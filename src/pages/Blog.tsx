@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Clock, Tag, ArrowRight, ChevronRight } from 'lucide-react';
+import { Search, Clock, Tag, ArrowRight, ChevronRight, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 const posts = [
   {
@@ -53,11 +54,51 @@ const posts = [
   },
 ];
 
+const ARTICLE_BODY: Record<number, string[]> = {
+  1: [
+    "Booking café gigs is one of the most effective ways for independent artists to build a local fanbase, test new material, and earn steady performance income. However, cafés operate differently than traditional music venues.",
+    "First, customize your pitch. Café owners are busy running a business; they want to know that you are professional, reliable, and will bring a pleasant vibe to their establishment. Send a short, personalized email with links to 2-3 live performance videos rather than studio files.",
+    "Second, respect the volume limit. Cafés are social hubs where people read, study, and converse. Acoustic sets with low-profile amplifiers or completely unplugged performances are highly preferred.",
+    "Lastly, build a consistent schedule. Performing at the same café on a recurring basis (e.g., the first Thursday of every month) helps build a loyal audience that knows exactly when to expect you."
+  ],
+  2: [
+    "Artificial intelligence is no longer just a futuristic concept; it is actively reshaping the songwriting process for creative artists around the globe.",
+    "Modern tools like chord progression generators, melody suggestion engines, and lyric brainstorming assistants are helping songwriters overcome writer's block and explore new musical directions.",
+    "AI is best viewed as a collaborator, not a replacement. By feeding a generator a simple prompt or mood, you can receive hundreds of variations that spark new human creativity.",
+    "As we move forward, the most successful creators will be those who learn to harness these technical tools to augment their unique artistic voice."
+  ],
+  3: [
+    "Open mic events have long been a staple of local music scenes, but recently, independent cafés have taken over as the primary venues for these creative gatherings.",
+    "Unlike traditional bar venues, cafés offer a warm, sober, and community-focused atmosphere where the music is the central focus, rather than background noise.",
+    "This intimate environment encourages experimental singer-songwriters to debut raw material and receive real-time, constructive reactions from listeners.",
+    "For communities looking to foster artistic collaboration, starting a weekly café open mic is the single best way to bring local musicians together."
+  ],
+  4: [
+    "Music theory can seem intimidating with all its sheet music and classical terminology, but for guitarists, understanding a few basic concepts can unlock the fretboard completely.",
+    "Start with the Major Scale. Almost all harmony in western music is derived from it. Understanding the intervals (whole steps and half steps) is key to chord construction.",
+    "Next, learn how chords are built. A standard triad consists of the root, third, and fifth notes of a scale. By knowing where these intervals lie on your fretboard, you can build any chord anywhere on the neck.",
+    "Practicing simple harmonic analysis of your favorite songs will help you write better progressions and improvise solos with absolute confidence."
+  ],
+  5: [
+    "Monetizing an independent music career is tough, but a direct fan membership program offers recurring monthly revenue that keeps you sustainable.",
+    "To succeed, keep your tiers simple. Offer high-value, exclusive rewards like behind-the-scenes demos, early access to tickets, or monthly Q&As.",
+    "Price your membership access reasonably. A $5/month tier is highly accessible and can add up quickly with just a few dozen supporters.",
+    "Consistency is the key to retention. Keep your community engaged with regular posts, updates, and expressions of gratitude for their support."
+  ],
+  6: [
+    "Fostering collaboration with other musicians is one of the quickest ways to expand your creative horizons and cross-pollinate fanbases.",
+    "Look for collaborators who complement your skill set. If you are a strong lyricist but struggle with production, team up with an electronic beatmaker.",
+    "Establish clear boundaries and expectations early. Agree on songwriting splits, session times, and credit before starting work.",
+    "Most importantly, stay open-minded. The magic of collaboration lies in the unexpected ideas that arise when two creative minds meet."
+  ]
+};
+
 const allCategories = ['All', ...Array.from(new Set(posts.map(p => p.category)))];
 
 export default function Blog() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedPost, setSelectedPost] = useState<typeof posts[0] | null>(null);
 
   const featured = posts.find(p => p.featured);
   const filtered = posts.filter(p => {
@@ -65,6 +106,71 @@ export default function Blog() {
     const matchSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.excerpt.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch && !p.featured;
   });
+
+  // If user selected a post, render the full article reader view
+  if (selectedPost) {
+    const paragraphs = ARTICLE_BODY[selectedPost.id] || ["Article content coming soon..."];
+    return (
+      <div className="min-h-screen bg-background pt-24 pb-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          
+          {/* Breadcrumb & Back */}
+          <button
+            onClick={() => { setSelectedPost(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="inline-flex items-center gap-2 text-xs font-semibold text-coffee hover:underline mb-8"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Articles
+          </button>
+
+          {/* Category Badge & Clock */}
+          <div className="flex items-center gap-3 mb-4">
+            <span className="px-3 py-1 bg-coffee/10 text-coffee text-xs font-semibold rounded-full">{selectedPost.category}</span>
+            <span className="flex items-center gap-1 text-xs text-muted-foreground"><Clock className="w-3 h-3" />{selectedPost.readTime}</span>
+          </div>
+
+          {/* Title */}
+          <h1 className="font-display font-bold text-3xl sm:text-4xl text-foreground mb-6 leading-tight">
+            {selectedPost.title}
+          </h1>
+
+          {/* Author */}
+          <div className="flex items-center gap-3 pb-8 border-b border-border mb-8">
+            <img src={selectedPost.authorImg} alt={selectedPost.author} className="w-10 h-10 rounded-full object-cover" />
+            <div>
+              <p className="text-sm font-semibold text-foreground">{selectedPost.author}</p>
+              <p className="text-xs text-muted-foreground">Published on {selectedPost.date}</p>
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="rounded-2xl overflow-hidden mb-8 border border-border shadow-warm">
+            <img src={selectedPost.img} alt={selectedPost.title} className="w-full h-auto object-cover max-h-[400px]" />
+          </div>
+
+          {/* Paragraphs */}
+          <div className="space-y-6 text-sm text-foreground/90 leading-relaxed font-sans">
+            {paragraphs.map((p, i) => (
+              <p key={i} className="first-letter:text-3xl first-letter:font-bold first-letter:text-coffee first-letter:mr-1 first-letter:float-left first-letter:leading-none">
+                {i === 0 ? p : p.replace(/^[^a-zA-Z]*/, '')}
+              </p>
+            ))}
+          </div>
+
+          {/* Back button at footer */}
+          <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
+            <button
+              onClick={() => { setSelectedPost(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="px-5 py-2.5 border border-border text-xs font-semibold rounded-xl text-foreground hover:bg-muted transition-all"
+            >
+              Close Article
+            </button>
+            <span className="text-xs text-muted-foreground">Thank you for reading ChordsAndCoffee! ☕</span>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pt-16">
@@ -115,7 +221,10 @@ export default function Blog() {
                         <p className="text-xs text-muted-foreground">{featured.date}</p>
                       </div>
                     </div>
-                    <button className="inline-flex items-center gap-1.5 text-coffee text-sm font-semibold hover:gap-2.5 transition-all">
+                    <button
+                      onClick={() => { setSelectedPost(featured); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      className="inline-flex items-center gap-1.5 text-coffee text-sm font-semibold hover:gap-2.5 transition-all cursor-pointer"
+                    >
                       Read Article <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -145,7 +254,11 @@ export default function Blog() {
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map(post => (
-                <article key={post.id} className="bg-card rounded-2xl border border-border overflow-hidden hover:shadow-warm hover:-translate-y-1 transition-all cursor-pointer group">
+                <article
+                  key={post.id}
+                  onClick={() => { setSelectedPost(post); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  className="bg-card rounded-2xl border border-border overflow-hidden hover:shadow-warm hover:-translate-y-1 transition-all cursor-pointer group"
+                >
                   <div className="aspect-video overflow-hidden">
                     <img src={post.img} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>

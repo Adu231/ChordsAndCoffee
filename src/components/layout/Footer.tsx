@@ -12,12 +12,12 @@ const footerLinks = {
     { label: 'About Us', href: '/about' },
     { label: 'Contact', href: '/contact' },
     { label: 'FAQ', href: '/faq' },
-    { label: 'Careers', href: '/about' },
+    { label: 'Careers', href: '/careers' },
   ],
   Legal: [
     { label: 'Privacy Policy', href: '/privacy-policy' },
     { label: 'Terms of Service', href: '/terms' },
-    { label: 'Cookie Policy', href: '/privacy-policy' },
+    { label: 'Cookie Policy', href: '/cookie-policy' },
   ],
 };
 

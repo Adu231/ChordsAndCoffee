@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 
 const TRACKS = [
   { id: 1, title: 'Café Mornings', artist: 'Alex Rivera', genre: 'Acoustic', duration: 214, cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop' },
-  { id: 2, title: 'Golden Hours', artist: 'Maya Chen', genre: 'Indie Folk', duration: 183, cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop' },
-  { id: 3, title: 'Midnight Jazz', artist: 'The Quartet', genre: 'Jazz', duration: 267, cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop' },
+  { id: 2, title: 'Golden Hours', artist: 'Marcus Chen', genre: 'Jazz Piano', duration: 183, cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop' },
+  { id: 3, title: 'Midnight Synth', artist: 'Lana Vibe', genre: 'Ambient Synth', duration: 267, cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop' },
 ];
 
 function formatTime(s: number) {
@@ -22,6 +22,21 @@ export default function MusicPlayer({ mini = false }: { mini?: boolean }) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const track = TRACKS[current];
+
+  useEffect(() => {
+    const handlePlayTrackEvent = (e: CustomEvent<{ artist: string }>) => {
+      const idx = TRACKS.findIndex(t => t.artist.toLowerCase() === e.detail.artist.toLowerCase());
+      if (idx !== -1) {
+        setCurrent(idx);
+        setPlaying(true);
+        setProgress(0);
+      }
+    };
+    window.addEventListener('play-track' as any, handlePlayTrackEvent);
+    return () => {
+      window.removeEventListener('play-track' as any, handlePlayTrackEvent);
+    };
+  }, []);
 
   useEffect(() => {
     if (playing) {

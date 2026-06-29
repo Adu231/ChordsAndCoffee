@@ -4,10 +4,10 @@ import { ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function ScrollRestoration() {
-  const { pathname } = useLocation();
+  const { pathname, key } = useLocation();
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [pathname]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname, key]);
   return null;
 }
 

@@ -66,7 +66,10 @@ export default function Navbar() {
               <Coffee className="w-5 h-5 text-amber-200" />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-display font-bold text-lg text-foreground">Chords</span>
+              <span className={cn(
+                "font-display font-bold text-lg transition-colors",
+                scrolled || !isHome ? "text-foreground" : "text-white"
+              )}>Chords</span>
               <span className="text-xs font-body text-gold -mt-0.5 font-medium">&Coffee</span>
             </div>
           </Link>
@@ -81,7 +84,9 @@ export default function Navbar() {
                     onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
                     className={cn(
                       'flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                      'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      scrolled || !isHome
+                        ? 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                        : 'text-white/85 hover:text-white hover:bg-white/10'
                     )}
                   >
                     {link.label}
@@ -108,8 +113,10 @@ export default function Navbar() {
                   className={cn(
                     'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive(link.href!)
-                      ? 'text-foreground bg-muted font-semibold'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      ? (scrolled || !isHome ? 'text-foreground bg-muted font-semibold' : 'text-white bg-white/20 font-semibold')
+                      : (scrolled || !isHome
+                          ? 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                          : 'text-white/85 hover:text-white hover:bg-white/10')
                   )}
                 >
                   {link.label}
@@ -122,7 +129,12 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                scrolled || !isHome
+                  ? "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "text-white/80 hover:text-white hover:bg-white/10"
+              )}
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
@@ -133,11 +145,20 @@ export default function Navbar() {
                 <button
                   onClick={() => setUserMenuOpen(v => !v)}
                   onBlur={() => setTimeout(() => setUserMenuOpen(false), 150)}
-                  className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-muted transition-colors"
+                  className={cn(
+                    "flex items-center gap-2 p-1.5 rounded-xl transition-colors",
+                    scrolled || !isHome ? "hover:bg-muted" : "hover:bg-white/10"
+                  )}
                 >
                   <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover border-2 border-gold/40" />
-                  <span className="text-sm font-medium text-foreground">{user.name.split(' ')[0]}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  <span className={cn(
+                    "text-sm font-medium transition-colors",
+                    scrolled || !isHome ? "text-foreground" : "text-white"
+                  )}>{user.name.split(' ')[0]}</span>
+                  <ChevronDown className={cn(
+                    "w-3.5 h-3.5 transition-colors",
+                    scrolled || !isHome ? "text-muted-foreground" : "text-white/75"
+                  )} />
                 </button>
                 {userMenuOpen && (
                   <div className="absolute top-full mt-1 right-0 w-52 bg-card border border-border rounded-xl shadow-warm-lg overflow-hidden animate-fade-in">
@@ -166,7 +187,12 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                    scrolled || !isHome
+                      ? "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                  )}
                 >
                   Sign In
                 </Link>
@@ -184,13 +210,23 @@ export default function Navbar() {
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                scrolled || !isHome
+                  ? "text-muted-foreground hover:bg-muted"
+                  : "text-white/80 hover:bg-white/10"
+              )}
             >
               {theme === 'dark' ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
             </button>
             <button
               onClick={() => setIsOpen(v => !v)}
-              className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                scrolled || !isHome
+                  ? "text-muted-foreground hover:bg-muted"
+                  : "text-white/80 hover:bg-white/10"
+              )}
               aria-label="Toggle menu"
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

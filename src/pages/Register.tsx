@@ -75,9 +75,12 @@ export default function Register() {
           <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-coffee rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 text-center max-w-sm">
-          <div className="w-20 h-20 rounded-2xl gradient-brand flex items-center justify-center mx-auto mb-8 shadow-warm-lg">
+          <Link
+            to="/"
+            className="w-20 h-20 rounded-2xl gradient-brand flex items-center justify-center mx-auto mb-8 shadow-warm-lg hover:scale-105 transition-transform"
+          >
             <Coffee className="w-10 h-10 text-amber-200" />
-          </div>
+          </Link>
           <h2 className="font-display font-bold text-3xl text-white mb-4">Join 50,000+<br />Music Creators</h2>
           <p className="text-white/60 text-base leading-relaxed mb-10">
             Start your creative journey today — connect with artists, venues, and fans who love music as much as you do.
@@ -94,12 +97,12 @@ export default function Register() {
       {/* Right */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-9 h-9 rounded-xl gradient-brand flex items-center justify-center">
+          <Link to="/" className="flex items-center gap-2 mb-8 lg:hidden group">
+            <div className="w-9 h-9 rounded-xl gradient-brand flex items-center justify-center group-hover:scale-105 transition-transform">
               <Coffee className="w-5 h-5 text-amber-200" />
             </div>
             <span className="font-display font-bold text-lg text-foreground">ChordsAndCoffee</span>
-          </div>
+          </Link>
 
           {/* Step indicator */}
           <div className="flex items-center gap-2 mb-8">

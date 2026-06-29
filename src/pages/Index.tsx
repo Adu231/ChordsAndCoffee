@@ -10,6 +10,7 @@ import dashboardImg from '@/assets/dashboard-preview.jpg';
 import AnimatedCounter from '@/components/features/AnimatedCounter';
 import MusicPlayer from '@/components/features/MusicPlayer';
 import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 const features = [
   { icon: Music, title: 'Music Discovery', desc: 'Explore trending artists, new releases, and curated playlists tailored to your taste.', color: 'text-amber-500' },
@@ -86,6 +87,7 @@ const faqs = [
 ];
 
 export default function Index() {
+  const { user } = useAuth();
   const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -119,10 +121,10 @@ export default function Index() {
 
               <div className="flex flex-wrap gap-3 mb-10 animate-fade-up" style={{ animationDelay: '0.3s' }}>
                 <Link
-                  to="/register"
+                  to={user ? "/dashboard" : "/register"}
                   className="inline-flex items-center gap-2 px-6 py-3.5 bg-gold text-[hsl(220,27%,12%)] font-semibold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5"
                 >
-                  Start for Free <ArrowRight className="w-4 h-4" />
+                  {user ? "Go to Dashboard" : "Start for Free"} <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   to="/features"
@@ -253,8 +255,11 @@ export default function Index() {
                 ))}
               </div>
 
-              <Link to="/register" className="inline-flex items-center gap-2 px-6 py-3.5 mt-8 bg-gold text-[hsl(220,27%,12%)] rounded-xl font-semibold hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5">
-                Begin Your Journey <ArrowRight className="w-4 h-4" />
+              <Link
+                to={user ? "/dashboard" : "/register"}
+                className="inline-flex items-center gap-2 px-6 py-3.5 mt-8 bg-gold text-[hsl(220,27%,12%)] rounded-xl font-semibold hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5"
+              >
+                {user ? "Go to Dashboard" : "Begin Your Journey"} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
@@ -460,14 +465,15 @@ export default function Index() {
                   ))}
                 </ul>
                 <Link
-                  to="/register"
+                  to={user ? "/confirm-payment" : "/register"}
+                  state={user ? { artist: `ChordsAndCoffee Plan: ${plan.name}`, amount: plan.price[billing] } : undefined}
                   className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all ${
                     plan.highlight
                       ? 'bg-gold text-[hsl(220,27%,12%)] hover:bg-[hsl(43,87%,55%)] shadow-gold hover:-translate-y-0.5'
                       : 'bg-muted text-foreground hover:bg-[hsl(var(--muted))] hover:shadow-warm border border-border'
                   }`}
                 >
-                  {plan.cta}
+                  {user ? `Select ${plan.name} Plan` : plan.cta}
                 </Link>
               </div>
             ))}
@@ -535,10 +541,10 @@ export default function Index() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
-              to="/register"
+              to={user ? "/dashboard" : "/register"}
               className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-[hsl(220,27%,12%)] font-bold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5 text-base"
             >
-              Start for Free <ArrowRight className="w-5 h-5" />
+              {user ? "Go to Dashboard" : "Start for Free"} <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               to="/about"

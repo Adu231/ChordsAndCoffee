@@ -24,6 +24,9 @@ import Blog from "./pages/Blog";
 import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import Careers from "./pages/Careers";
+import CookiePolicy from "./pages/CookiePolicy";
+import ConfirmPayment from "./pages/ConfirmPayment";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +85,9 @@ function WithLayout() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
+          <Route path="/confirm-payment" element={<ConfirmPayment />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

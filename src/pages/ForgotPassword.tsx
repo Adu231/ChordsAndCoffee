@@ -25,12 +25,12 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-10">
-          <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center shadow-warm">
+        <Link to="/" className="flex items-center justify-center gap-2 mb-10 group">
+          <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center shadow-warm group-hover:scale-105 transition-transform">
             <Coffee className="w-5 h-5 text-amber-200" />
           </div>
           <span className="font-display font-bold text-xl text-foreground">ChordsAndCoffee</span>
-        </div>
+        </Link>
 
         <div className="bg-card rounded-2xl border border-border p-8 shadow-warm">
           {sent ? (

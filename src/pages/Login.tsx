@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Coffee, Music, AlertCircle, ArrowRight } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth, DEMO_USERS } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -44,9 +45,12 @@ export default function Login() {
           <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-coffee rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 text-center">
-          <div className="w-20 h-20 rounded-2xl gradient-brand flex items-center justify-center mx-auto mb-8 shadow-warm-lg">
+          <Link
+            to="/"
+            className="w-20 h-20 rounded-2xl gradient-brand flex items-center justify-center mx-auto mb-8 shadow-warm-lg hover:scale-105 transition-transform"
+          >
             <Coffee className="w-10 h-10 text-amber-200" />
-          </div>
+          </Link>
           <h2 className="font-display font-bold text-3xl text-white mb-4">Welcome back<br />to the music</h2>
           <p className="text-white/60 text-base leading-relaxed max-w-xs">
             Sign in to continue your creative journey — your performances, collaborators, and community are waiting.
@@ -69,16 +73,71 @@ export default function Login() {
       {/* Right Panel */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-9 h-9 rounded-xl gradient-brand flex items-center justify-center">
+          <Link to="/" className="flex items-center gap-2 mb-8 lg:hidden group">
+            <div className="w-9 h-9 rounded-xl gradient-brand flex items-center justify-center group-hover:scale-105 transition-transform">
               <Coffee className="w-5 h-5 text-amber-200" />
             </div>
             <span className="font-display font-bold text-lg text-foreground">ChordsAndCoffee</span>
+          </Link>
+
+          <div className="mb-6">
+            <h1 className="font-display font-bold text-3xl text-foreground mb-2">Sign In</h1>
+            <p className="text-muted-foreground mb-4">Don't have an account? <Link to="/register" className="text-coffee font-semibold hover:underline">Create one free</Link></p>
           </div>
 
-          <div className="mb-8">
-            <h1 className="font-display font-bold text-3xl text-foreground mb-2">Sign In</h1>
-            <p className="text-muted-foreground">Don't have an account? <Link to="/register" className="text-coffee font-semibold hover:underline">Create one free</Link></p>
+          {/* Quick Demo Login Panel */}
+          <div className="mb-6 bg-muted/40 border border-border/80 rounded-2xl p-4 shadow-sm">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              Quick Demo Sign In (7 Roles)
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(DEMO_USERS).map(([demoEmail, profile], idx) => {
+                let roleLabel = '';
+                switch (profile.role) {
+                  case 'fan': roleLabel = 'Music Lover'; break;
+                  case 'musician': roleLabel = 'Musician'; break;
+                  case 'teacher': roleLabel = 'Music Teacher'; break;
+                  case 'venue': roleLabel = 'Café / Venue'; break;
+                  case 'organizer': roleLabel = 'Event Org'; break;
+                  case 'sponsor': roleLabel = 'Sponsor'; break;
+                  case 'admin': roleLabel = 'Admin'; break;
+                  default: roleLabel = profile.role;
+                }
+
+                return (
+                  <button
+                    key={demoEmail}
+                    type="button"
+                    onClick={async () => {
+                      setEmail(demoEmail);
+                      setPassword('password');
+                      const result = await login(demoEmail, 'password');
+                      if (result.success) {
+                        toast.success(`Logged in as ${profile.name} (${roleLabel})! 🎵`);
+                        navigate('/dashboard');
+                      } else {
+                        toast.error(result.error || 'Demo login failed.');
+                      }
+                    }}
+                    className={cn(
+                      "flex items-center gap-2 p-2 bg-card hover:bg-muted/80 border border-border rounded-xl text-left transition-all hover:scale-[1.01] active:scale-[0.98] group shadow-sm",
+                      idx === 6 && "col-span-2"
+                    )}
+                  >
+                    <img
+                      src={profile.avatar}
+                      alt={profile.name}
+                      className="w-7 h-7 rounded-full object-cover border border-gold/30"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-foreground truncate group-hover:text-coffee transition-colors">{profile.name}</p>
+                      <p className="text-[10px] text-muted-foreground truncate font-medium">{roleLabel}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {errors.form && (

@@ -161,13 +161,13 @@ export default function Settings() {
                             toast.success('Preference saved');
                           }}
                           className={cn(
-                            'relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5',
-                            value ? 'bg-coffee' : 'bg-muted'
+                            'relative w-11 h-6 rounded-full transition-all flex-shrink-0 mt-0.5 border cursor-pointer focus:outline-none focus:ring-2 focus:ring-coffee/20',
+                            value ? 'bg-coffee border-coffee shadow-[0_0_8px_rgba(201,138,34,0.15)]' : 'bg-muted border-border hover:border-muted-foreground/30'
                           )}
                         >
                           <span className={cn(
-                            'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform',
-                            value ? 'translate-x-6' : 'translate-x-1'
+                            'absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow transition-transform',
+                            value ? 'translate-x-5' : 'translate-x-0.5'
                           )} />
                         </button>
                       </div>

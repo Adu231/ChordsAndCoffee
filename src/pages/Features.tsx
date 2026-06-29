@@ -4,6 +4,7 @@ import {
   Globe, Shield, Star, Play, Calendar, MessageSquare, ShoppingBag,
   ArrowRight, CheckCircle, ChevronRight
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const featureGroups = [
   {
@@ -69,6 +70,7 @@ const featureGroups = [
 ];
 
 export default function Features() {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-background pt-16">
       {/* Hero */}
@@ -88,8 +90,11 @@ export default function Features() {
           <p className="text-white/65 text-lg max-w-2xl mx-auto leading-relaxed mb-8">
             From live performances to AI composition assistance, venue booking to fan monetization — ChordsAndCoffee gives you a complete creative ecosystem.
           </p>
-          <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-[hsl(220,27%,12%)] font-bold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5">
-            Get Started Free <ArrowRight className="w-4 h-4" />
+          <Link
+            to={user ? "/dashboard" : "/register"}
+            className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-[hsl(220,27%,12%)] font-bold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5"
+          >
+            {user ? "Go to Dashboard" : "Get Started Free"} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
@@ -117,8 +122,8 @@ export default function Features() {
                     </li>
                   ))}
                 </ul>
-                <Link to="/register" className="inline-flex items-center gap-2 text-coffee font-semibold hover:gap-3 transition-all">
-                  Start using {group.title} <ChevronRight className="w-4 h-4" />
+                <Link to={user ? "/dashboard" : "/register"} className="inline-flex items-center gap-2 text-coffee font-semibold hover:gap-3 transition-all">
+                  {user ? "Go to Dashboard" : `Start using ${group.title}`} <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
 
@@ -171,8 +176,8 @@ export default function Features() {
           </h2>
           <p className="text-white/60 mb-8 text-lg">Start free. No credit card required. Upgrade anytime.</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-[hsl(220,27%,12%)] font-bold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5">
-              Create Free Account <ArrowRight className="w-4 h-4" />
+            <Link to={user ? "/dashboard" : "/register"} className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-[hsl(220,27%,12%)] font-bold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5">
+              {user ? "Go to Dashboard" : "Create Free Account"} <ArrowRight className="w-4 h-4" />
             </Link>
             <Link to="/pricing" className="inline-flex items-center gap-2 px-8 py-4 glass text-white font-semibold rounded-xl hover:bg-white/15 transition-all">
               View Pricing

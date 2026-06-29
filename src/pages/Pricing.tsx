@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, DollarSign, ArrowRight, Zap, Globe, Shield, Users, BarChart3, BookOpen } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const plans = [
   {
@@ -85,6 +86,7 @@ const comparisons = [
 ];
 
 export default function Pricing() {
+  const { user } = useAuth();
   const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly');
 
   return (
@@ -162,14 +164,15 @@ export default function Pricing() {
                 </div>
                 <div className="px-8 pb-8">
                   <Link
-                    to="/register"
+                    to={user ? "/confirm-payment" : "/register"}
+                    state={user ? { artist: `ChordsAndCoffee Plan: ${plan.name}`, amount: plan.price[billing] } : undefined}
                     className={`block text-center py-3.5 rounded-xl font-semibold text-sm transition-all ${
                       plan.highlight
                         ? 'bg-gold text-[hsl(220,27%,12%)] hover:bg-[hsl(43,87%,55%)] shadow-gold hover:-translate-y-0.5'
                         : 'bg-coffee text-white hover:bg-[hsl(25,40%,26%)] shadow-warm hover:-translate-y-0.5'
                     }`}
                   >
-                    {plan.cta}
+                    {user ? `Select ${plan.name} Plan` : plan.cta}
                   </Link>
                 </div>
               </div>
@@ -241,8 +244,8 @@ export default function Pricing() {
             Start Your Free Account Today
           </h2>
           <p className="text-white/60 mb-8 text-lg">Join thousands of artists already growing on ChordsAndCoffee.</p>
-          <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-[hsl(220,27%,12%)] font-bold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5">
-            Get Started Free <ArrowRight className="w-4 h-4" />
+          <Link to={user ? "/dashboard" : "/register"} className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-[hsl(220,27%,12%)] font-bold rounded-xl hover:bg-[hsl(43,87%,55%)] shadow-gold transition-all hover:-translate-y-0.5">
+            {user ? "Go to Dashboard" : "Get Started Free"} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
