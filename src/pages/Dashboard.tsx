@@ -36,7 +36,6 @@ const getNavItemsForRole = (role: string) => {
     case 'musician':
       return [
         { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
-        { icon: User, label: 'Artist Profile', id: 'profile-setup' },
         { icon: Music, label: 'Upload Portfolio', id: 'portfolio' },
         { icon: Calendar, label: 'Book Performances', id: 'booking' },
         { icon: Users, label: 'Collaborate', id: 'collab' },
@@ -137,23 +136,78 @@ export default function Dashboard() {
   ]);
   const [newTrackTitle, setNewTrackTitle] = useState('');
   const [newTrackGenre, setNewTrackGenre] = useState('Acoustic');
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [gigOffers, setGigOffers] = useState([
-    { id: 1, venue: 'The Grind Café', date: 'Jul 15', pay: '$250', status: 'Pending' },
-    { id: 2, venue: 'Brew & Strum', date: 'Jul 22', pay: '$180', status: 'Confirmed' },
-    { id: 3, venue: 'Notes & Beans', date: 'Aug 05', pay: '$400', status: 'Pending' },
+    {
+      id: 1,
+      venue: 'The Grind Café',
+      date: 'Jul 15',
+      time: '7:30 PM - 9:30 PM',
+      pay: '$250',
+      status: 'Pending',
+      desc: 'Looking for a 2-hour acoustic set during our Friday evening peak rush. Crowd loves indie folk covers and original tunes. Free espresso bar and snacks included for the artist.',
+      address: '123 Brew St, Austin, TX',
+      expectations: '2 sets of 45 minutes with a 15 minute break in between. Must bring own instrument; house PA system is available.'
+    },
+    {
+      id: 2,
+      venue: 'Brew & Strum',
+      date: 'Jul 22',
+      time: '8:00 PM - 10:00 PM',
+      pay: '$180',
+      status: 'Confirmed',
+      desc: 'Acoustic live music set for our weekly café community evening. Casual vibe, family-friendly audience.',
+      address: '456 Chord Ave, Austin, TX',
+      expectations: 'Bring acoustic guitar or keyboards. Low-profile amplification requested.'
+    },
+    {
+      id: 3,
+      venue: 'Notes & Beans',
+      date: 'Aug 05',
+      time: '6:00 PM - 9:00 PM',
+      pay: '$400',
+      status: 'Pending',
+      desc: 'Premium jazz/acoustic lounge performance slot. High patronage, elegant atmosphere.',
+      address: '789 Rhythm Blvd, Austin, TX',
+      expectations: 'Classy lounge repertoire. Professional attire and punctuality are mandatory.'
+    },
   ]);
+  const [viewingGig, setViewingGig] = useState<typeof gigOffers[0] | null>(null);
   const [collabList, setCollabList] = useState([
-    { id: 1, title: 'Guitarist needed for indie folk ballad', creator: 'Marcus Chen', status: 'Open' },
-    { id: 2, title: 'Looking for vocalist for jazz duet', creator: 'Lana Vibe', status: 'In Progress' },
+    {
+      id: 1,
+      title: 'Guitarist needed for indie folk ballad',
+      creator: 'Marcus Chen',
+      roleNeeded: 'Guitarist',
+      status: 'Open',
+      desc: 'We are finishing a warm acoustic indie folk ballad and need a subtle fingerpicked guitar part to fill out the verses. Key of G, tempo 85bpm.',
+      requirements: 'Must have a clean acoustic recording setup and be able to provide WAV stems.'
+    },
+    {
+      id: 2,
+      title: 'Looking for vocalist for jazz duet',
+      creator: 'Lana Vibe',
+      roleNeeded: 'Vocalist',
+      status: 'In Progress',
+      desc: 'Looking for a male/tenor vocalist to sing harmonies on a jazz duet version of Café Mornings. Piano is already tracked.',
+      requirements: 'Comfortable with close harmonies, jazz syncopation, and vocal expression.'
+    },
   ]);
   const [newCollabTitle, setNewCollabTitle] = useState('');
+  const [newCollabRole, setNewCollabRole] = useState('Guitarist');
+  const [newCollabDesc, setNewCollabDesc] = useState('');
+  const [newCollabReqs, setNewCollabReqs] = useState('');
+  const [viewingCollab, setViewingCollab] = useState<typeof collabList[0] | null>(null);
   // Digital Storefront
   const [storeTracks, setStoreTracks] = useState([
-    { id: 1, title: 'Café Mornings EP', price: 9.99 },
-    { id: 2, title: 'Unplugged Sessions Album', price: 14.99 }
+    { id: 1, title: 'Café Mornings EP', price: 9.99, format: 'EP', releaseDate: '2026-06-01', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop' },
+    { id: 2, title: 'Unplugged Sessions Album', price: 14.99, format: 'Album', releaseDate: '2026-05-15', cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop' }
   ]);
   const [storeTrackTitle, setStoreTrackTitle] = useState('');
   const [storeTrackPrice, setStoreTrackPrice] = useState('9.99');
+  const [storeTrackFormat, setStoreTrackFormat] = useState('EP');
+  const [storeTrackDate, setStoreTrackDate] = useState('2026-07-01');
+  const [storeTrackCover, setStoreTrackCover] = useState<File | null>(null);
 
   // 4.3 Music Teacher States
   const [teacherEarnings, setTeacherEarnings] = useState(4250);
@@ -164,6 +218,10 @@ export default function Dashboard() {
   const [newCourseTitle, setNewCourseTitle] = useState('');
   const [newCourseLevel, setNewCourseLevel] = useState('Beginner');
   const [newCoursePrice, setNewCoursePrice] = useState('49');
+  const [newCourseDesc, setNewCourseDesc] = useState('');
+  const [newCourseHours, setNewCourseHours] = useState('10');
+  const [newCourseLectures, setNewCourseLectures] = useState('12');
+  const [newCourseSyllabus, setNewCourseSyllabus] = useState('');
 
   const [teacherWorkshops, setTeacherWorkshops] = useState([
     { id: 1, title: 'Jazz Chords Mastery', date: 'Jul 12', seatsLeft: 5, price: '$15' },
@@ -177,31 +235,71 @@ export default function Dashboard() {
     { id: 2, name: 'Jane Smith', notes: 'Working on rhythm patterns', lastMeeting: 'Jun 28' },
   ]);
   const [newStudentName, setNewStudentName] = useState('');
+  const [newStudentEmail, setNewStudentEmail] = useState('');
+  const [newStudentInstrument, setNewStudentInstrument] = useState('Guitar');
+  const [newStudentLevel, setNewStudentLevel] = useState('Beginner');
+  const [newStudentNotes, setNewStudentNotes] = useState('');
+
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
+  const [selectedWithdrawalAccount, setSelectedWithdrawalAccount] = useState('Chase Bank (...4829)');
+  const withdrawalAccounts = ['Chase Bank (...4829)', 'Wells Fargo (...1056)', 'PayPal (alex.rivera@gmail.com)'];
+  const [withdrawAmount, setWithdrawAmount] = useState('4250');
+
+  const [activeHostingWorkshop, setActiveHostingWorkshop] = useState<typeof teacherWorkshops[0] | null>(null);
+  const [schedulingStudent, setSchedulingStudent] = useState<typeof mentorshipStudents[0] | null>(null);
+  const [meetingDate, setMeetingDate] = useState('2026-07-10');
+  const [meetingTime, setMeetingTime] = useState('16:00');
 
   // 4.4 Café / Venue Owner States
+  const [venueName, setVenueName] = useState('Chords & Coffee Lounge');
   const [venueCapacity, setVenueCapacity] = useState('120');
   const [venueAddress, setVenueAddress] = useState('123 Brew St, Austin, TX');
   const [venueStatus, setVenueStatus] = useState('Listed & Active');
+  const [venueDescription, setVenueDescription] = useState('A warm acoustic live performance café featuring artisanal espresso and local songwriter show stages.');
+  const [venueContactPhone, setVenueContactPhone] = useState('(512) 555-0199');
+  const [venuePricingPerHour, setVenuePricingPerHour] = useState('50');
+  const [venueStageGear, setVenueStageGear] = useState('Yamaha Upright Piano, 2x Shure SM58, Soundcraft Mixer, JBL Active PAs');
+  const [venueAcousticsRating, setVenueAcousticsRating] = useState('Excellent');
+
   const [venueCampaignsCount, setVenueCampaignsCount] = useState(2);
   const [venueEvents, setVenueEvents] = useState([
-    { id: 1, name: 'Open Mic Night', date: 'Jul 05', time: '8:00 PM', price: 'Free' },
-    { id: 2, name: 'Acoustic Set Live', date: 'Jul 12', time: '7:30 PM', price: '$10' },
+    { id: 1, name: 'Open Mic Night', date: 'Jul 05', time: '8:00 PM', price: 'Free', desc: 'Our weekly acoustic showcase for local singer-songwriters.', genre: 'Acoustic / Indie' },
+    { id: 2, name: 'Acoustic Set Live', date: 'Jul 12', time: '7:30 PM', price: '$10', desc: 'Featuring regional indie folk artists.', genre: 'Folk / Bluegrass' },
   ]);
   const [newVenueEventName, setNewVenueEventName] = useState('');
-  const [newVenueEventDate, setNewVenueEventDate] = useState('Jul 20');
+  const [newVenueEventDate, setNewVenueEventDate] = useState('2026-07-20');
+  const [newVenueEventTime, setNewVenueEventTime] = useState('20:00');
+  const [newVenueEventPrice, setNewVenueEventPrice] = useState('10');
+  const [newVenueEventDesc, setNewVenueEventDesc] = useState('');
+  const [newVenueEventGenre, setNewVenueEventGenre] = useState('Acoustic');
 
   const [venueReservations, setVenueReservations] = useState([
-    { id: 1, table: 'Table 4', guests: 4, time: '7:00 PM', status: 'Checked In' },
-    { id: 2, table: 'Table 1', guests: 2, time: '7:30 PM', status: 'Confirmed' },
-    { id: 3, table: 'VIP Section', guests: 6, time: '8:00 PM', status: 'Confirmed' },
+    { id: 1, table: 'Table 4', guests: 4, time: '7:00 PM', name: 'John Miller', email: 'john@miller.com', notes: 'Anniversary celebration, request booth seat', status: 'Checked In' },
+    { id: 2, table: 'Table 1', guests: 2, time: '7:30 PM', name: 'Clara Oswald', email: 'clara@oswald.com', notes: 'Near the live stage if possible', status: 'Confirmed' },
+    { id: 3, table: 'VIP Section', guests: 6, time: '8:00 PM', name: 'David Tennant', email: 'david@doctor.com', notes: 'Needs wheelchair access', status: 'Confirmed' },
   ]);
+  const [viewingReservation, setViewingReservation] = useState<typeof venueReservations[0] | null>(null);
 
   const [sentArtistOffers, setSentArtistOffers] = useState([
-    { id: 1, artist: 'Alex Rivera', date: 'Jul 24', pay: '$250', status: 'Pending' },
-    { id: 2, artist: 'Marcus Chen', date: 'Jul 30', pay: '$300', status: 'Accepted' },
+    { id: 1, artist: 'Alex Rivera', date: 'Jul 24', slotTime: '8:00 PM - 10:00 PM', pay: '$250', status: 'Pending', notes: 'Headliner set for Acoustic Night', accommodation: 'No' },
+    { id: 2, artist: 'Marcus Chen', date: 'Jul 30', slotTime: '7:30 PM - 9:30 PM', pay: '$300', status: 'Accepted', notes: 'Opening set', accommodation: 'Yes' },
   ]);
   const [bookingArtistName, setBookingArtistName] = useState('Alex Rivera');
-  const [bookingPay, setBookingPay] = useState('200');
+  const [bookingPay, setBookingPay] = useState('250');
+  const [bookingDate, setBookingDate] = useState('2026-07-25');
+  const [bookingSlotTime, setBookingSlotTime] = useState('20:00 - 22:00');
+  const [bookingNotes, setBookingNotes] = useState('');
+  const [bookingAccommodation, setBookingAccommodation] = useState(false);
+
+  const [showPromoModal, setShowPromoModal] = useState(false);
+  const [promoRadius, setPromoRadius] = useState('10');
+  const [promoGoal, setPromoGoal] = useState('Increase Ticket Sales');
+  const [promoEventId, setPromoEventId] = useState('1');
+  const [promoAdTitle, setPromoAdTitle] = useState('');
+  const [promoAdDesc, setPromoAdDesc] = useState('');
+  const [promoBudget, setPromoBudget] = useState('25');
+  const [promoProcessing, setPromoProcessing] = useState(false);
+  const [isSavingVenueProfile, setIsSavingVenueProfile] = useState(false);
 
   // 4.5 Event Organizer States
   const [orgEvents, setOrgEvents] = useState([
@@ -209,15 +307,37 @@ export default function Dashboard() {
     { id: 2, name: 'Cafe Acoustic Series', date: 'Jul 29', ticketsSold: 85, capacity: 100, price: '$15' },
   ]);
   const [newOrgEventName, setNewOrgEventName] = useState('');
-  const [newOrgEventDate, setNewOrgEventDate] = useState('Aug 20');
+  const [newOrgEventDate, setNewOrgEventDate] = useState('2026-08-20');
   const [newOrgEventCapacity, setNewOrgEventCapacity] = useState('150');
+  const [newOrgEventTime, setNewOrgEventTime] = useState('19:30');
+  const [newOrgEventPrice, setNewOrgEventPrice] = useState('25');
+  const [newOrgEventLocation, setNewOrgEventLocation] = useState('Chords Café Main Hall');
+  const [newOrgEventDesc, setNewOrgEventDesc] = useState('');
+  const [newOrgEventGenre, setNewOrgEventGenre] = useState('Acoustic Lounge');
 
   const [attendees, setAttendees] = useState([
-    { id: 1, name: 'Tommy Cooper', ticket: 'VIP', status: 'Confirmed' },
-    { id: 2, name: 'Sarah Connor', ticket: 'GA', status: 'Checked In' },
-    { id: 3, name: 'Emily Johnson', ticket: 'GA', status: 'Confirmed' },
+    { id: 1, name: 'Tommy Cooper', ticket: 'VIP', status: 'Confirmed', email: 'tommy@cooper.com', serial: 'TKT-104-9921', date: 'Jun 22', notes: 'Include complimentary front row access' },
+    { id: 2, name: 'Sarah Connor', ticket: 'GA', status: 'Checked In', email: 'sarah@connor.com', serial: 'TKT-821-1056', date: 'Jun 25', notes: 'Wheelchair seating requested' },
+    { id: 3, name: 'Emily Johnson', ticket: 'GA', status: 'Confirmed', email: 'emily@johnson.com', serial: 'TKT-441-2099', date: 'Jun 28', notes: 'Dietary preference: Gluten Free' },
   ]);
   const [newAttendeeName, setNewAttendeeName] = useState('');
+  const [newAttendeeEmail, setNewAttendeeEmail] = useState('');
+  const [newAttendeeTicket, setNewAttendeeTicket] = useState('GA');
+  const [newAttendeeNotes, setNewAttendeeNotes] = useState('');
+  const [viewingAttendee, setViewingAttendee] = useState<typeof attendees[0] | null>(null);
+
+  const [showInviteArtistModal, setShowInviteArtistModal] = useState(false);
+  const [invitingArtist, setInvitingArtist] = useState<{ name: string; genre: string; rate: string; avatar: string } | null>(null);
+  const [selectedInviteEventId, setSelectedInviteEventId] = useState('1');
+  const [invitePayoutOffer, setInvitePayoutOffer] = useState('300');
+  const [invitedArtistsList, setInvitedArtistsList] = useState([
+    { id: 1, name: 'Alex Rivera', event: 'Underground Beats Festival', pay: '$300', date: 'Aug 15', status: 'Pending' }
+  ]);
+
+  const [ticketTierEventId, setTicketTierEventId] = useState('1');
+  const [ticketTierEarlyPrice, setTicketTierEarlyPrice] = useState('20');
+  const [ticketTierGAPrice, setTicketTierGAPrice] = useState('35');
+  const [ticketTierVIPPrice, setTicketTierVIPPrice] = useState('75');
 
   // 4.6 Brand / Sponsor States
   const [sponsorCampaigns, setSponsorCampaigns] = useState([
@@ -225,7 +345,22 @@ export default function Dashboard() {
     { id: 2, name: 'VibeBrew Coffee Promo Code', impressions: '83K', clicks: 3580, ctr: '4.3%' },
   ]);
   const [newCampaignName, setNewCampaignName] = useState('');
+  const [campaignGoal, setCampaignGoal] = useState('Brand Awareness');
+  const [campaignBudget, setCampaignBudget] = useState('1000');
+  const [campaignAudience, setCampaignAudience] = useState('All Patrons');
+  const [campaignPromoCode, setCampaignPromoCode] = useState('COFFEEVIBE20');
+  const [campaignAdCopy, setCampaignAdCopy] = useState('');
+  const [campaignChannels, setCampaignChannels] = useState<string[]>(['In-App Banner Ads']);
+
   const [sponsoredEvents, setSponsoredEvents] = useState<string[]>(['Underground Beats Festival']);
+  const [viewingSponsorOpportunity, setViewingSponsorOpportunity] = useState<{ name: string; fee: string; spot: string; impressions: string; perks: string } | null>(null);
+
+  const [isRefreshingTalent, setIsRefreshingTalent] = useState(false);
+  const [talentDirectory, setTalentDirectory] = useState([
+    { name: 'Alex Rivera', genre: 'Acoustic / Folk Singer', followers: '12K', rate: '$250/Gig', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' },
+    { name: 'Lana Vibe', genre: 'Indie Pop / Electronic', followers: '28K', rate: '$350/Gig', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80' },
+    { name: 'Marcus Chen', genre: 'Piano / Live Loop', followers: '18K', rate: '$300/Gig', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }
+  ]);
 
   // Sponsor ROI Calculator Form
   const [roiBudget, setRoiBudget] = useState('500');
@@ -234,14 +369,26 @@ export default function Dashboard() {
 
   // 4.7 Admin States
   const [pendingVerifications, setPendingVerifications] = useState([
-    { id: 1, name: 'Lana Vibe', genre: 'Synth Folk', joined: '1 week ago' },
-    { id: 2, name: 'The Coffee Grinders', genre: 'Acoustic Blues', joined: '3 days ago' },
+    { id: 1, name: 'Lana Vibe', genre: 'Synth Folk / Electronic', joined: '1 week ago', bio: 'Blending live acoustic guitars with lo-fi synth waves. Over 10k monthly listeners.', socialLink: 'https://spotify.com/lana-vibe' },
+    { id: 2, name: 'The Coffee Grinders', genre: 'Acoustic Blues / Folk', joined: '3 days ago', bio: 'A local songwriter trio hosting blues songwriter rounds.', socialLink: 'https://soundcloud.com/coffee-grinders' },
+    { id: 3, name: 'Buster Brown', genre: 'Jazz Trumpet / Soul', joined: '1 day ago', bio: 'Solo brass instrumentalist and performance arranger.', socialLink: 'https://youtube.com/buster-trumpet' }
   ]);
   const [moderationReports, setModerationReports] = useState([
-    { id: 1, message: 'This venue is a scam!', author: 'User102', reason: 'Harassment' },
-    { id: 2, message: 'Click here to win a free guitar (spam-link)', author: 'Spammer99', reason: 'Spam' },
+    { id: 1, message: 'This venue is a scam! They cancel gigs last minute and don\'t pay.', author: 'User102', reason: 'Harassment / Fake Info', contentId: 'MSG-882' },
+    { id: 2, message: 'Click here to win a free guitar (spam-link) http://scamguitars.com', author: 'Spammer99', reason: 'Spam / Phishing Link', contentId: 'MSG-109' },
+    { id: 3, message: 'Copyright claim: This track uses an uncleared sample from my acoustic catalog.', author: 'Artist901', reason: 'Copyright Infringement', contentId: 'TRACK-440' }
   ]);
-  const [platformFeePercentage, setPlatformFeePercentage] = useState('10%');
+  const [platformFeePercentage, setPlatformFeePercentage] = useState('10');
+  const [maintenanceMode, setMaintenanceMode] = useState('Disabled');
+  const [allowRegistration, setAllowRegistration] = useState('Yes');
+  const [minWithdrawalThreshold, setMinWithdrawalThreshold] = useState('50');
+  const [maxUploadLimit, setMaxUploadLimit] = useState('20');
+  const [adminContactEmail, setAdminContactEmail] = useState('admin@chordsandcoffee.com');
+  const [globalRateLimit, setGlobalRateLimit] = useState('120');
+
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectingArtistId, setRejectingArtistId] = useState<number | null>(null);
+  const [rejectReason, setRejectReason] = useState('Insufficient social links/portfolio info.');
 
   // Guard: Redirect to login if user isn't authenticated
   if (!user) {
@@ -1053,38 +1200,6 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {activeTab === 'profile-setup' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-2xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4">Edit Artist Profile</h3>
-                    <div className="space-y-4">
-                      <div className="flex gap-4 items-center">
-                        <img src={user.avatar} className="w-16 h-16 rounded-full object-cover border-2 border-coffee" />
-                        <div>
-                          <h4 className="text-sm font-semibold text-foreground">{user.name}</h4>
-                          <p className="text-xs text-muted-foreground">Signed in as Musician</p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Artist Name</label>
-                          <input type="text" defaultValue={user.name} className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Location</label>
-                          <input type="text" defaultValue={user.location} className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none" />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Bio</label>
-                        <textarea defaultValue={user.bio} rows={3} className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none" />
-                      </div>
-                      <button onClick={() => toast.success('Artist profile saved successfully!')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
-                        Save Profile
-                      </button>
-                    </div>
-                  </div>
-                )}
-
                 {activeTab === 'portfolio' && (
                   <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
                     <h3 className="font-semibold text-foreground mb-4">Upload New Track to Portfolio</h3>
@@ -1111,12 +1226,35 @@ export default function Dashboard() {
                           <option value="Jazz">Jazz</option>
                         </select>
                       </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Attach Audio File</label>
+                        <input
+                          type="file"
+                          accept="audio/*"
+                          onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) setAudioFile(file);
+                          }}
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-coffee/10 file:text-coffee hover:file:bg-coffee/20 cursor-pointer"
+                        />
+                        {audioFile && (
+                          <p className="text-[10px] text-emerald-600 font-medium mt-1">📎 Selected: {audioFile.name} ({(audioFile.size / (1024 * 1024)).toFixed(2)} MB)</p>
+                        )}
+                      </div>
                       <button
                         onClick={() => {
-                          if (!newTrackTitle.trim()) return;
+                          if (!newTrackTitle.trim()) {
+                            toast.error('Please enter a track title.');
+                            return;
+                          }
+                          if (!audioFile) {
+                            toast.error('Please attach an audio file.');
+                            return;
+                          }
                           setPortfolioTracks([...portfolioTracks, { id: Date.now(), title: newTrackTitle, plays: 0, likes: 0, status: 'Released' }]);
                           setNewTrackTitle('');
-                          toast.success('Track uploaded and listed in portfolio! 🎧');
+                          setAudioFile(null);
+                          toast.success('Track and audio file published to your portfolio! 🎧');
                         }}
                         className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
                       >
@@ -1139,84 +1277,314 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'booking' && (
-                  <div className="bg-card rounded-2xl border border-border p-5">
-                    <h3 className="font-semibold text-foreground mb-4 font-display">Performance Booking Invites</h3>
-                    <div className="space-y-3">
-                      {gigOffers.map(gig => (
-                        <div key={gig.id} className="flex flex-wrap justify-between items-center p-4 border border-border rounded-xl bg-muted/10 text-xs">
-                          <div>
-                            <p className="font-semibold text-sm text-foreground">🏟️ Gig at {gig.venue}</p>
-                            <p className="text-muted-foreground mt-0.5">Date: {gig.date} • Offer Pay: <strong className="text-emerald-600 font-semibold">{gig.pay}</strong></p>
+                  <div className="space-y-6">
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h3 className="font-semibold text-foreground mb-4 font-display">Performance Booking Invites</h3>
+                      <div className="space-y-3">
+                        {gigOffers.map(gig => (
+                          <div key={gig.id} className="flex flex-wrap justify-between items-center p-4 border border-border rounded-xl bg-muted/10 text-xs">
+                            <div>
+                              <p className="font-semibold text-sm text-foreground">🏟️ Gig at {gig.venue}</p>
+                              <p className="text-muted-foreground mt-0.5">Date: {gig.date} • Offer Pay: <strong className="text-emerald-600 font-semibold">{gig.pay}</strong></p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setViewingGig(gig)}
+                                className="px-3.5 py-1.5 border border-border text-foreground hover:bg-muted rounded-lg font-semibold transition-all"
+                              >
+                                View Details
+                              </button>
+                              {gig.status === 'Pending' ? (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      setGigOffers(gigOffers.map(g => g.id === gig.id ? { ...g, status: 'Confirmed' } : g));
+                                      toast.success(`Gig booking for ${gig.venue} accepted! 📅`);
+                                    }}
+                                    className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-semibold hover:opacity-90 transition-all"
+                                  >
+                                    Accept Offer
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setGigOffers(gigOffers.filter(g => g.id !== gig.id));
+                                      toast.info('Gig booking declined');
+                                      if (viewingGig?.id === gig.id) setViewingGig(null);
+                                    }}
+                                    className="px-3 py-1.5 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted-foreground/10 border border-border transition-all"
+                                  >
+                                    Decline
+                                  </button>
+                                </>
+                              ) : (
+                                <span className="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-lg font-semibold flex items-center">{gig.status}</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            {gig.status === 'Pending' ? (
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* viewingGig Details Card */}
+                    {viewingGig && (
+                      <div className="bg-card border border-border rounded-2xl p-6 shadow-warm">
+                        <div className="flex justify-between items-center mb-4">
+                          <h4 className="font-display font-semibold text-lg text-foreground">🏟️ Performance Invitation details: {viewingGig.venue}</h4>
+                          <button onClick={() => setViewingGig(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
+                        </div>
+                        <div className="space-y-4 text-xs">
+                          <p className="text-muted-foreground leading-relaxed">{viewingGig.desc}</p>
+                          <div className="grid sm:grid-cols-2 gap-3 pt-2">
+                            <div>
+                              <strong className="text-foreground">📍 Location Address:</strong>
+                              <p className="text-muted-foreground mt-0.5">{viewingGig.address}</p>
+                            </div>
+                            <div>
+                              <strong className="text-foreground">⏰ Timing & Compensation:</strong>
+                              <p className="text-muted-foreground mt-0.5">{viewingGig.date} · {viewingGig.time} · <span className="text-emerald-600 font-semibold">{viewingGig.pay}</span></p>
+                            </div>
+                          </div>
+                          <div className="bg-muted/30 p-3 rounded-xl border border-border">
+                            <strong className="text-foreground block mb-1">Performance Expectations:</strong>
+                            <p className="text-muted-foreground leading-relaxed">{viewingGig.expectations}</p>
+                          </div>
+                          
+                          <div className="flex gap-2 pt-2">
+                            {viewingGig.status === 'Pending' ? (
                               <>
                                 <button
                                   onClick={() => {
-                                    setGigOffers(gigOffers.map(g => g.id === gig.id ? { ...g, status: 'Confirmed' } : g));
-                                    toast.success(`Gig booking for ${gig.venue} accepted! 📅`);
+                                    setGigOffers(gigOffers.map(g => g.id === viewingGig.id ? { ...g, status: 'Confirmed' } : g));
+                                    setViewingGig(null);
+                                    toast.success(`Gig booking for ${viewingGig.venue} accepted! 📅`);
                                   }}
-                                  className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-semibold hover:opacity-90"
+                                  className="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:opacity-90 transition-colors"
                                 >
-                                  Accept Offer
+                                  Accept & Book Performance
                                 </button>
                                 <button
                                   onClick={() => {
-                                    setGigOffers(gigOffers.filter(g => g.id !== gig.id));
+                                    setGigOffers(gigOffers.filter(g => g.id !== viewingGig.id));
+                                    setViewingGig(null);
                                     toast.info('Gig booking declined');
                                   }}
-                                  className="px-3 py-1.5 bg-muted text-foreground rounded-lg font-semibold hover:bg-muted-foreground/10 border border-border"
+                                  className="px-5 py-2.5 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-colors"
                                 >
-                                  Decline
+                                  Decline Invitation
                                 </button>
                               </>
                             ) : (
-                              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-semibold">{gig.status}</span>
+                              <span className="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-xl font-bold">Confirmed Booking</span>
                             )}
+                            <button
+                              type="button"
+                              onClick={() => setViewingGig(null)}
+                              className="px-4 py-2.5 border border-border text-muted-foreground hover:bg-muted rounded-xl transition-colors"
+                            >
+                              Close Details
+                            </button>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {activeTab === 'collab' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4">Musician Collaboration Requests</h3>
-                    <div className="flex gap-2 mb-4">
-                      <input
-                        type="text"
-                        value={newCollabTitle}
-                        onChange={e => setNewCollabTitle(e.target.value)}
-                        placeholder="Need a vocalist/guitarist..."
-                        className="flex-1 px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                      />
-                      <button
-                        onClick={() => {
-                          if (!newCollabTitle.trim()) return;
-                          setCollabList([...collabList, { id: Date.now(), title: newCollabTitle, creator: user.name, status: 'Open' }]);
+                  <div className="space-y-6 max-w-xl mx-auto">
+                    {/* Upload New Collaboration Request Form */}
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h3 className="font-semibold text-foreground mb-4 font-display">Create Collaboration Request</h3>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          if (!newCollabTitle.trim() || !newCollabDesc.trim()) {
+                            toast.error('Please enter collaboration title and description.');
+                            return;
+                          }
+                          setCollabList([
+                            ...collabList,
+                            {
+                              id: Date.now(),
+                              title: newCollabTitle,
+                              creator: user.name,
+                              roleNeeded: newCollabRole,
+                              status: 'Open',
+                              desc: newCollabDesc,
+                              requirements: newCollabReqs || 'No specific requirements.'
+                            }
+                          ]);
                           setNewCollabTitle('');
-                          toast.success('Collaboration request posted to board!');
+                          setNewCollabDesc('');
+                          setNewCollabReqs('');
+                          toast.success('Collaboration request uploaded to board! 🚀');
                         }}
-                        className="px-4 py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
+                        className="space-y-3"
                       >
-                        Post
-                      </button>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Collab Title</label>
+                            <input
+                              type="text"
+                              required
+                              value={newCollabTitle}
+                              onChange={e => setNewCollabTitle(e.target.value)}
+                              placeholder="e.g. Bassist for Jazz Trio"
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Role Needed</label>
+                            <select
+                              value={newCollabRole}
+                              onChange={e => setNewCollabRole(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Guitarist">Guitarist</option>
+                              <option value="Vocalist">Vocalist</option>
+                              <option value="Producer">Producer</option>
+                              <option value="Mixer">Mixer</option>
+                              <option value="Lyricist">Lyricist</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Description</label>
+                          <textarea
+                            required
+                            rows={2}
+                            value={newCollabDesc}
+                            onChange={e => setNewCollabDesc(e.target.value)}
+                            placeholder="Describe your track, key, tempo, and what you are looking to achieve..."
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Requirements (Optional)</label>
+                          <input
+                            type="text"
+                            value={newCollabReqs}
+                            onChange={e => setNewCollabReqs(e.target.value)}
+                            placeholder="e.g. WAV format, home studio, experience with folk"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <button type="submit" className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90">
+                          Upload Collaboration Request
+                        </button>
+                      </form>
                     </div>
 
-                    <div className="space-y-3">
-                      {collabList.map(collab => (
-                        <div key={collab.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
-                          <div>
-                            <p className="font-semibold text-foreground">{collab.title}</p>
-                            <p className="text-muted-foreground mt-0.5">Posted by: @{collab.creator}</p>
+                    {/* Collaboration Listings */}
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h3 className="font-semibold text-foreground mb-4">Board Listings</h3>
+                      <div className="space-y-3">
+                        {collabList.map(collab => (
+                          <div key={collab.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex flex-wrap justify-between items-center gap-2">
+                            <div>
+                              <p className="font-semibold text-foreground">{collab.title}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="px-2 py-0.5 bg-coffee/10 text-coffee rounded-full text-[9px] font-bold">{collab.roleNeeded}</span>
+                                <span className="text-muted-foreground text-[10px]">by @{collab.creator}</span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setViewingCollab(collab)}
+                                className="px-3 py-1 border border-border text-foreground hover:bg-muted font-semibold rounded-lg text-[10px]"
+                              >
+                                View Details
+                              </button>
+                              {collab.status === 'Open' ? (
+                                <button
+                                  onClick={() => {
+                                    if (collab.creator === user.name) {
+                                      toast.error('You cannot join your own collaboration request.');
+                                      return;
+                                    }
+                                    setCollabList(collabList.map(c => c.id === collab.id ? { ...c, status: 'Joined' } : c));
+                                    toast.success(`Successfully joined collaboration with ${collab.creator}! 💬`);
+                                  }}
+                                  className="px-3 py-1 bg-coffee text-white font-semibold rounded-lg text-[10px]"
+                                >
+                                  Join Collab
+                                </button>
+                              ) : (
+                                <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg font-bold text-[9px]">Joined</span>
+                              )}
+                            </div>
                           </div>
-                          <button onClick={() => toast.success(`Sent chat request to ${collab.creator}!`)} className="px-3 py-1 bg-coffee text-white font-semibold rounded-lg text-[10px]">
-                            Join Collab
-                          </button>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
+
+                    {/* viewingCollab Details modal card */}
+                    {viewingCollab && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                        <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-lg w-full relative animate-in fade-in zoom-in-95 duration-200">
+                          <div className="flex justify-between items-center mb-4">
+                            <h4 className="font-display font-semibold text-base text-foreground">🤝 Collaboration Details: {viewingCollab.title}</h4>
+                            <button onClick={() => setViewingCollab(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
+                          </div>
+                          <div className="space-y-4 text-xs">
+                            <div>
+                              <span className="px-2.5 py-0.5 bg-coffee/15 text-coffee rounded-full font-bold text-[10px]">{viewingCollab.roleNeeded} Needed</span>
+                              <span className="ml-2 text-muted-foreground">Posted by @{viewingCollab.creator}</span>
+                            </div>
+                            <div>
+                              <strong className="text-foreground">Project Description:</strong>
+                              <p className="text-muted-foreground mt-1 leading-relaxed">{viewingCollab.desc}</p>
+                            </div>
+                            <div className="bg-muted/30 p-3 rounded-xl border border-border">
+                              <strong className="text-foreground block mb-1">Stems & Deliverable Requirements:</strong>
+                              <p className="text-muted-foreground leading-relaxed">{viewingCollab.requirements}</p>
+                            </div>
+
+                            <div className="flex gap-2 pt-2">
+                              {viewingCollab.status === 'Open' ? (
+                                <button
+                                  onClick={() => {
+                                    if (viewingCollab.creator === user.name) {
+                                      toast.error('You cannot join your own collaboration request.');
+                                      return;
+                                    }
+                                    setCollabList(collabList.map(c => c.id === viewingCollab.id ? { ...c, status: 'Joined' } : c));
+                                    setViewingCollab(null);
+                                    toast.success(`Successfully joined collaboration with ${viewingCollab.creator}! 💬`);
+                                  }}
+                                  className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl hover:opacity-90 transition-all"
+                                >
+                                  Join Collaboration
+                                </button>
+                              ) : (
+                                <>
+                                  <span className="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-xl font-bold flex items-center">Already Joined</span>
+                                  {viewingCollab.creator !== user.name && (
+                                    <button
+                                      onClick={() => {
+                                        setCollabList(collabList.map(c => c.id === viewingCollab.id ? { ...c, status: 'Open' } : c));
+                                        setViewingCollab(null);
+                                        toast.info(`Left collaboration with ${viewingCollab.creator}`);
+                                      }}
+                                      className="px-4 py-2 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-750 transition-all"
+                                    >
+                                      Leave Collab
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => setViewingCollab(null)}
+                                className="px-4 py-2 border border-border text-muted-foreground hover:bg-muted rounded-xl transition-all"
+                              >
+                                Close Details
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1254,48 +1622,120 @@ export default function Dashboard() {
                     {/* Digital Storefront */}
                     <div className="bg-card rounded-2xl border border-border p-5">
                       <h3 className="font-semibold text-foreground mb-4">Digital Storefront Manager</h3>
-                      <div className="flex flex-col sm:flex-row gap-3 mb-6 bg-muted/25 border border-border p-4 rounded-xl">
-                        <div className="flex-1">
-                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Track / Album Title</label>
-                          <input
-                            type="text"
-                            value={storeTrackTitle}
-                            onChange={e => setStoreTrackTitle(e.target.value)}
-                            placeholder="e.g. Café Sessions EP"
-                            className="w-full px-3 py-2 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none"
-                          />
+                      <div className="space-y-4 mb-6 bg-muted/25 border border-border p-5 rounded-xl text-xs">
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Track / Album Title</label>
+                            <input
+                              type="text"
+                              value={storeTrackTitle}
+                              onChange={e => setStoreTrackTitle(e.target.value)}
+                              placeholder="e.g. Café Sessions EP"
+                              className="w-full px-3 py-2 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Price ($ USD)</label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={storeTrackPrice}
+                              onChange={e => setStoreTrackPrice(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
                         </div>
-                        <div className="w-full sm:w-28">
-                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Price ($ USD)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={storeTrackPrice}
-                            onChange={e => setStoreTrackPrice(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none"
-                          />
+
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Format Type</label>
+                            <select
+                              value={storeTrackFormat}
+                              onChange={e => setStoreTrackFormat(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Single">Single</option>
+                              <option value="EP">EP</option>
+                              <option value="Album">Album</option>
+                              <option value="Sound Kit">Sound Kit</option>
+                              <option value="Stems">Stems</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Release Date</label>
+                            <input
+                              type="date"
+                              value={storeTrackDate}
+                              onChange={e => setStoreTrackDate(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
                         </div>
+
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Attach Audio Stems/Track</label>
+                            <input
+                              type="file"
+                              accept="audio/*"
+                              className="w-full px-3 py-1.5 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none file:mr-2 file:py-0.5 file:px-2 file:rounded file:border-0 file:text-[9px] file:bg-coffee/10 file:text-coffee hover:file:bg-coffee/20 cursor-pointer"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Attach Album Artwork Cover</label>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={e => {
+                                const file = e.target.files?.[0];
+                                if (file) setStoreTrackCover(file);
+                              }}
+                              className="w-full px-3 py-1.5 border border-border rounded-lg bg-card text-xs text-foreground focus:outline-none file:mr-2 file:py-0.5 file:px-2 file:rounded file:border-0 file:text-[9px] file:bg-coffee/10 file:text-coffee hover:file:bg-coffee/20 cursor-pointer"
+                            />
+                            {storeTrackCover && (
+                              <p className="text-[9px] text-emerald-600 font-medium mt-1">📎 Artwork: {storeTrackCover.name}</p>
+                            )}
+                          </div>
+                        </div>
+
                         <button
                           onClick={() => {
                             if (!storeTrackTitle.trim() || !storeTrackPrice) {
                               toast.error('Please enter a track name and price.');
                               return;
                             }
-                            setStoreTracks([...storeTracks, { id: Date.now(), title: storeTrackTitle, price: parseFloat(storeTrackPrice) }]);
+                            setStoreTracks([
+                              ...storeTracks,
+                              {
+                                id: Date.now(),
+                                title: storeTrackTitle,
+                                price: parseFloat(storeTrackPrice),
+                                format: storeTrackFormat,
+                                releaseDate: storeTrackDate,
+                                cover: storeTrackCover ? URL.createObjectURL(storeTrackCover) : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop'
+                              }
+                            ]);
                             setStoreTrackTitle('');
                             setStoreTrackPrice('9.99');
-                            toast.success(`Track "${storeTrackTitle}" added to storefront! 💿`);
+                            setStoreTrackCover(null);
+                            toast.success(`Track "${storeTrackTitle}" listed successfully on digital storefront! 💿`);
                           }}
-                          className="sm:self-end px-5 py-2.5 bg-coffee text-white font-semibold text-xs rounded-lg hover:opacity-90 whitespace-nowrap"
+                          className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-lg hover:opacity-90"
                         >
-                          List Track
+                          List Product in Digital Storefront
                         </button>
                       </div>
 
                       <div className="space-y-2">
                         {storeTracks.map(track => (
                           <div key={track.id} className="flex justify-between items-center text-xs bg-muted/15 p-3 rounded-xl border border-border">
-                            <span className="font-semibold text-foreground">💿 {track.title}</span>
+                            <div className="flex items-center gap-3">
+                              <img src={track.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop'} className="w-8 h-8 rounded-lg object-cover border border-border" />
+                              <div>
+                                <p className="font-semibold text-foreground">💿 {track.title}</p>
+                                <p className="text-[10px] text-muted-foreground">Format: {track.format || 'EP'} • Date: {track.releaseDate || '2026-06-01'}</p>
+                              </div>
+                            </div>
                             <div className="flex items-center gap-3">
                               <strong className="text-emerald-600 font-semibold">${track.price.toFixed(2)}</strong>
                               <button
@@ -1413,17 +1853,79 @@ export default function Dashboard() {
                           />
                         </div>
                       </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Estimated Hours</label>
+                          <input
+                            type="number"
+                            value={newCourseHours}
+                            onChange={e => setNewCourseHours(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Number of Lectures</label>
+                          <input
+                            type="number"
+                            value={newCourseLectures}
+                            onChange={e => setNewCourseLectures(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Course Description</label>
+                        <textarea
+                          rows={2}
+                          value={newCourseDesc}
+                          onChange={e => setNewCourseDesc(e.target.value)}
+                          placeholder="What will students learn in this course..."
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Syllabus Overview</label>
+                        <input
+                          type="text"
+                          value={newCourseSyllabus}
+                          onChange={e => setNewCourseSyllabus(e.target.value)}
+                          placeholder="e.g. Intro, Major Scales, Fingerpicking Patterns, Soloing"
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                        />
+                      </div>
                       <button
                         onClick={() => {
-                          if (!newCourseTitle.trim()) return;
+                          if (!newCourseTitle.trim()) {
+                            toast.error('Please enter a course title.');
+                            return;
+                          }
                           setTeacherCourses([...teacherCourses, { id: Date.now(), title: newCourseTitle, level: newCourseLevel, students: 0, price: `$${newCoursePrice}` }]);
                           setNewCourseTitle('');
+                          setNewCourseDesc('');
+                          setNewCourseHours('10');
+                          setNewCourseLectures('12');
+                          setNewCourseSyllabus('');
                           toast.success('Course created and listed successfully! 📚');
                         }}
                         className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
                       >
                         Create Course
                       </button>
+                    </div>
+
+                    <div className="border-t border-border pt-4">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Your Course Catalog ({teacherCourses.length})</h4>
+                      <div className="space-y-2">
+                        {teacherCourses.map(course => (
+                          <div key={course.id} className="flex justify-between items-center p-3 border border-border rounded-xl bg-muted/15 text-xs">
+                            <div>
+                              <p className="font-semibold text-foreground">📚 {course.title}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Level: {course.level} • Price: {course.price} • Students: {course.students}</p>
+                            </div>
+                            <span className="px-2 py-1 bg-coffee/10 text-coffee rounded text-[10px] font-bold">Listed</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1473,7 +1975,13 @@ export default function Dashboard() {
                               <p className="font-semibold text-foreground">{ws.title}</p>
                               <p className="text-[10px] text-muted-foreground mt-0.5">Date: {ws.date} • Tickets: {ws.price}</p>
                             </div>
-                            <button onClick={() => toast.success(`Live Workshop "${ws.title}" streaming feeds ready!`)} className="px-3 py-1.5 bg-coffee text-white rounded-lg font-semibold hover:opacity-90 text-[10px]">
+                            <button
+                              onClick={() => {
+                                setActiveHostingWorkshop(ws);
+                                toast.info(`Starting video connection for ${ws.title}...`);
+                              }}
+                              className="px-3 py-1.5 bg-coffee text-white rounded-lg font-semibold hover:opacity-90 text-[10px]"
+                            >
                               Host Session
                             </button>
                           </div>
@@ -1484,41 +1992,116 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'mentorship' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4 font-display">Mentor Students</h3>
-                    <div className="flex gap-2 mb-4">
-                      <input
-                        type="text"
-                        value={newStudentName}
-                        onChange={e => setNewStudentName(e.target.value)}
-                        placeholder="Add new student..."
-                        className="flex-1 px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                      />
-                      <button
-                        onClick={() => {
-                          if (!newStudentName.trim()) return;
-                          setMentorshipStudents([...mentorshipStudents, { id: Date.now(), name: newStudentName, notes: 'Just joined, lesson planning pending', lastMeeting: 'Never' }]);
-                          setNewStudentName('');
-                          toast.success('New mentorship student added!');
-                        }}
-                        className="px-4 py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
-                      >
-                        Add Student
-                      </button>
+                  <div className="space-y-6 max-w-xl mx-auto">
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h3 className="font-semibold text-foreground mb-4">Add New Mentorship Student</h3>
+                      <div className="space-y-3">
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Student Full Name</label>
+                            <input
+                              type="text"
+                              value={newStudentName}
+                              onChange={e => setNewStudentName(e.target.value)}
+                              placeholder="e.g. Charlie Parker"
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Email Address</label>
+                            <input
+                              type="email"
+                              value={newStudentEmail}
+                              onChange={e => setNewStudentEmail(e.target.value)}
+                              placeholder="e.g. charlie@gmail.com"
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Instrument</label>
+                            <select
+                              value={newStudentInstrument}
+                              onChange={e => setNewStudentInstrument(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Guitar">Guitar</option>
+                              <option value="Piano">Piano</option>
+                              <option value="Vocal">Vocal</option>
+                              <option value="Drums">Drums</option>
+                              <option value="Violin">Violin</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Skill Level</label>
+                            <select
+                              value={newStudentLevel}
+                              onChange={e => setNewStudentLevel(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Beginner">Beginner</option>
+                              <option value="Intermediate">Intermediate</option>
+                              <option value="Advanced">Advanced</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Lesson Goals / Focus Area</label>
+                          <textarea
+                            rows={2}
+                            value={newStudentNotes}
+                            onChange={e => setNewStudentNotes(e.target.value)}
+                            placeholder="Describe what the student wants to focus on..."
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                          />
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (!newStudentName.trim() || !newStudentEmail.trim()) {
+                              toast.error('Please fill in name and email address.');
+                              return;
+                            }
+                            setMentorshipStudents([
+                              ...mentorshipStudents,
+                              {
+                                id: Date.now(),
+                                name: newStudentName,
+                                notes: `${newStudentInstrument} (${newStudentLevel}) - Goal: ${newStudentNotes || 'Fundamentals'}`,
+                                lastMeeting: 'Never'
+                              }
+                            ]);
+                            setNewStudentName('');
+                            setNewStudentEmail('');
+                            setNewStudentNotes('');
+                            toast.success('Mentorship student enrolled successfully!');
+                          }}
+                          className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
+                        >
+                          Enroll Mentorship Student
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="space-y-3">
-                      {mentorshipStudents.map(student => (
-                        <div key={student.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
-                          <div>
-                            <p className="font-semibold text-foreground">🎓 {student.name}</p>
-                            <p className="text-muted-foreground mt-0.5">Notes: {student.notes}</p>
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h3 className="font-semibold text-foreground mb-4 font-display">Active Mentorship Roster</h3>
+                      <div className="space-y-3">
+                        {mentorshipStudents.map(student => (
+                          <div key={student.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
+                            <div>
+                              <p className="font-semibold text-foreground">🎓 {student.name}</p>
+                              <p className="text-muted-foreground mt-0.5">Focus: {student.notes}</p>
+                              <p className="text-[10px] text-muted-foreground mt-1">Last Class: {student.lastMeeting}</p>
+                            </div>
+                            <button
+                              onClick={() => setSchedulingStudent(student)}
+                              className="px-3 py-1.5 bg-coffee text-white font-semibold rounded-lg text-[10px]"
+                            >
+                              Schedule 1-on-1
+                            </button>
                           </div>
-                          <button onClick={() => toast.success(`1-on-1 schedule requested for ${student.name}!`)} className="px-3 py-1.5 bg-coffee text-white font-semibold rounded-lg text-[10px]">
-                            Schedule 1-on-1
-                          </button>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1539,13 +2122,199 @@ export default function Dashboard() {
                             toast.error('You do not have any earnings to withdraw.');
                             return;
                           }
-                          toast.success(`Withdrawal request of $${teacherEarnings.toLocaleString()} sent! Processing in 2-3 business days.`);
-                          setTeacherEarnings(0);
+                          setWithdrawAmount(teacherEarnings.toString());
+                          setShowWithdrawalModal(true);
                         }}
                         className="w-full py-2 bg-emerald-600 text-white rounded-xl font-semibold text-xs hover:bg-emerald-700"
                       >
                         Withdraw Payout to Bank
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* ========================================== */}
+                {/* TEACHER WORKSPACE INTERACTIVE MODALS       */}
+                {/* ========================================== */}
+
+                {/* Workshop Session Host Streaming Modal */}
+                {activeHostingWorkshop && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-2xl w-full grid md:grid-cols-3 gap-6 relative animate-in fade-in zoom-in-95 duration-200">
+                      {/* Video stream simulator */}
+                      <div className="md:col-span-2 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-display font-semibold text-foreground text-sm">🎥 Broadcasting: {activeHostingWorkshop.title}</h4>
+                          <span className="px-2 py-0.5 bg-red-600 text-white text-[9px] font-bold rounded-full animate-pulse flex items-center gap-1">🔴 LIVE</span>
+                        </div>
+                        <div className="aspect-video bg-black rounded-xl border border-border flex flex-col items-center justify-center relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
+                          <Music className="w-12 h-12 text-coffee/40 animate-bounce mb-3" />
+                          <div className="flex gap-1 h-8 items-end">
+                            {[...Array(8)].map((_, i) => (
+                              <div key={i} className="w-1 bg-coffee rounded-t animate-bounce" style={{ height: `${20 + Math.random() * 60}%`, animationDelay: `${i * 0.1}s`, animationDuration: '0.6s' }} />
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-4 z-10">Webcam feeds active • Audio broadcast high-fidelity stems</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setActiveHostingWorkshop(null);
+                              toast.success('Live broadcast finished successfully! Feed archived.');
+                            }}
+                            className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl flex-1 transition-colors"
+                          >
+                            End Live Session
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Live chat panel */}
+                      <div className="border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-6 flex flex-col justify-between">
+                        <div>
+                          <h5 className="font-bold text-[10px] uppercase text-muted-foreground mb-3">Live Session Chat</h5>
+                          <div className="space-y-3 h-48 overflow-y-auto pr-1">
+                            {[
+                              { user: 'Clara', msg: 'The sound quality is amazing!' },
+                              { user: 'Buster', msg: 'Can you show that fingerpicking chord again?' },
+                              { user: 'Sarah', msg: 'Great session!' }
+                            ].map((chat, idx) => (
+                              <div key={idx} className="text-[11px] leading-relaxed">
+                                <strong className="text-coffee">@{chat.user}: </strong>
+                                <span className="text-muted-foreground">{chat.msg}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="pt-3 border-t border-border mt-3">
+                          <input
+                            type="text"
+                            placeholder="Say something..."
+                            disabled
+                            className="w-full px-3 py-1.5 border border-border rounded-lg bg-muted text-[10px] text-muted-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Mentorship 1-on-1 Lesson Scheduler Modal */}
+                {schedulingStudent && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm">🗓️ Schedule Class: {schedulingStudent.name}</h4>
+                        <button onClick={() => setSchedulingStudent(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-3 text-xs">
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Select Date</label>
+                          <input
+                            type="date"
+                            value={meetingDate}
+                            onChange={e => setMeetingDate(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Select Time</label>
+                          <input
+                            type="time"
+                            value={meetingTime}
+                            onChange={e => setMeetingTime(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div className="bg-muted/30 p-2.5 rounded-xl border border-border text-[10px] text-muted-foreground leading-relaxed">
+                          📎 A calendar event invitation and Zoom/Google Meet link will be generated and dispatched automatically to student inbox.
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              toast.success(`1-on-1 session scheduled with ${schedulingStudent.name} for ${meetingDate} at ${meetingTime}! 📅`);
+                              setMentorshipStudents(mentorshipStudents.map(s => s.id === schedulingStudent.id ? { ...s, lastMeeting: meetingDate } : s));
+                              setSchedulingStudent(null);
+                            }}
+                            className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1"
+                          >
+                            Book Lesson
+                          </button>
+                          <button
+                            onClick={() => setSchedulingStudent(null)}
+                            className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Withdraw Payout Account Selector Modal */}
+                {showWithdrawalModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">💳 Confirm Payout Withdrawal</h4>
+                        <button onClick={() => setShowWithdrawalModal(false)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-4 text-xs">
+                        <div className="bg-emerald-50/50 border border-emerald-200/50 rounded-xl p-3 text-center">
+                          <span className="text-[10px] text-emerald-800 uppercase font-bold tracking-wider">Available Balance</span>
+                          <p className="text-2xl font-bold text-emerald-600 mt-0.5">${teacherEarnings}</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Select Transfer Account</label>
+                          <select
+                            value={selectedWithdrawalAccount}
+                            onChange={e => setSelectedWithdrawalAccount(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            {withdrawalAccounts.map(acc => (
+                              <option key={acc} value={acc}>{acc}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Withdrawal Amount ($ USD)</label>
+                          <input
+                            type="number"
+                            max={teacherEarnings}
+                            value={withdrawAmount}
+                            onChange={e => setWithdrawAmount(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              const amt = parseFloat(withdrawAmount);
+                              if (isNaN(amt) || amt <= 0 || amt > teacherEarnings) {
+                                toast.error('Please enter a valid withdrawal amount.');
+                                return;
+                              }
+                              toast.success(`Withdrawal request of $${amt.toLocaleString()} successfully queued to ${selectedWithdrawalAccount}! 🚀`);
+                              setTeacherEarnings(prev => prev - amt);
+                              setShowWithdrawalModal(false);
+                            }}
+                            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs flex-1 transition-colors"
+                          >
+                            Confirm & Withdraw
+                          </button>
+                          <button
+                            onClick={() => setShowWithdrawalModal(false)}
+                            className="px-4 py-2.5 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1622,22 +2391,86 @@ export default function Dashboard() {
                   <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
                     <h3 className="font-semibold text-foreground mb-4">Venue Listing Settings</h3>
                     <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Address</label>
-                        <input
-                          type="text"
-                          value={venueAddress}
-                          onChange={e => setVenueAddress(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        />
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Name</label>
+                          <input
+                            type="text"
+                            value={venueName}
+                            onChange={e => setVenueName(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Seating Capacity</label>
+                          <input
+                            type="number"
+                            value={venueCapacity}
+                            onChange={e => setVenueCapacity(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Address</label>
+                          <input
+                            type="text"
+                            value={venueAddress}
+                            onChange={e => setVenueAddress(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Contact Phone</label>
+                          <input
+                            type="text"
+                            value={venueContactPhone}
+                            onChange={e => setVenueContactPhone(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Stage Gear</label>
+                          <input
+                            type="text"
+                            value={venueStageGear}
+                            onChange={e => setVenueStageGear(e.target.value)}
+                            placeholder="e.g. Mixer, Mics, PAs"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Acoustics Rating</label>
+                          <select
+                            value={venueAcousticsRating}
+                            onChange={e => setVenueAcousticsRating(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Excellent">Excellent</option>
+                            <option value="Good">Good</option>
+                            <option value="Average">Average</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Pricing ($ / Hr)</label>
+                          <input
+                            type="number"
+                            value={venuePricingPerHour}
+                            onChange={e => setVenuePricingPerHour(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Seating Capacity</label>
-                        <input
-                          type="number"
-                          value={venueCapacity}
-                          onChange={e => setVenueCapacity(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Description</label>
+                        <textarea
+                          rows={3}
+                          value={venueDescription}
+                          onChange={e => setVenueDescription(e.target.value)}
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
                         />
                       </div>
                       <div>
@@ -1651,8 +2484,26 @@ export default function Dashboard() {
                           <option value="Temporary Closed">Temporary Closed</option>
                         </select>
                       </div>
-                      <button onClick={() => toast.success('Venue listing details saved!')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
-                        Save Venue Profile
+                      <button
+                        onClick={() => {
+                          setIsSavingVenueProfile(true);
+                          toast.info('Saving venue profile to database...');
+                          setTimeout(() => {
+                            setIsSavingVenueProfile(false);
+                            toast.success('Venue listing details saved successfully! 🏛️');
+                          }, 1200);
+                        }}
+                        disabled={isSavingVenueProfile}
+                        className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90 disabled:opacity-55 flex items-center justify-center gap-1.5 transition-opacity"
+                      >
+                        {isSavingVenueProfile ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Saving Venue Details...
+                          </>
+                        ) : (
+                          'Save Venue Profile'
+                        )}
                       </button>
                     </div>
                   </div>
@@ -1662,81 +2513,225 @@ export default function Dashboard() {
                   <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
                     <h3 className="font-semibold text-foreground mb-4">Host a Venue Event</h3>
                     <div className="space-y-4 mb-6">
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Event Name</label>
-                        <input
-                          type="text"
-                          value={newVenueEventName}
-                          onChange={e => setNewVenueEventName(e.target.value)}
-                          placeholder="e.g. Acoustic Night Live"
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        />
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Event Name</label>
+                          <input
+                            type="text"
+                            value={newVenueEventName}
+                            onChange={e => setNewVenueEventName(e.target.value)}
+                            placeholder="e.g. Acoustic Night Live"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Genre / Theme</label>
+                          <input
+                            type="text"
+                            value={newVenueEventGenre}
+                            onChange={e => setNewVenueEventGenre(e.target.value)}
+                            placeholder="e.g. Acoustic / Indie"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Date</label>
+                          <input
+                            type="date"
+                            value={newVenueEventDate}
+                            onChange={e => setNewVenueEventDate(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Start Time</label>
+                          <input
+                            type="time"
+                            value={newVenueEventTime}
+                            onChange={e => setNewVenueEventTime(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Ticket Price ($ USD / Free)</label>
+                          <input
+                            type="text"
+                            value={newVenueEventPrice}
+                            onChange={e => setNewVenueEventPrice(e.target.value)}
+                            placeholder="e.g. 10 or Free"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Date</label>
-                        <input
-                          type="text"
-                          value={newVenueEventDate}
-                          onChange={e => setNewVenueEventDate(e.target.value)}
-                          placeholder="e.g. Jul 20"
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Event Description</label>
+                        <textarea
+                          rows={2}
+                          value={newVenueEventDesc}
+                          onChange={e => setNewVenueEventDesc(e.target.value)}
+                          placeholder="Provide details about the event schedule, artists, food, or vibe..."
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
                         />
                       </div>
                       <button
                         onClick={() => {
-                          if (!newVenueEventName.trim()) return;
-                          setVenueEvents([...venueEvents, { id: Date.now(), name: newVenueEventName, date: newVenueEventDate, time: '8:00 PM', price: '$5' }]);
+                          if (!newVenueEventName.trim()) {
+                            toast.error('Please enter an event name.');
+                            return;
+                          }
+                          const formattedPrice = newVenueEventPrice.toLowerCase() === 'free' ? 'Free' : `$${newVenueEventPrice}`;
+                          setVenueEvents([
+                            ...venueEvents,
+                            {
+                              id: Date.now(),
+                              name: newVenueEventName,
+                              date: newVenueEventDate,
+                              time: newVenueEventTime,
+                              price: formattedPrice,
+                              desc: newVenueEventDesc || 'No description provided.',
+                              genre: newVenueEventGenre || 'General'
+                            }
+                          ]);
                           setNewVenueEventName('');
+                          setNewVenueEventDesc('');
                           toast.success('Event hosted at your venue! 🏟️');
                         }}
-                        className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
+                        className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-xl hover:opacity-90"
                       >
                         Host Event
                       </button>
+                    </div>
+
+                    <div className="border-t border-border pt-4">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Your Hosted Events ({venueEvents.length})</h4>
+                      <div className="space-y-2">
+                        {venueEvents.map(evt => (
+                          <div key={evt.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
+                            <div>
+                              <p className="font-semibold text-foreground">🏟️ {evt.name}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Date: {evt.date} • Time: {evt.time} • Price: {evt.price} • Genre: {evt.genre}</p>
+                            </div>
+                            <span className="px-2 py-0.5 bg-coffee/10 text-coffee rounded text-[9px] font-bold">Scheduled</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'book-artists' && (
                   <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4">Send Booking Offer to Artist</h3>
+                    <h3 className="font-semibold text-foreground mb-4 font-display">Send Booking Offer to Artist</h3>
                     <div className="space-y-4 mb-6">
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Select Artist</label>
-                        <select
-                          value={bookingArtistName}
-                          onChange={e => setBookingArtistName(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        >
-                          <option value="Alex Rivera">Alex Rivera</option>
-                          <option value="Lana Vibe">Lana Vibe</option>
-                          <option value="Marcus Chen">Marcus Chen</option>
-                        </select>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Select Artist</label>
+                          <select
+                            value={bookingArtistName}
+                            onChange={e => setBookingArtistName(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Alex Rivera">Alex Rivera</option>
+                            <option value="Lana Vibe">Lana Vibe</option>
+                            <option value="Marcus Chen">Marcus Chen</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Compensation Offer ($ USD)</label>
+                          <input
+                            type="number"
+                            value={bookingPay}
+                            onChange={e => setBookingPay(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Performance Date</label>
+                          <input
+                            type="date"
+                            value={bookingDate}
+                            onChange={e => setBookingDate(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Performance Time Slot</label>
+                          <input
+                            type="text"
+                            value={bookingSlotTime}
+                            onChange={e => setBookingSlotTime(e.target.value)}
+                            placeholder="e.g. 8:00 PM - 10:00 PM"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 py-1">
+                        <input
+                          type="checkbox"
+                          id="accommodation"
+                          checked={bookingAccommodation}
+                          onChange={e => setBookingAccommodation(e.target.checked)}
+                          className="rounded border-border text-coffee focus:ring-coffee/40"
+                        />
+                        <label htmlFor="accommodation" className="text-xs text-muted-foreground font-medium cursor-pointer">Include Travel / Accommodation expenses</label>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Compensation ($ USD)</label>
-                        <input
-                          type="number"
-                          value={bookingPay}
-                          onChange={e => setBookingPay(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Booking Notes & Set Expectations</label>
+                        <textarea
+                          rows={2}
+                          value={bookingNotes}
+                          onChange={e => setBookingNotes(e.target.value)}
+                          placeholder="e.g. 2x 45 min sets, covers welcome, sound check at 6 PM..."
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
                         />
                       </div>
                       <button
                         onClick={() => {
-                          setSentArtistOffers([...sentArtistOffers, { id: Date.now(), artist: bookingArtistName, date: 'Aug 10', pay: `$${bookingPay}`, status: 'Pending' }]);
+                          setSentArtistOffers([
+                            ...sentArtistOffers,
+                            {
+                              id: Date.now(),
+                              artist: bookingArtistName,
+                              date: bookingDate,
+                              slotTime: bookingSlotTime,
+                              pay: `$${bookingPay}`,
+                              status: 'Pending',
+                              notes: bookingNotes || 'No special requirements.',
+                              accommodation: bookingAccommodation ? 'Yes' : 'No'
+                            }
+                          ]);
+                          setBookingNotes('');
                           toast.success(`Booking offer sent to ${bookingArtistName}! 🎤`);
                         }}
-                        className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
+                        className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-xl hover:opacity-90"
                       >
                         Send Booking Offer
                       </button>
+                    </div>
+
+                    <div className="border-t border-border pt-4">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Sent Artist Offers ({sentArtistOffers.length})</h4>
+                      <div className="space-y-2">
+                        {sentArtistOffers.map(offer => (
+                          <div key={offer.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
+                            <div>
+                              <p className="font-semibold text-foreground">🎤 {offer.artist}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Date: {offer.date} • Pay: {offer.pay} • Travel Comp: {offer.accommodation}</p>
+                            </div>
+                            <span className={`px-2 py-0.5 text-[9px] font-bold rounded ${offer.status === 'Accepted' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{offer.status}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'reservations' && (
-                  <div className="bg-card rounded-2xl border border-border p-5">
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
                     <h3 className="font-semibold text-foreground mb-4">Manage Reservations</h3>
                     <div className="space-y-2">
                       {venueReservations.map(res => (
@@ -1745,17 +2740,25 @@ export default function Dashboard() {
                             <p className="font-semibold text-foreground">{res.table} ({res.guests} Guests)</p>
                             <p className="text-muted-foreground mt-0.5">Time: {res.time} • Status: {res.status}</p>
                           </div>
-                          {res.status === 'Confirmed' && (
+                          <div className="flex gap-2">
                             <button
-                              onClick={() => {
-                                setVenueReservations(venueReservations.map(r => r.id === res.id ? { ...r, status: 'Checked In' } : r));
-                                toast.success(`Checked in ${res.table}!`);
-                              }}
-                              className="px-3 py-1.5 bg-coffee text-white rounded-lg font-semibold hover:opacity-90 text-[10px]"
+                              onClick={() => setViewingReservation(res)}
+                              className="px-3 py-1.5 border border-border text-foreground hover:bg-muted font-semibold rounded-lg text-[10px]"
                             >
-                              Check In
+                              View Details
                             </button>
-                          )}
+                            {res.status === 'Confirmed' && (
+                              <button
+                                onClick={() => {
+                                  setVenueReservations(venueReservations.map(r => r.id === res.id ? { ...r, status: 'Checked In' } : r));
+                                  toast.success(`Checked in ${res.table}!`);
+                                }}
+                                className="px-3 py-1.5 bg-coffee text-white rounded-lg font-semibold hover:opacity-90 text-[10px]"
+                              >
+                                Check In
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -1763,19 +2766,213 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'audience' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 text-center">
+                  <div className="bg-card rounded-2xl border border-border p-5 text-center max-w-md mx-auto">
                     <TrendingUp className="w-8 h-8 text-coffee mx-auto mb-2" />
                     <h3 className="font-semibold text-foreground mb-2">Audience Analytics</h3>
                     <p className="text-xs text-muted-foreground mb-4">Reach local music lovers. Promote your next gig to 3,120 customers in your neighborhood.</p>
+                    <div className="bg-muted/30 border border-border p-3.5 rounded-xl mb-4 text-xs flex justify-between items-center">
+                      <span className="text-muted-foreground">Active Ad Campaigns:</span>
+                      <strong className="text-foreground text-sm">{venueCampaignsCount}</strong>
+                    </div>
                     <button
-                      onClick={() => {
-                        setVenueCampaignsCount(venueCampaignsCount + 1);
-                        toast.success('Promotion campaign launched to local neighborhood app! ($25 charged)');
-                      }}
-                      className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
+                      onClick={() => setShowPromoModal(true)}
+                      className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
                     >
                       Launch Local Promo Ads ($25)
                     </button>
+                  </div>
+                )}
+
+                {/* ========================================== */}
+                {/* VENUE WORKSPACE INTERACTIVE MODALS         */}
+                {/* ========================================== */}
+
+                {/* Reservation Details Modal */}
+                {viewingReservation && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">📋 Reservation Info: {viewingReservation.table}</h4>
+                        <button onClick={() => setViewingReservation(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-3.5 text-xs">
+                        <div className="grid grid-cols-2 gap-3 border-b border-border pb-3">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Guest Name</span>
+                            <p className="font-semibold text-foreground mt-0.5">{viewingReservation.name}</p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Guests Count</span>
+                            <p className="font-semibold text-foreground mt-0.5">{viewingReservation.guests} seats reserved</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 border-b border-border pb-3">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Schedule Slot</span>
+                            <p className="font-semibold text-foreground mt-0.5">{viewingReservation.time}</p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Status Badge</span>
+                            <p className="font-semibold text-emerald-600 mt-0.5">{viewingReservation.status}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold">Email Address</span>
+                          <p className="text-muted-foreground mt-0.5">{viewingReservation.email}</p>
+                        </div>
+                        <div className="bg-muted/30 p-2.5 rounded-xl border border-border">
+                          <strong className="text-foreground block mb-0.5">Special Seating / Event Notes:</strong>
+                          <p className="text-muted-foreground leading-relaxed text-[11px]">{viewingReservation.notes || 'None.'}</p>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                          {viewingReservation.status === 'Confirmed' && (
+                            <button
+                              onClick={() => {
+                                setVenueReservations(venueReservations.map(r => r.id === viewingReservation.id ? { ...r, status: 'Checked In' } : r));
+                                setViewingReservation(null);
+                                toast.success(`Checked in guest for ${viewingReservation.table}!`);
+                              }}
+                              className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1"
+                            >
+                              Check In Guest Now
+                            </button>
+                          )}
+                          <button
+                            onClick={() => setViewingReservation(null)}
+                            className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                          >
+                            Close Info
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Grow Audience Promotion Modal Form */}
+                {showPromoModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-md w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">📢 Setup Local Ad Campaign</h4>
+                        <button onClick={() => setShowPromoModal(false)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-4 text-xs">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Target Radius</label>
+                            <select
+                              value={promoRadius}
+                              onChange={e => setPromoRadius(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="5">5 Miles (Neighborhood)</option>
+                              <option value="10">10 Miles (City Wide)</option>
+                              <option value="25">25 Miles (Metro Area)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Campaign Goal</label>
+                            <select
+                              value={promoGoal}
+                              onChange={e => setPromoGoal(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Increase Ticket Sales">Increase Ticket Sales</option>
+                              <option value="Promote Brand">Promote Brand</option>
+                              <option value="Promote Special Gig">Promote Special Gig</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Select Event to Feature</label>
+                          <select
+                            value={promoEventId}
+                            onChange={e => setPromoEventId(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            {venueEvents.map(evt => (
+                              <option key={evt.id} value={evt.id}>{evt.name}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Ad Title Headline</label>
+                          <input
+                            type="text"
+                            required
+                            value={promoAdTitle}
+                            onChange={e => setPromoAdTitle(e.target.value)}
+                            placeholder="e.g. Friday Night Jazz Live at Chords!"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Ad Copy Description</label>
+                          <textarea
+                            required
+                            rows={2}
+                            value={promoAdDesc}
+                            onChange={e => setPromoAdDesc(e.target.value)}
+                            placeholder="Write a catchy line to pull in patrons..."
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Ad Budget ($ USD)</label>
+                            <input
+                              type="number"
+                              value={promoBudget}
+                              onChange={e => setPromoBudget(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Payment Method</label>
+                            <select className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none">
+                              <option>Business Card (...5820)</option>
+                              <option>Corporate Payout Fund</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              if (!promoAdTitle.trim() || !promoAdDesc.trim()) {
+                                toast.error('Please enter Ad Headline and Description.');
+                                return;
+                              }
+                              setPromoProcessing(true);
+                              toast.info('Validating payment details and creating ad asset...');
+                              setTimeout(() => {
+                                setPromoProcessing(false);
+                                setVenueCampaignsCount(venueCampaignsCount + 1);
+                                setPromoAdTitle('');
+                                setPromoAdDesc('');
+                                setShowPromoModal(false);
+                                toast.success(`Ad Campaign "${promoAdTitle || 'Local Promo'}" launched! $${promoBudget} charged to card.`);
+                              }, 1500);
+                            }}
+                            disabled={promoProcessing}
+                            className="px-4 py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs flex-1 disabled:opacity-50"
+                          >
+                            {promoProcessing ? 'Launching...' : 'Pay & Launch Campaign ($25)'}
+                          </button>
+                          <button
+                            onClick={() => setShowPromoModal(false)}
+                            className="px-4 py-2.5 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </>
@@ -1868,14 +3065,18 @@ export default function Dashboard() {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Date</label>
-                          <input
-                            type="text"
-                            value={newOrgEventDate}
-                            onChange={e => setNewOrgEventDate(e.target.value)}
-                            placeholder="e.g. Aug 20"
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Event Genre / Category</label>
+                          <select
+                            value={newOrgEventGenre}
+                            onChange={e => setNewOrgEventGenre(e.target.value)}
                             className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
+                          >
+                            <option value="Acoustic Lounge">Acoustic Lounge</option>
+                            <option value="Live Concert">Live Concert</option>
+                            <option value="Festival">Festival</option>
+                            <option value="Open Mic">Open Mic</option>
+                            <option value="Panel Discussion">Panel Discussion</option>
+                          </select>
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-foreground mb-1.5">Ticket Capacity</label>
@@ -1887,11 +3088,74 @@ export default function Dashboard() {
                           />
                         </div>
                       </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Date</label>
+                          <input
+                            type="date"
+                            value={newOrgEventDate}
+                            onChange={e => setNewOrgEventDate(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Start Time</label>
+                          <input
+                            type="time"
+                            value={newOrgEventTime}
+                            onChange={e => setNewOrgEventTime(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Ticket Price ($ USD)</label>
+                          <input
+                            type="number"
+                            value={newOrgEventPrice}
+                            onChange={e => setNewOrgEventPrice(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Venue / Performance Location</label>
+                        <input
+                          type="text"
+                          value={newOrgEventLocation}
+                          onChange={e => setNewOrgEventLocation(e.target.value)}
+                          placeholder="e.g. Main Concert Hall, Chords Cafe Garden Stage"
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-foreground mb-1.5">Event Description</label>
+                        <textarea
+                          rows={2}
+                          value={newOrgEventDesc}
+                          onChange={e => setNewOrgEventDesc(e.target.value)}
+                          placeholder="Describe the lineup, schedule, attractions, food, or general info..."
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                        />
+                      </div>
                       <button
                         onClick={() => {
-                          if (!newOrgEventName.trim()) return;
-                          setOrgEvents([...orgEvents, { id: Date.now(), name: newOrgEventName, date: newOrgEventDate, ticketsSold: 0, capacity: parseInt(newOrgEventCapacity), price: '$20' }]);
+                          if (!newOrgEventName.trim()) {
+                            toast.error('Please enter an event name.');
+                            return;
+                          }
+                          setOrgEvents([
+                            ...orgEvents,
+                            {
+                              id: Date.now(),
+                              name: newOrgEventName,
+                              date: newOrgEventDate,
+                              ticketsSold: 0,
+                              capacity: parseInt(newOrgEventCapacity),
+                              price: `$${newOrgEventPrice}`
+                            }
+                          ]);
                           setNewOrgEventName('');
+                          setNewOrgEventDesc('');
                           toast.success('Event listing initialized! Ticket sales launched.');
                         }}
                         className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
@@ -1903,83 +3167,471 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'invite' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 text-center">
-                    <Music className="w-8 h-8 text-coffee mx-auto mb-2" />
-                    <h3 className="font-semibold text-foreground mb-2">Invite Artists to Lineup</h3>
-                    <p className="text-xs text-muted-foreground mb-4">Browse verified musicians and invite them to perform at your festival. Sent invites will show in bookings.</p>
-                    <button onClick={() => toast.success('Performance invitations dispatched to Alex Rivera!')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
-                      Invite Alex Rivera
-                    </button>
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
+                    <div className="text-center mb-2">
+                      <Music className="w-8 h-8 text-coffee mx-auto mb-2" />
+                      <h3 className="font-semibold text-foreground mb-2">Invite Artists to Lineup</h3>
+                      <p className="text-xs text-muted-foreground">Browse verified musicians on the platform and invite them to perform at your festival/event lineup.</p>
+                    </div>
+
+                    <div className="space-y-3 pt-2">
+                      {[
+                        { name: 'Alex Rivera', genre: 'Acoustic / Indie Folk', rate: '$250 - $400', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' },
+                        { name: 'Lana Vibe', genre: 'Indie Pop / Electronic', rate: '$350 - $500', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80' },
+                        { name: 'Marcus Chen', genre: 'Piano / Live Loop', rate: '$300 - $450', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' }
+                      ].map(art => {
+                        const isAlreadyInvited = invitedArtistsList.some(inv => inv.name === art.name);
+                        return (
+                          <div key={art.name} className="flex items-center justify-between p-3 border border-border rounded-xl bg-muted/15 text-xs">
+                            <div className="flex items-center gap-3">
+                              <img src={art.avatar} alt={art.name} className="w-10 h-10 rounded-full object-cover border border-border" />
+                              <div>
+                                <p className="font-semibold text-foreground">{art.name}</p>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">{art.genre} • Standard Set: {art.rate}</p>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setInvitingArtist(art);
+                                setShowInviteArtistModal(true);
+                              }}
+                              disabled={isAlreadyInvited}
+                              className={`px-3 py-1.5 rounded-lg font-semibold text-[10px] transition-colors ${
+                                isAlreadyInvited ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-coffee text-white hover:opacity-90'
+                              }`}
+                            >
+                              {isAlreadyInvited ? 'Invited' : `Invite ${art.name.split(' ')[0]}`}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="border-t border-border pt-4">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Lineup Invitations History ({invitedArtistsList.length})</h4>
+                      <div className="space-y-2">
+                        {invitedArtistsList.map(inv => (
+                          <div key={inv.id} className="flex justify-between items-center p-3 border border-border rounded-xl bg-muted/10 text-xs">
+                            <div>
+                              <p className="font-semibold text-foreground">🎤 {inv.name}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Event: {inv.event} • Payout Offer: {inv.pay} • Date: {inv.date}</p>
+                            </div>
+                            <span className="px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-[9px] font-bold">{inv.status}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 {activeTab === 'tickets' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 text-center">
-                    <DollarSign className="w-8 h-8 text-coffee mx-auto mb-2" />
-                    <h3 className="font-semibold text-foreground mb-2">Manage Ticket Sales Tiers</h3>
-                    <p className="text-xs text-muted-foreground mb-4">Set early bird discounts, general admission, and VIP passes.</p>
-                    <button onClick={() => toast.success('Ticket tier pricing config updated!')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
-                      Configure Tiers
-                    </button>
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
+                    <div className="text-center mb-2">
+                      <DollarSign className="w-8 h-8 text-coffee mx-auto mb-2" />
+                      <h3 className="font-semibold text-foreground mb-2">Manage Ticket Sales Tiers</h3>
+                      <p className="text-xs text-muted-foreground">Configure pricing and sales cap volumes for early bird, general admission, and VIP levels.</p>
+                    </div>
+
+                    <div className="space-y-3.5 pt-2 text-xs">
+                      <div>
+                        <label className="block text-[10px] font-bold text-foreground mb-1">Select Event</label>
+                        <select
+                          value={ticketTierEventId}
+                          onChange={e => setTicketTierEventId(e.target.value)}
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                        >
+                          {orgEvents.map(evt => (
+                            <option key={evt.id} value={evt.id}>{evt.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="border border-border p-3 rounded-xl bg-muted/10 space-y-2">
+                          <strong className="text-[10px] text-coffee uppercase block">Early Bird</strong>
+                          <div>
+                            <label className="block text-[9px] text-muted-foreground mb-0.5">Price ($)</label>
+                            <input
+                              type="number"
+                              value={ticketTierEarlyPrice}
+                              onChange={e => setTicketTierEarlyPrice(e.target.value)}
+                              className="w-full px-2 py-1.5 border border-border rounded bg-card text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="border border-border p-3 rounded-xl bg-muted/10 space-y-2">
+                          <strong className="text-[10px] text-coffee uppercase block">Gen Admission</strong>
+                          <div>
+                            <label className="block text-[9px] text-muted-foreground mb-0.5">Price ($)</label>
+                            <input
+                              type="number"
+                              value={ticketTierGAPrice}
+                              onChange={e => setTicketTierGAPrice(e.target.value)}
+                              className="w-full px-2 py-1.5 border border-border rounded bg-card text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="border border-border p-3 rounded-xl bg-muted/10 space-y-2">
+                          <strong className="text-[10px] text-coffee uppercase block">VIP Pass</strong>
+                          <div>
+                            <label className="block text-[9px] text-muted-foreground mb-0.5">Price ($)</label>
+                            <input
+                              type="number"
+                              value={ticketTierVIPPrice}
+                              onChange={e => setTicketTierVIPPrice(e.target.value)}
+                              className="w-full px-2 py-1.5 border border-border rounded bg-card text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          const ev = orgEvents.find(e => e.id.toString() === ticketTierEventId);
+                          toast.success(`Ticket tier pricing successfully configured for "${ev ? ev.name : 'your event'}"! 🎫`);
+                        }}
+                        className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl hover:opacity-90"
+                      >
+                        Save Ticket Pricing Configuration
+                      </button>
+                    </div>
                   </div>
                 )}
 
                 {activeTab === 'attendees' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4 font-display">Manage Attendee Registration & Check-in</h3>
-                    <div className="flex gap-2 mb-4">
-                      <input
-                        type="text"
-                        value={newAttendeeName}
-                        onChange={e => setNewAttendeeName(e.target.value)}
-                        placeholder="Register attendee manually..."
-                        className="flex-1 px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                      />
-                      <button
-                        onClick={() => {
-                          if (!newAttendeeName.trim()) return;
-                          setAttendees([...attendees, { id: Date.now(), name: newAttendeeName, ticket: 'GA', status: 'Confirmed' }]);
-                          setNewAttendeeName('');
-                          toast.success('Attendee registered manually!');
-                        }}
-                        className="px-4 py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
-                      >
-                        Register
-                      </button>
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-6">
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-4">Register New Attendee Manually</h3>
+                      <div className="space-y-3">
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Full Name</label>
+                            <input
+                              type="text"
+                              value={newAttendeeName}
+                              onChange={e => setNewAttendeeName(e.target.value)}
+                              placeholder="e.g. Liam Neeson"
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Email Address</label>
+                            <input
+                              type="email"
+                              value={newAttendeeEmail}
+                              onChange={e => setNewAttendeeEmail(e.target.value)}
+                              placeholder="e.g. liam@taken.com"
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Ticket Tier</label>
+                            <select
+                              value={newAttendeeTicket}
+                              onChange={e => setNewAttendeeTicket(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="GA">General Admission (GA)</option>
+                              <option value="VIP">VIP Pass</option>
+                              <option value="Early Bird">Early Bird</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Special Assistance / Requests</label>
+                            <input
+                              type="text"
+                              value={newAttendeeNotes}
+                              onChange={e => setNewAttendeeNotes(e.target.value)}
+                              placeholder="e.g. complementary beverage, front row seat..."
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (!newAttendeeName.trim() || !newAttendeeEmail.trim()) {
+                              toast.error('Please fill in name and email address.');
+                              return;
+                            }
+                            setAttendees([
+                              ...attendees,
+                              {
+                                id: Date.now(),
+                                name: newAttendeeName,
+                                ticket: newAttendeeTicket,
+                                status: 'Confirmed',
+                                email: newAttendeeEmail,
+                                serial: `TKT-${Math.floor(100 + Math.random() * 900)}-${Math.floor(1000 + Math.random() * 9000)}`,
+                                date: 'Jun 29',
+                                notes: newAttendeeNotes || 'None.'
+                              }
+                            ]);
+                            setNewAttendeeName('');
+                            setNewAttendeeEmail('');
+                            setNewAttendeeNotes('');
+                            toast.success('Attendee registered manually! Badge and ticket serial generated.');
+                          }}
+                          className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
+                        >
+                          Register Attendee
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
-                      {attendees.map(att => (
-                        <div key={att.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
-                          <div>
-                            <p className="font-semibold text-foreground">🎟️ {att.name}</p>
-                            <p className="text-muted-foreground mt-0.5">Status: {att.status}</p>
+                    <div className="border-t border-border pt-4">
+                      <h3 className="font-semibold text-foreground mb-4 font-display">Attendee Check-in Desk</h3>
+                      <div className="space-y-2">
+                        {attendees.map(att => (
+                          <div key={att.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
+                            <div>
+                              <p className="font-semibold text-foreground">🎫 {att.name}</p>
+                              <p className="text-muted-foreground mt-0.5">Ticket: {att.ticket} • Status: {att.status}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setViewingAttendee(att)}
+                                className="px-3 py-1.5 border border-border text-foreground hover:bg-muted font-semibold rounded-lg text-[10px]"
+                              >
+                                View
+                              </button>
+                              {att.status === 'Confirmed' && (
+                                <button
+                                  onClick={() => {
+                                    setAttendees(attendees.map(a => a.id === att.id ? { ...a, status: 'Checked In' } : a));
+                                    toast.success(`Checked in ${att.name}!`);
+                                  }}
+                                  className="px-3 py-1.5 bg-coffee text-white rounded-lg font-semibold hover:opacity-90 text-[10px]"
+                                >
+                                  Check In
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          {att.status === 'Confirmed' && (
-                            <button
-                              onClick={() => {
-                                setAttendees(attendees.map(a => a.id === att.id ? { ...a, status: 'Checked In' } : a));
-                                toast.success(`Checked in ${att.name}!`);
-                              }}
-                              className="px-3 py-1 bg-coffee text-white rounded-lg font-semibold hover:opacity-90 text-[10px]"
-                            >
-                              Check In
-                            </button>
-                          )}
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'analyze' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 text-center">
-                    <BarChart3 className="w-8 h-8 text-coffee mx-auto mb-2" />
-                    <h3 className="font-semibold text-foreground mb-2">Analyze Success</h3>
-                    <p className="text-xs text-muted-foreground mb-4">Export CSV sheet containing attendee counts, revenue budgets, and satisfaction feedback.</p>
-                    <button onClick={() => toast.success('Exporting spreadsheet report...')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-6">
+                    <div className="text-center mb-4">
+                      <BarChart3 className="w-8 h-8 text-coffee mx-auto mb-2" />
+                      <h3 className="font-semibold text-foreground mb-2">Analyze Success</h3>
+                      <p className="text-xs text-muted-foreground">View real-time event analytics and export detailed registration reports.</p>
+                    </div>
+
+                    {/* CSS Graphic Charts */}
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="border border-border p-4 rounded-xl bg-muted/10">
+                        <h4 className="text-[11px] font-bold text-muted-foreground uppercase mb-3">Ticket Sales Revenue</h4>
+                        <div className="space-y-3.5">
+                          {[
+                            { name: 'Underground Beats Festival', amount: 12500, max: 25000, color: 'bg-emerald-500' },
+                            { name: 'Cafe Acoustic Series', amount: 1275, max: 2000, color: 'bg-amber-500' },
+                            { name: 'Indie Wave Fest', amount: 3750, max: 5000, color: 'bg-coffee' }
+                          ].map(bar => {
+                            const pct = Math.round((bar.amount / bar.max) * 100);
+                            return (
+                              <div key={bar.name} className="text-[10px]">
+                                <div className="flex justify-between items-center mb-1 font-medium">
+                                  <span className="text-foreground truncate max-w-[120px]">{bar.name}</span>
+                                  <span className="text-muted-foreground">${bar.amount.toLocaleString()} ({pct}%)</span>
+                                </div>
+                                <div className="w-full bg-border h-2 rounded-full overflow-hidden">
+                                  <div className={cn("h-full rounded-full transition-all", bar.color)} style={{ width: `${pct}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="border border-border p-4 rounded-xl bg-muted/10">
+                        <h4 className="text-[11px] font-bold text-muted-foreground uppercase mb-3">Attendee Satisfaction Rating</h4>
+                        <div className="space-y-3.5">
+                          {[
+                            { group: 'VIP Patrons', rating: 98, color: 'bg-emerald-500' },
+                            { group: 'General Admission', rating: 92, color: 'bg-violet-500' },
+                            { group: 'Early Bird Users', rating: 89, color: 'bg-blue-500' }
+                          ].map(bar => (
+                            <div key={bar.group} className="text-[10px]">
+                              <div className="flex justify-between items-center mb-1 font-medium">
+                                <span className="text-foreground">{bar.group}</span>
+                                <span className="text-muted-foreground">{bar.rating}% Approval</span>
+                              </div>
+                              <div className="w-full bg-border h-2 rounded-full overflow-hidden">
+                                <div className={cn("h-full rounded-full transition-all", bar.color)} style={{ width: `${bar.rating}%` }} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const csvContent = "data:text/csv;charset=utf-8,"
+                          + "Event Name,Date,Tickets Sold,Capacity,Revenue,Satisfaction\n"
+                          + orgEvents.map(e => `"${e.name}",${e.date},${e.ticketsSold},${e.capacity},${e.price},94%`).join("\n");
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "Event_Success_Report.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        toast.success('Spreadsheet success report downloaded! 📊');
+                      }}
+                      className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
+                    >
                       Export Report
                     </button>
+                  </div>
+                )}
+
+                {/* ========================================== */}
+                {/* ORGANIZER WORKSPACE INTERACTIVE MODALS    */}
+                {/* ========================================== */}
+
+                {/* Invite Artist Setup Modal */}
+                {showInviteArtistModal && invitingArtist && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">🎤 Invite to Lineup: {invitingArtist.name}</h4>
+                        <button onClick={() => { setShowInviteArtistModal(false); setInvitingArtist(null); }} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-4 text-xs">
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Select Lineup Event</label>
+                          <select
+                            value={selectedInviteEventId}
+                            onChange={e => setSelectedInviteEventId(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            {orgEvents.map(evt => (
+                              <option key={evt.id} value={evt.id}>{evt.name}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Compensation Offer ($ USD)</label>
+                          <input
+                            type="number"
+                            value={invitePayoutOffer}
+                            onChange={e => setInvitePayoutOffer(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+
+                        <div className="bg-muted/30 p-2.5 rounded-xl border border-border leading-relaxed text-[10px] text-muted-foreground">
+                          📌 Dispatching this offer sends an invitation contract to the artist dashboard. Once they accept, they will join the event lineup catalog.
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              const ev = orgEvents.find(e => e.id.toString() === selectedInviteEventId);
+                              setInvitedArtistsList([
+                                ...invitedArtistsList,
+                                {
+                                  id: Date.now(),
+                                  name: invitingArtist.name,
+                                  event: ev ? ev.name : 'Unknown Event',
+                                  pay: `$${invitePayoutOffer}`,
+                                  date: ev ? ev.date : 'Aug 15',
+                                  status: 'Pending'
+                                }
+                              ]);
+                              toast.success(`Performance invitation successfully dispatched to ${invitingArtist.name}! 🎤`);
+                              setShowInviteArtistModal(false);
+                              setInvitingArtist(null);
+                            }}
+                            className="px-4 py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs flex-1"
+                          >
+                            Send Lineup Invite
+                          </button>
+                          <button
+                            onClick={() => { setShowInviteArtistModal(false); setInvitingArtist(null); }}
+                            className="px-4 py-2.5 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Attendee Details Modal */}
+                {viewingAttendee && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">🎫 Ticket Details: {viewingAttendee.name}</h4>
+                        <button onClick={() => setViewingAttendee(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-3.5 text-xs">
+                        <div className="grid grid-cols-2 gap-3 border-b border-border pb-3">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Guest Name</span>
+                            <p className="font-semibold text-foreground mt-0.5">{viewingAttendee.name}</p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Ticket Tier</span>
+                            <p className="font-semibold text-foreground mt-0.5">{viewingAttendee.ticket}</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 border-b border-border pb-3">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Ticket Serial</span>
+                            <p className="font-mono font-semibold text-foreground mt-0.5">{viewingAttendee.serial}</p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Check-in Status</span>
+                            <p className={cn("font-semibold mt-0.5", viewingAttendee.status === 'Checked In' ? 'text-emerald-600' : 'text-amber-600')}>{viewingAttendee.status}</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 border-b border-border pb-3">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Email Address</span>
+                            <p className="text-muted-foreground mt-0.5">{viewingAttendee.email}</p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Registered On</span>
+                            <p className="text-muted-foreground mt-0.5">{viewingAttendee.date}</p>
+                          </div>
+                        </div>
+                        <div className="bg-muted/30 p-2.5 rounded-xl border border-border">
+                          <strong className="text-foreground block mb-0.5">Special Assistance / Requests:</strong>
+                          <p className="text-muted-foreground leading-relaxed text-[11px]">{viewingAttendee.notes}</p>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                          {viewingAttendee.status === 'Confirmed' && (
+                            <button
+                              onClick={() => {
+                                setAttendees(attendees.map(a => a.id === viewingAttendee.id ? { ...a, status: 'Checked In' } : a));
+                                setViewingAttendee(null);
+                                toast.success(`Checked in ${viewingAttendee.name}!`);
+                              }}
+                              className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1"
+                            >
+                              Check In Guest
+                            </button>
+                          )}
+                          <button
+                            onClick={() => setViewingAttendee(null)}
+                            className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                          >
+                            Close Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </>
@@ -2042,13 +3694,64 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'discover-talent' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 text-center">
-                    <Search className="w-8 h-8 text-coffee mx-auto mb-2" />
-                    <h3 className="font-semibold text-foreground mb-2">Browse Top Performing Artists</h3>
-                    <p className="text-xs text-muted-foreground mb-4">Find independent musicians with highly engaged listener demographics to represent your brand.</p>
-                    <button onClick={() => toast.success('Search directory is up to date!')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
-                      Refresh Catalog
-                    </button>
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-semibold text-foreground">Top Performing Artists</h3>
+                      <button
+                        onClick={() => {
+                          setIsRefreshingTalent(true);
+                          toast.info('Querying talent index stats...');
+                          setTimeout(() => {
+                            const shuffled = [...talentDirectory];
+                            shuffled.reverse();
+                            if (shuffled.length === 3) {
+                              shuffled.push({
+                                name: 'Clara Oswald',
+                                genre: 'Opera / Acoustic Cello',
+                                followers: '19K',
+                                rate: '$320/Gig',
+                                avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80'
+                              });
+                            }
+                            setTalentDirectory(shuffled);
+                            setIsRefreshingTalent(false);
+                            toast.success('Artist catalog refreshed! 4 verified matches found. 🎼');
+                          }, 1000);
+                        }}
+                        disabled={isRefreshingTalent}
+                        className="px-3 py-1.5 bg-coffee text-white font-semibold rounded-lg text-xs hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5 animate-in fade-in"
+                      >
+                        {isRefreshingTalent ? (
+                          <>
+                            <span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+                            Refreshed Catalog
+                          </>
+                        ) : (
+                          'Refresh Catalog'
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Browse verified independent musicians with target branding audience matches.</p>
+
+                    <div className="space-y-3 pt-2">
+                      {talentDirectory.map(artist => (
+                        <div key={artist.name} className="flex items-center justify-between p-3 border border-border rounded-xl bg-muted/15 text-xs">
+                          <div className="flex items-center gap-3">
+                            <img src={artist.avatar} alt={artist.name} className="w-10 h-10 rounded-full object-cover border border-border" />
+                            <div>
+                              <p className="font-semibold text-foreground">{artist.name}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">{artist.genre} • Followers: {artist.followers} • Rate: {artist.rate}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => toast.success(`Talent sponsorship inquiry sent to ${artist.name}! 🚀`)}
+                            className="px-2.5 py-1.5 bg-coffee/10 text-coffee hover:bg-coffee/20 rounded-lg text-[10px] font-semibold"
+                          >
+                            Inquire Sponsorship
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -2057,31 +3760,39 @@ export default function Dashboard() {
                     <h3 className="font-semibold text-foreground mb-4">Sponsor Local Music Events</h3>
                     <div className="space-y-3">
                       {[
-                        { name: 'Underground Beats Festival', fee: '$1,500', spot: 'Main Stage Banner' },
-                        { name: 'Acoustic Cafe Series', fee: '$300', spot: 'Cup/Sleeve Branding' },
-                        { name: 'Jazz Rooftop Special', fee: '$500', spot: 'VIP Lounge Logo' },
+                        { name: 'Underground Beats Festival', fee: '$1,500', spot: 'Main Stage Banner', impressions: '15,000+ local fans', date: 'Aug 15', perks: 'Banner ads on main stage backdrop, VIP entrance logo placement, 4x complimentary artist passes.' },
+                        { name: 'Cafe Acoustic Series', fee: '$300', spot: 'Cup/Sleeve Branding', impressions: '4,500+ café visitors', date: 'Jul 29', perks: 'Physical logo sticker branding on all coffee cup sleeves, digital feature in the Chords & Coffee newsletter.' },
+                        { name: 'Jazz Rooftop Special', fee: '$500', spot: 'VIP Lounge Logo', impressions: '2,500+ premium fans', date: 'Aug 10', perks: 'Custom logo projection on the VIP lounge backdrop, sponsor mentions by hosts before performance sets.' },
                       ].map(opportunity => (
                         <div key={opportunity.name} className="p-4 border border-border rounded-xl bg-muted/10 text-xs flex justify-between items-center">
                           <div>
                             <p className="font-semibold text-foreground">{opportunity.name}</p>
                             <p className="text-muted-foreground mt-0.5">Sponsor Spot: {opportunity.spot} • Cost: {opportunity.fee}</p>
                           </div>
-                          <button
-                            onClick={() => {
-                              if (sponsoredEvents.includes(opportunity.name)) {
-                                toast.info(`You are already sponsoring ${opportunity.name}`);
-                              } else {
-                                setSponsoredEvents([...sponsoredEvents, opportunity.name]);
-                                toast.success(`Sponsorship pledge confirmed for ${opportunity.name}! ☕`);
-                              }
-                            }}
-                            className={cn(
-                              "px-3 py-1.5 font-semibold rounded-lg text-[10px]",
-                              sponsoredEvents.includes(opportunity.name) ? "bg-emerald-100 text-emerald-800" : "bg-coffee text-white"
-                            )}
-                          >
-                            {sponsoredEvents.includes(opportunity.name) ? 'Sponsored' : 'Sponsor'}
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setViewingSponsorOpportunity(opportunity)}
+                              className="px-3 py-1.5 border border-border text-foreground hover:bg-muted font-semibold rounded-lg text-[10px]"
+                            >
+                              View Details
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (sponsoredEvents.includes(opportunity.name)) {
+                                  toast.info(`You are already sponsoring ${opportunity.name}`);
+                                } else {
+                                  setSponsoredEvents([...sponsoredEvents, opportunity.name]);
+                                  toast.success(`Sponsorship pledge confirmed for ${opportunity.name}! ☕`);
+                                }
+                              }}
+                              className={cn(
+                                "px-3 py-1.5 font-semibold rounded-lg text-[10px]",
+                                sponsoredEvents.includes(opportunity.name) ? "bg-emerald-100 text-emerald-800" : "bg-coffee text-white"
+                              )}
+                            >
+                              {sponsoredEvents.includes(opportunity.name) ? 'Sponsored' : 'Sponsor'}
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -2089,11 +3800,11 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'campaigns' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4">Launch Sponsor Campaign</h3>
-                    <div className="space-y-4 mb-6">
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
+                    <h3 className="font-semibold text-foreground">Launch Sponsor Campaign</h3>
+                    <div className="space-y-3.5 text-xs">
                       <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Campaign Name</label>
+                        <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Name</label>
                         <input
                           type="text"
                           value={newCampaignName}
@@ -2102,17 +3813,180 @@ export default function Dashboard() {
                           className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
                         />
                       </div>
+
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Goal</label>
+                          <select
+                            value={campaignGoal}
+                            onChange={e => setCampaignGoal(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Brand Awareness">Brand Awareness</option>
+                            <option value="Promo Code Conversions">Promo Code Conversions</option>
+                            <option value="Leads Collection">Leads Collection</option>
+                            <option value="Event RSVP Boost">Event RSVP Boost</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Target Audience</label>
+                          <select
+                            value={campaignAudience}
+                            onChange={e => setCampaignAudience(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="All Patrons">All Patrons</option>
+                            <option value="Musicians Only">Musicians Only</option>
+                            <option value="Venue Owners Only">Venue Owners Only</option>
+                            <option value="Local Fans Only">Local Fans Only</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Promo Discount / Voucher Code</label>
+                          <input
+                            type="text"
+                            value={campaignPromoCode}
+                            onChange={e => setCampaignPromoCode(e.target.value)}
+                            placeholder="e.g. COFFEEVIBE20"
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Budget ($ USD)</label>
+                          <input
+                            type="number"
+                            value={campaignBudget}
+                            onChange={e => setCampaignBudget(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-foreground mb-1">Select Marketing Channels</label>
+                        <div className="grid grid-cols-2 gap-2 mt-1">
+                          {['In-App Banner Ads', 'Coffee Sleeves Logo', 'Email Newsletters', 'Live Stream Bumpers'].map(channel => (
+                            <label key={channel} className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground">
+                              <input
+                                type="checkbox"
+                                checked={campaignChannels.includes(channel)}
+                                onChange={e => {
+                                  if (e.target.checked) {
+                                    setCampaignChannels([...campaignChannels, channel]);
+                                  } else {
+                                    setCampaignChannels(campaignChannels.filter(c => c !== channel));
+                                  }
+                                }}
+                                className="rounded border-border text-coffee focus:ring-coffee/40"
+                              />
+                              <span>{channel}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-foreground mb-1">Ad Copy Pitch Description</label>
+                        <textarea
+                          rows={2}
+                          value={campaignAdCopy}
+                          onChange={e => setCampaignAdCopy(e.target.value)}
+                          placeholder="Describe the promotion deal details to target listeners..."
+                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                        />
+                      </div>
+
                       <button
                         onClick={() => {
-                          if (!newCampaignName.trim()) return;
-                          setSponsorCampaigns([...sponsorCampaigns, { id: Date.now(), name: newCampaignName, impressions: '0', clicks: 0, ctr: '0.0%' }]);
+                          if (!newCampaignName.trim()) {
+                            toast.error('Please enter a campaign name.');
+                            return;
+                          }
+                          const bud = parseFloat(campaignBudget) || 100;
+                          const estImpressions = `${Math.round(bud * 45)}K`;
+                          const estClicks = Math.round(bud * 1.5);
+                          const ctrPct = '3.3%';
+                          setSponsorCampaigns([
+                            ...sponsorCampaigns,
+                            {
+                              id: Date.now(),
+                              name: newCampaignName,
+                              impressions: estImpressions,
+                              clicks: estClicks,
+                              ctr: ctrPct
+                            }
+                          ]);
                           setNewCampaignName('');
-                          toast.success('Sponsor campaign launched! Tracking stats...');
+                          setCampaignAdCopy('');
+                          toast.success('Sponsor campaign launched successfully! Real-time metrics generated.');
                         }}
-                        className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
+                        className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
                       >
                         Publish Campaign
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Brand Event Sponsorship details view popup */}
+                {viewingSponsorOpportunity && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">☕ Sponsorship: {viewingSponsorOpportunity.name}</h4>
+                        <button onClick={() => setViewingSponsorOpportunity(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-3.5 text-xs">
+                        <div className="grid grid-cols-2 gap-3 border-b border-border pb-3">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Placement Spot</span>
+                            <p className="font-semibold text-foreground mt-0.5">{viewingSponsorOpportunity.spot}</p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Pledge Cost</span>
+                            <p className="font-semibold text-emerald-600 mt-0.5">{viewingSponsorOpportunity.fee}</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 border-b border-border pb-3">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Est Impressions</span>
+                            <p className="font-semibold text-foreground mt-0.5">{viewingSponsorOpportunity.impressions}</p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Sponsor Date</span>
+                            <p className="text-muted-foreground mt-0.5">{viewingSponsorOpportunity.date}</p>
+                          </div>
+                        </div>
+                        <div className="bg-muted/30 p-2.5 rounded-xl border border-border">
+                          <strong className="text-foreground block mb-0.5">Campaign Perks & Benefits:</strong>
+                          <p className="text-muted-foreground leading-relaxed text-[11px]">{viewingSponsorOpportunity.perks}</p>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              if (sponsoredEvents.includes(viewingSponsorOpportunity.name)) {
+                                toast.info(`You are already sponsoring ${viewingSponsorOpportunity.name}`);
+                              } else {
+                                setSponsoredEvents([...sponsoredEvents, viewingSponsorOpportunity.name]);
+                                toast.success(`Sponsorship pledge confirmed for ${viewingSponsorOpportunity.name}! ☕`);
+                              }
+                              setViewingSponsorOpportunity(null);
+                            }}
+                            className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1"
+                          >
+                            {sponsoredEvents.includes(viewingSponsorOpportunity.name) ? 'Already Sponsored' : 'Pledge Sponsorship'}
+                          </button>
+                          <button
+                            onClick={() => setViewingSponsorOpportunity(null)}
+                            className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                          >
+                            Close Info
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2324,20 +4198,84 @@ export default function Dashboard() {
                 {activeTab === 'manage-platform' && (
                   <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
                     <h3 className="font-semibold text-foreground mb-4">Platform Settings</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Platform Cut (Admin Fee)</label>
-                        <select
-                          value={platformFeePercentage}
-                          onChange={e => setPlatformFeePercentage(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        >
-                          <option value="5%">5% commission</option>
-                          <option value="10%">10% commission</option>
-                          <option value="15%">15% commission</option>
-                        </select>
+                    <div className="space-y-4 text-xs">
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Platform Cut (Admin Fee)</label>
+                          <select
+                            value={platformFeePercentage}
+                            onChange={e => setPlatformFeePercentage(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="5">5% commission</option>
+                            <option value="10">10% commission</option>
+                            <option value="15">15% commission</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">System Mode</label>
+                          <select
+                            value={maintenanceMode}
+                            onChange={e => setMaintenanceMode(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Disabled">Live & Operational</option>
+                            <option value="Enabled">Maintenance Mode</option>
+                          </select>
+                        </div>
                       </div>
-                      <button onClick={() => toast.success('Platform configurations saved!')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">User Sign-up Registry</label>
+                          <select
+                            value={allowRegistration}
+                            onChange={e => setAllowRegistration(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Yes">Enabled</option>
+                            <option value="No">Disabled</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Global Rate Limit (Req/Min)</label>
+                          <input
+                            type="number"
+                            value={globalRateLimit}
+                            onChange={e => setGlobalRateLimit(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Max Track Size (MB)</label>
+                          <input
+                            type="number"
+                            value={maxUploadLimit}
+                            onChange={e => setMaxUploadLimit(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Min Payout Threshold ($)</label>
+                          <input
+                            type="number"
+                            value={minWithdrawalThreshold}
+                            onChange={e => setMinWithdrawalThreshold(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">System Contact Email</label>
+                          <input
+                            type="email"
+                            value={adminContactEmail}
+                            onChange={e => setAdminContactEmail(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      <button onClick={() => toast.success('Platform configurations saved successfully! ⚙️')} className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
                         Save Configurations
                       </button>
                     </div>
@@ -2345,65 +4283,205 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'verify-artists' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
                     <h3 className="font-semibold text-foreground mb-4">Artist Verification Requests</h3>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {pendingVerifications.map(app => (
-                        <div key={app.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
-                          <div>
-                            <p className="font-semibold text-foreground">{app.name}</p>
-                            <p className="text-muted-foreground mt-0.5">Genre: {app.genre} • Applied: {app.joined}</p>
+                        <div key={app.id} className="p-4 border border-border rounded-xl bg-muted/15 text-xs space-y-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold text-foreground text-sm">🌟 {app.name}</p>
+                              <p className="text-muted-foreground mt-0.5">Genre: {app.genre} • Applied: {app.joined}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setPendingVerifications(pendingVerifications.filter(a => a.id !== app.id));
+                                  toast.success(`Artist "${app.name}" approved and verified successfully! 🌟`);
+                                }}
+                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-[10px]"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setRejectingArtistId(app.id);
+                                  setShowRejectModal(true);
+                                }}
+                                className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold text-[10px]"
+                              >
+                                Reject
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex gap-1.5">
-                            <button
-                              onClick={() => {
-                                setPendingVerifications(pendingVerifications.filter(a => a.id !== app.id));
-                                toast.success(`Artist "${app.name}" approved!`);
-                              }}
-                              className="px-2.5 py-1 bg-emerald-600 text-white rounded font-semibold text-[10px]"
-                            >
-                              Approve
-                            </button>
+                          <div className="bg-card p-2 rounded border border-border text-[11px] leading-relaxed text-muted-foreground">
+                            <strong>Bio: </strong>{app.bio}
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Social Portfolio: </span>
+                            <a href={app.socialLink} target="_blank" rel="noopener noreferrer" className="text-coffee font-semibold hover:underline">{app.socialLink}</a>
                           </div>
                         </div>
                       ))}
+                      {pendingVerifications.length === 0 && (
+                        <p className="text-xs text-muted-foreground text-center py-4">No pending verification requests.</p>
+                      )}
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'moderation' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
                     <h3 className="font-semibold text-foreground mb-4">Moderate Content Feed</h3>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {moderationReports.map(rep => (
-                        <div key={rep.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
-                          <div>
-                            <p className="font-semibold text-foreground">"{rep.message}"</p>
-                            <p className="text-muted-foreground mt-0.5">Reported by safety filter</p>
+                        <div key={rep.id} className="p-4 border border-border rounded-xl bg-muted/15 text-xs space-y-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="px-2 py-0.5 bg-rose-100 text-rose-800 font-bold rounded text-[9px] uppercase tracking-wider">{rep.reason}</span>
+                              <p className="text-muted-foreground text-[10px] mt-1.5">Content ID: <strong className="text-foreground">{rep.contentId}</strong> • Reported by: <strong className="text-foreground">@{rep.author}</strong></p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setModerationReports(moderationReports.filter(r => r.id !== rep.id));
+                                  toast.success('Content report dismissed. Post remains live.');
+                                }}
+                                className="px-3 py-1.5 border border-border text-foreground hover:bg-muted rounded-lg font-semibold text-[10px]"
+                              >
+                                Keep Content
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setModerationReports(moderationReports.filter(r => r.id !== rep.id));
+                                  toast.success('Flagged content successfully removed from platform. 🛡️');
+                                }}
+                                className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold text-[10px]"
+                              >
+                                Remove Content
+                              </button>
+                            </div>
                           </div>
-                          <button
-                            onClick={() => {
-                              setModerationReports(moderationReports.filter(r => r.id !== rep.id));
-                              toast.success('Removed message.');
-                            }}
-                            className="px-3 py-1 bg-rose-600 text-white rounded font-semibold text-[10px]"
-                          >
-                            Remove
-                          </button>
+                          <div className="p-2.5 bg-card rounded border border-border italic text-muted-foreground leading-relaxed text-[11px]">
+                            "{rep.message}"
+                          </div>
                         </div>
                       ))}
+                      {moderationReports.length === 0 && (
+                        <p className="text-xs text-muted-foreground text-center py-4">No content reports pending moderation.</p>
+                      )}
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'revenue-split' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 text-center">
-                    <DollarSign className="w-8 h-8 text-coffee mx-auto mb-2" />
-                    <h3 className="font-semibold text-foreground mb-2">Platform Revenue Split Monitor</h3>
-                    <p className="text-xs text-muted-foreground mb-4">General net transaction statistics showing platform cuts vs artist payouts.</p>
-                    <button onClick={() => toast.info('Exporting transaction sheet...')} className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
+                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-6">
+                    <div className="text-center mb-4">
+                      <DollarSign className="w-8 h-8 text-coffee mx-auto mb-2" />
+                      <h3 className="font-semibold text-foreground mb-2">Platform Revenue Split Monitor</h3>
+                      <p className="text-xs text-muted-foreground">General net transaction statistics showing platform cuts vs artist payouts.</p>
+                    </div>
+
+                    {/* CSS Graphic Charts */}
+                    <div className="border border-border p-4 rounded-xl bg-muted/10 space-y-4">
+                      <h4 className="text-[11px] font-bold text-muted-foreground uppercase">Accrued Platform Commissions</h4>
+                      <div className="space-y-3.5">
+                        {[
+                          { name: 'Subscription Commissions', amount: 8450, max: 15000, color: 'bg-emerald-500' },
+                          { name: 'Ticket Commission Cuts', amount: 4120, max: 10000, color: 'bg-violet-500' },
+                          { name: 'Sponsorship Commission Cuts', amount: 2800, max: 5000, color: 'bg-coffee' }
+                        ].map(bar => {
+                          const pct = Math.round((bar.amount / bar.max) * 100);
+                          return (
+                            <div key={bar.name} className="text-[10px]">
+                              <div className="flex justify-between items-center mb-1 font-medium">
+                                <span className="text-foreground">{bar.name}</span>
+                                <span className="text-muted-foreground">${bar.amount.toLocaleString()} ({pct}%)</span>
+                              </div>
+                              <div className="w-full bg-border h-2 rounded-full overflow-hidden">
+                                <div className={cn("h-full rounded-full transition-all", bar.color)} style={{ width: `${pct}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const csvContent = "data:text/csv;charset=utf-8,"
+                          + "Revenue Stream,Amount,Date,Source\n"
+                          + "Subscription Commissions,$8450,2026-06-29,Platform Subscriptions Cuts\n"
+                          + "Ticket Commission Cuts,$4120,2026-06-29,Event Ticket Sales Commission\n"
+                          + "Sponsorship Commission Cuts,$2800,2026-06-29,Brand Partnerships Cuts\n";
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "Platform_Revenue_Statement.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        toast.success('Revenue statement downloaded successfully! 📊');
+                      }}
+                      className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
+                    >
                       Download Statement
                     </button>
+                  </div>
+                )}
+
+                {/* ========================================== */}
+                {/* ADMIN WORKSPACE INTERACTIVE MODALS         */}
+                {/* ========================================== */}
+
+                {/* Artist Verification Reject Reasons Modal */}
+                {showRejectModal && rejectingArtistId && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold font-display">⚠️ Decline Verification Request</h4>
+                        <button onClick={() => { setShowRejectModal(false); setRejectingArtistId(null); }} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="space-y-4 text-xs">
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Decline Reason</label>
+                          <select
+                            value={rejectReason}
+                            onChange={e => setRejectReason(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Insufficient social links/portfolio info.">Insufficient social links/portfolio info.</option>
+                            <option value="Missing profile photo or track attachments.">Missing profile photo or track attachments.</option>
+                            <option value="Metadata conflicts with copyrighted materials.">Metadata conflicts with copyrighted materials.</option>
+                            <option value="Verification details do not match profile role.">Verification details do not match profile role.</option>
+                          </select>
+                        </div>
+
+                        <div className="bg-muted/30 p-2.5 rounded-xl border border-border leading-relaxed text-[10px] text-muted-foreground">
+                          📌 Submitting this decline sends a notification email to the artist detailing the reject reason, allowing them to re-apply once resolved.
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              setPendingVerifications(pendingVerifications.filter(a => a.id !== rejectingArtistId));
+                              toast.error(`Verification request declined. Reason: ${rejectReason}`);
+                              setShowRejectModal(false);
+                              setRejectingArtistId(null);
+                            }}
+                            className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-xs flex-1 transition-colors"
+                          >
+                            Decline Request
+                          </button>
+                          <button
+                            onClick={() => { setShowRejectModal(false); setRejectingArtistId(null); }}
+                            className="px-4 py-2.5 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </>

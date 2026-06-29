@@ -58,28 +58,30 @@ export default function Profile() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Profile Header */}
-        <div className="relative -mt-16 mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-            <div className="relative">
-              <img src={user.avatar} alt={user.name} className="w-28 h-28 rounded-2xl object-cover border-4 border-background shadow-warm-lg" />
-              {user.verified && (
-                <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gold flex items-center justify-center shadow-sm">
-                  <Award className="w-3.5 h-3.5 text-white" />
+        <div className="relative mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+              <div className="relative -mt-16">
+                <img src={user.avatar} alt={user.name} className="w-28 h-28 rounded-2xl object-cover border-4 border-background shadow-warm-lg" />
+                {user.verified && (
+                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gold flex items-center justify-center shadow-sm">
+                    <Award className="w-3.5 h-3.5 text-white" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 pt-2">
+                <div className="flex flex-wrap items-center gap-3 mb-2">
+                  <h1 className="font-display font-bold text-2xl lg:text-3xl text-foreground">{user.name}</h1>
+                  {user.verified && <span className="px-2.5 py-0.5 bg-gold/15 text-gold text-xs font-semibold rounded-full border border-gold/30">Verified Artist</span>}
                 </div>
-              )}
-            </div>
-            <div className="flex-1 pb-1">
-              <div className="flex flex-wrap items-center gap-3 mb-2">
-                <h1 className="font-display font-bold text-2xl lg:text-3xl text-foreground">{user.name}</h1>
-                {user.verified && <span className="px-2.5 py-0.5 bg-gold/15 text-gold text-xs font-semibold rounded-full border border-gold/30">Verified Artist</span>}
-              </div>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{user.location}</span>
-                <span className="flex items-center gap-1"><Music className="w-3.5 h-3.5" />{user.genres.join(', ')}</span>
-                <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />Joined {new Date(user.joinedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{user.location}</span>
+                  <span className="flex items-center gap-1"><Music className="w-3.5 h-3.5" />{user.genres.join(', ')}</span>
+                  <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />Joined {new Date(user.joinedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 sm:self-center">
               <button
                 onClick={() => toast.success('Following Alex Rivera!')}
                 className="px-5 py-2.5 bg-coffee text-white text-sm font-semibold rounded-xl hover:bg-[hsl(25,40%,26%)] shadow-warm transition-all"
