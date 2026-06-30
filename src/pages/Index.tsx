@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import {
   Play, ArrowRight, Music, Coffee, Users, Star, Calendar, BookOpen,
   Mic2, Globe, TrendingUp, CheckCircle, ChevronDown, Quote, Zap,
-  ShieldCheck, Award, Heart, MapPin, Clock, DollarSign, ChevronRight
+  ShieldCheck, Award, Heart, MapPin, Clock, DollarSign, ChevronRight, X
 } from 'lucide-react';
 import heroImg from '@/assets/hero-bg.jpg';
 import performanceImg from '@/assets/performance.jpg';
@@ -90,6 +90,7 @@ export default function Index() {
   const { user } = useAuth();
   const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showDemoVideo, setShowDemoVideo] = useState(false);
 
   return (
     <div className="min-h-screen">
@@ -126,12 +127,13 @@ export default function Index() {
                 >
                   {user ? "Go to Dashboard" : "Start for Free"} <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link
-                  to="/features"
+                <button
+                  type="button"
+                  onClick={() => setShowDemoVideo(true)}
                   className="inline-flex items-center gap-2 px-6 py-3.5 glass text-white font-medium rounded-xl hover:bg-white/15 transition-all"
                 >
                   <Play className="w-4 h-4" /> Watch Demo
-                </Link>
+                </button>
               </div>
 
               <div className="flex flex-wrap gap-6 animate-fade-up" style={{ animationDelay: '0.4s' }}>
@@ -558,6 +560,44 @@ export default function Index() {
       </section>
 
       {/* 10. Footer is rendered from layout */}
+      {/* Demo Video Modal Popup */}
+      {showDemoVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-card border border-border rounded-2xl p-4 shadow-2xl max-w-3xl w-full relative animate-in fade-in zoom-in-95 duration-200 text-left">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-display font-bold text-base text-foreground flex items-center gap-2">
+                <Play className="w-4 h-4 text-coffee fill-coffee" />
+                Chords & Coffee Platform Tour
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowDemoVideo(false)}
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="rounded-xl overflow-hidden border border-border bg-black aspect-video relative">
+              <video
+                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                controls
+                autoPlay
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="mt-3 text-xs text-muted-foreground leading-relaxed flex justify-between items-center">
+              <span>Duration: 0:15 • Live Open Mic Café Demonstration</span>
+              <button
+                type="button"
+                onClick={() => setShowDemoVideo(false)}
+                className="px-4 py-1.5 bg-coffee text-white font-semibold rounded-lg hover:opacity-90"
+              >
+                Close Tour
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

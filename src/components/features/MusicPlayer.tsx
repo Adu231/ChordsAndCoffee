@@ -3,9 +3,9 @@ import { Play, Pause, SkipBack, SkipForward, Volume2, Heart, Music2 } from 'luci
 import { cn } from '@/lib/utils';
 
 const TRACKS = [
-  { id: 1, title: 'Café Mornings', artist: 'Alex Rivera', genre: 'Acoustic', duration: 214, cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop' },
-  { id: 2, title: 'Golden Hours', artist: 'Marcus Chen', genre: 'Jazz Piano', duration: 183, cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop' },
-  { id: 3, title: 'Midnight Synth', artist: 'Lana Vibe', genre: 'Ambient Synth', duration: 267, cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop' },
+  { id: 1, title: 'Café Mornings', artist: 'Alex Rivera', genre: 'Acoustic', duration: 372, cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 2, title: 'Golden Hours', artist: 'Marcus Chen', genre: 'Jazz Piano', duration: 425, cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+  { id: 3, title: 'Midnight Synth', artist: 'Lana Vibe', genre: 'Ambient Synth', duration: 302, cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
 ];
 
 function formatTime(s: number) {
@@ -19,10 +19,76 @@ export default function MusicPlayer({ mini = false }: { mini?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [liked, setLiked] = useState<number[]>([]);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const track = TRACKS[current];
 
+  // Initialize Audio
+  useEffect(() => {
+    audioRef.current = new Audio(TRACKS[current].url);
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Sync state events from audio element
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      setProgress(Math.floor(audio.currentTime));
+    };
+
+    const handleEnded = () => {
+      next();
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [current]);
+
+  // Track switching effect
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+    audio.src = track.url;
+    audio.load();
+    if (playing) {
+      audio.play().catch(err => {
+        console.log('Audio autoplay blocked or failed:', err);
+        setPlaying(false);
+      });
+    }
+  }, [current]);
+
+  // Play/Pause toggle effect
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (playing) {
+      audio.play().catch(err => {
+        console.log('Audio playback blocked or failed:', err);
+        setPlaying(false);
+      });
+    } else {
+      audio.pause();
+    }
+  }, [playing]);
+
+  // Event listener for playing a specific artist's track from outer actions
   useEffect(() => {
     const handlePlayTrackEvent = (e: CustomEvent<{ artist: string }>) => {
       const idx = TRACKS.findIndex(t => t.artist.toLowerCase() === e.detail.artist.toLowerCase());
@@ -38,26 +104,19 @@ export default function MusicPlayer({ mini = false }: { mini?: boolean }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (playing) {
-      intervalRef.current = setInterval(() => {
-        setProgress(p => {
-          if (p >= track.duration) {
-            next();
-            return 0;
-          }
-          return p + 1;
-        });
-      }, 1000);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [playing, current]);
+  const prev = () => {
+    setCurrent(c => (c - 1 + TRACKS.length) % TRACKS.length);
+    setProgress(0);
+  };
 
-  const prev = () => { setCurrent(c => (c - 1 + TRACKS.length) % TRACKS.length); setProgress(0); };
-  const next = () => { setCurrent(c => (c + 1) % TRACKS.length); setProgress(0); };
-  const toggleLike = (id: number) => setLiked(l => l.includes(id) ? l.filter(x => x !== id) : [...l, id]);
+  const next = () => {
+    setCurrent(c => (c + 1) % TRACKS.length);
+    setProgress(0);
+  };
+
+  const toggleLike = (id: number) => {
+    setLiked(l => l.includes(id) ? l.filter(x => x !== id) : [...l, id]);
+  };
 
   const pct = (progress / track.duration) * 100;
 
@@ -108,7 +167,11 @@ export default function MusicPlayer({ mini = false }: { mini?: boolean }) {
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const x = e.clientX - rect.left;
-            setProgress(Math.round((x / rect.width) * track.duration));
+            const newTime = (x / rect.width) * track.duration;
+            setProgress(Math.round(newTime));
+            if (audioRef.current) {
+              audioRef.current.currentTime = newTime;
+            }
           }}
         >
           <div

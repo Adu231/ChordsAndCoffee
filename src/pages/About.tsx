@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Coffee, Music, Users, Heart, Award, Globe, ArrowRight, Target, Lightbulb, Zap } from 'lucide-react';
 import AnimatedCounter from '@/components/features/AnimatedCounter';
+import { useAuth } from '@/hooks/useAuth';
 
 const team = [
   { name: 'Sofia Mendez', role: 'Co-Founder & CEO', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face', bio: 'Former music producer and community builder with 10+ years in the creative industry.' },
@@ -24,6 +25,8 @@ const milestones = [
 ];
 
 export default function About() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-background pt-16">
       {/* Hero */}
@@ -85,7 +88,7 @@ export default function About() {
               <p className="text-muted-foreground leading-relaxed mb-8">
                 Our platform bridges the gap between digital discovery and authentic human connection, giving artists the tools to perform, collaborate, learn, and earn — all in one place.
               </p>
-              <Link to="/register" className="inline-flex items-center gap-2 px-6 py-3.5 bg-coffee text-white rounded-xl font-semibold hover:bg-[hsl(25,40%,26%)] shadow-warm transition-all hover:-translate-y-0.5">
+              <Link to={user ? "/dashboard" : "/register"} className="inline-flex items-center gap-2 px-6 py-3.5 bg-coffee text-white rounded-xl font-semibold hover:bg-[hsl(25,40%,26%)] shadow-warm transition-all hover:-translate-y-0.5">
                 Join Our Community <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

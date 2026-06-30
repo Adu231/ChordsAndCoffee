@@ -5,7 +5,7 @@ import {
   TrendingUp, DollarSign, Eye, Heart, MessageSquare, Play, Plus,
   Bell, Search, Menu, X, Coffee, LogOut, ChevronRight, Mic2,
   BookOpen, MapPin, Clock, User, Award, Shield, CheckCircle, Video, BookMarked, HelpCircle,
-  FileText, Check, AlertCircle, PlusCircle, Share2, Trash2, Send
+  FileText, Check, AlertCircle, PlusCircle, Share2, Trash2, Send, Mail
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,6 +29,7 @@ const getNavItemsForRole = (role: string) => {
       return [
         { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
         { icon: Search, label: 'Discover Artists', id: 'discover' },
+        { icon: BookOpen, label: 'Learn Music', id: 'learn' },
         { icon: Calendar, label: 'Attend Events', id: 'events' },
         { icon: Users, label: 'Join Communities', id: 'community' },
         { icon: Heart, label: 'Support Creators', id: 'support' },
@@ -63,7 +64,6 @@ const getNavItemsForRole = (role: string) => {
         { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
         { icon: Plus, label: 'Create Event', id: 'create-event' },
         { icon: Users, label: 'Invite Artists', id: 'invite' },
-        { icon: DollarSign, label: 'Sell Tickets', id: 'tickets' },
         { icon: Users, label: 'Manage Attendees', id: 'attendees' },
         { icon: BarChart3, label: 'Analyze Success', id: 'analyze' },
       ];
@@ -113,6 +113,11 @@ export default function Dashboard() {
   const [tipsSent, setTipsSent] = useState<{ artist: string; amount: number }[]>([]);
   const [customTipAmount, setCustomTipAmount] = useState('10');
   const [selectedTipArtist, setSelectedTipArtist] = useState('Alex Rivera');
+  const [artistSearchQuery, setArtistSearchQuery] = useState('');
+  const [joinedCourses, setJoinedCourses] = useState<number[]>([1]);
+  const [joinedWorkshops, setJoinedWorkshops] = useState<number[]>([]);
+  const [courseSearchQuery, setCourseSearchQuery] = useState('');
+  const [viewingCourseDetails, setViewingCourseDetails] = useState<any | null>(null);
   
   // Event Booking & Details States
   const [bookingEvent, setBookingEvent] = useState<{ id: number; title: string; venue: string; date: string; time: string; price: string; desc: string; address: string; lineup: string } | null>(null);
@@ -246,6 +251,12 @@ export default function Dashboard() {
   const [withdrawAmount, setWithdrawAmount] = useState('4250');
 
   const [activeHostingWorkshop, setActiveHostingWorkshop] = useState<typeof teacherWorkshops[0] | null>(null);
+  const [workshopChats, setWorkshopChats] = useState([
+    { user: 'Clara', msg: 'The sound quality is amazing!' },
+    { user: 'Buster', msg: 'Can you show that fingerpicking chord again?' },
+    { user: 'Sarah', msg: 'Great session!' }
+  ]);
+  const [workshopChatInput, setWorkshopChatInput] = useState('');
   const [schedulingStudent, setSchedulingStudent] = useState<typeof mentorshipStudents[0] | null>(null);
   const [meetingDate, setMeetingDate] = useState('2026-07-10');
   const [meetingTime, setMeetingTime] = useState('16:00');
@@ -262,6 +273,10 @@ export default function Dashboard() {
   const [venueAcousticsRating, setVenueAcousticsRating] = useState('Excellent');
 
   const [venueCampaignsCount, setVenueCampaignsCount] = useState(2);
+  const [venueCampaigns, setVenueCampaigns] = useState([
+    { id: 1, title: 'Summer Jazz Series Showcase', eventName: 'Acoustic Set Live', radius: '10 Miles', goal: 'Increase Ticket Sales', budget: '25', status: 'Running', impressions: 1240, clicks: 185 },
+    { id: 2, title: 'Weekly Acoustic Night Promo', eventName: 'Open Mic Night', radius: '5 Miles', goal: 'Promote Brand', budget: '25', status: 'Running', impressions: 840, clicks: 98 },
+  ]);
   const [venueEvents, setVenueEvents] = useState([
     { id: 1, name: 'Open Mic Night', date: 'Jul 05', time: '8:00 PM', price: 'Free', desc: 'Our weekly acoustic showcase for local singer-songwriters.', genre: 'Acoustic / Indie' },
     { id: 2, name: 'Acoustic Set Live', date: 'Jul 12', time: '7:30 PM', price: '$10', desc: 'Featuring regional indie folk artists.', genre: 'Folk / Bluegrass' },
@@ -300,6 +315,7 @@ export default function Dashboard() {
   const [promoBudget, setPromoBudget] = useState('25');
   const [promoProcessing, setPromoProcessing] = useState(false);
   const [isSavingVenueProfile, setIsSavingVenueProfile] = useState(false);
+  const [isVenueSaved, setIsVenueSaved] = useState(false);
 
   // 4.5 Event Organizer States
   const [orgEvents, setOrgEvents] = useState([
@@ -356,6 +372,15 @@ export default function Dashboard() {
   const [viewingSponsorOpportunity, setViewingSponsorOpportunity] = useState<{ name: string; fee: string; spot: string; impressions: string; perks: string } | null>(null);
 
   const [isRefreshingTalent, setIsRefreshingTalent] = useState(false);
+  const [inquiringArtist, setInquiringArtist] = useState<{ name: string; genre: string; rate: string; avatar: string } | null>(null);
+  const [inquiryBudget, setInquiryBudget] = useState('500');
+  const [inquiryMessage, setInquiryMessage] = useState('');
+  const [inquiryPlacement, setInquiryPlacement] = useState('Shoutout & Logo on Banner');
+  const [sponsorshipInquiries, setSponsorshipInquiries] = useState([
+    { id: 1, artistName: 'Alex Rivera', placement: 'Shoutout & Logo on Banner', budget: '500', status: 'Accepted', date: 'Jun 28' },
+    { id: 2, artistName: 'Lana Vibe', placement: 'Audio Intro Sponsor', budget: '350', status: 'Pending', date: 'Jun 30' },
+    { id: 3, artistName: 'Marcus Chen', placement: 'Dedicated Merch Placement', budget: '750', status: 'Declined', date: 'Jun 25' }
+  ]);
   const [talentDirectory, setTalentDirectory] = useState([
     { name: 'Alex Rivera', genre: 'Acoustic / Folk Singer', followers: '12K', rate: '$250/Gig', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' },
     { name: 'Lana Vibe', genre: 'Indie Pop / Electronic', followers: '28K', rate: '$350/Gig', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80' },
@@ -687,38 +712,225 @@ export default function Dashboard() {
 
                 {activeTab === 'discover' && (
                   <div className="bg-card rounded-2xl border border-border p-5">
-                    <h3 className="font-semibold text-foreground mb-4">Discover Local Artists</h3>
-                    <div className="grid gap-4 md:grid-cols-3">
-                      {[
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                      <h3 className="font-semibold text-foreground">Discover Local Artists</h3>
+                      <div className="relative max-w-xs w-full">
+                        <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          placeholder="Search name or genre..."
+                          value={artistSearchQuery}
+                          onChange={(e) => setArtistSearchQuery(e.target.value)}
+                          className="w-full pl-9 pr-4 py-2 bg-muted/40 border border-border rounded-xl text-xs focus:outline-none focus:border-coffee/50"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Grid */}
+                    {(() => {
+                      const allArtists = [
                         { name: 'Alex Rivera', genre: 'Acoustic / Folk', followers: '1,247', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
                         { name: 'Lana Vibe', genre: 'Ambient Synth', followers: '890', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop' },
-                        { name: 'Marcus Chen', genre: 'Jazz Piano', followers: '2.1K', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop' }
-                      ].map(artist => (
-                        <div key={artist.name} className="border border-border p-4 rounded-xl flex flex-col justify-between items-center text-center bg-muted/20">
-                          <img src={artist.img} className="w-16 h-16 rounded-full object-cover border-2 border-coffee/30 mb-3" />
-                          <h4 className="font-semibold text-sm text-foreground">{artist.name}</h4>
-                          <p className="text-xs text-muted-foreground mb-4">{artist.genre} • {artist.followers} fans</p>
-                          <div className="w-full">
-                            <button
-                              onClick={() => {
-                                if (followedArtists.includes(artist.name)) {
-                                  setFollowedArtists(followedArtists.filter(a => a !== artist.name));
-                                  toast.info(`Unfollowed ${artist.name}`);
-                                } else {
-                                  setFollowedArtists([...followedArtists, artist.name]);
-                                  toast.success(`Followed ${artist.name}! 🎵`);
-                                }
-                              }}
-                              className={cn(
-                                "w-full py-1.5 text-xs font-semibold rounded-lg transition-colors",
-                                followedArtists.includes(artist.name) ? "bg-muted text-muted-foreground" : "bg-coffee text-white hover:opacity-90"
-                              )}
-                            >
-                              {followedArtists.includes(artist.name) ? 'Following' : 'Follow'}
-                            </button>
+                        { name: 'Marcus Chen', genre: 'Jazz Piano', followers: '2.1K', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop' },
+                        { name: 'Clara Woods', genre: 'Indie Pop', followers: '940', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop' },
+                        { name: 'Dave Groove', genre: 'Funk Bass', followers: '1.5K', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop' },
+                        { name: 'Sarah Synth', genre: 'Techno / Lo-Fi', followers: '3K', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop' }
+                      ];
+                      
+                      const filtered = allArtists.filter(artist => 
+                        artist.name.toLowerCase().includes(artistSearchQuery.toLowerCase()) ||
+                        artist.genre.toLowerCase().includes(artistSearchQuery.toLowerCase())
+                      );
+
+                      if (filtered.length === 0) {
+                        return (
+                          <div className="text-center py-10">
+                            <p className="text-sm text-muted-foreground">No artists found matching "{artistSearchQuery}"</p>
                           </div>
+                        );
+                      }
+
+                      return (
+                        <div className="grid gap-4 md:grid-cols-3">
+                          {filtered.map(artist => (
+                            <div key={artist.name} className="border border-border p-4 rounded-xl flex flex-col justify-between items-center text-center bg-muted/20 hover:shadow-warm hover:-translate-y-0.5 transition-all">
+                              <img src={artist.img} className="w-16 h-16 rounded-full object-cover border-2 border-coffee/30 mb-3" />
+                              <h4 className="font-semibold text-sm text-foreground">{artist.name}</h4>
+                              <p className="text-xs text-muted-foreground mb-4">{artist.genre} • {artist.followers} fans</p>
+                              <div className="w-full">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (followedArtists.includes(artist.name)) {
+                                      setFollowedArtists(followedArtists.filter(a => a !== artist.name));
+                                      toast.info(`Unfollowed ${artist.name}`);
+                                    } else {
+                                      setFollowedArtists([...followedArtists, artist.name]);
+                                      toast.success(`Followed ${artist.name}! 🎵`);
+                                    }
+                                  }}
+                                  className={cn(
+                                    "w-full py-1.5 text-xs font-semibold rounded-lg transition-colors",
+                                    followedArtists.includes(artist.name) ? "bg-muted text-muted-foreground" : "bg-coffee text-white hover:opacity-90"
+                                  )}
+                                >
+                                  {followedArtists.includes(artist.name) ? 'Following' : 'Follow'}
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {activeTab === 'learn' && (
+                  <div className="space-y-6 text-left max-w-4xl mx-auto animate-in fade-in duration-200">
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <h3 className="font-display font-semibold text-lg text-foreground flex items-center gap-2">
+                          <BookOpen className="w-5 h-5 text-coffee" />
+                          Music Academy
+                        </h3>
+                        <p className="text-xs text-muted-foreground">Search independent courses and live session workshops to master new instruments.</p>
+                      </div>
+                      <div className="w-full sm:w-64 relative">
+                        <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          placeholder="Search courses or level..."
+                          value={courseSearchQuery}
+                          onChange={(e) => setCourseSearchQuery(e.target.value)}
+                          className="w-full pl-9 pr-4 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none focus:border-coffee/50"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* Interactive Courses Listing */}
+                      <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+                        <h4 className="font-display font-semibold text-base text-foreground">Available Courses</h4>
+                        <div className="space-y-3.5">
+                          {teacherCourses
+                            .filter(course =>
+                              course.title.toLowerCase().includes(courseSearchQuery.toLowerCase()) ||
+                              course.level.toLowerCase().includes(courseSearchQuery.toLowerCase())
+                            )
+                            .map(course => {
+                              const isEnrolled = joinedCourses.includes(course.id);
+                              return (
+                                <div key={course.id} className="p-4 border border-border bg-muted/10 hover:bg-muted/20 rounded-xl transition-all flex justify-between items-center text-xs gap-3">
+                                  <div className="space-y-1 text-left">
+                                    <p className="font-semibold text-foreground text-sm">{course.title}</p>
+                                    <p className="text-[10px] text-muted-foreground">
+                                      Level: <strong className="text-foreground">{course.level}</strong> • Price: <strong className="text-coffee">{course.price}</strong> • Enrolled: {course.students}
+                                    </p>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => setViewingCourseDetails({
+                                        id: course.id,
+                                        title: course.title,
+                                        level: course.level,
+                                        price: course.price,
+                                        instructor: 'Sarah Jenkins (M.Mus)',
+                                        schedule: 'Tuesdays & Thursdays • 6:00 PM - 7:30 PM EST',
+                                        duration: '10 Weeks (30 Total Hours)',
+                                        syllabus: 'Complete acoustic fundamentals, chord configurations, rhythm coordination exercises, and classical repertoire playthroughs.',
+                                        isWorkshop: false
+                                      })}
+                                      className="px-2.5 py-1.5 border border-border text-foreground hover:bg-muted font-semibold rounded-lg text-[10px] whitespace-nowrap"
+                                    >
+                                      View Details
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        if (isEnrolled) {
+                                          toast.info('You are already enrolled in this course.');
+                                          return;
+                                        }
+                                        setJoinedCourses([...joinedCourses, course.id]);
+                                        setTeacherCourses(teacherCourses.map(c => c.id === course.id ? { ...c, students: c.students + 1 } : c));
+                                        toast.success(`Successfully enrolled in "${course.title}"! 🎒`);
+                                      }}
+                                      className={cn(
+                                        "px-2.5 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap transition-colors",
+                                        isEnrolled ? "bg-muted text-muted-foreground" : "bg-coffee text-white hover:opacity-90"
+                                      )}
+                                    >
+                                      {isEnrolled ? 'Enrolled' : 'Join Course'}
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+
+                      {/* Interactive Workshops Listing */}
+                      <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+                        <h4 className="font-display font-semibold text-base text-foreground">Live Masterclass Workshops</h4>
+                        <div className="space-y-3.5">
+                          {teacherWorkshops
+                            .filter(ws =>
+                              ws.title.toLowerCase().includes(courseSearchQuery.toLowerCase())
+                            )
+                            .map(ws => {
+                              const isRegistered = joinedWorkshops.includes(ws.id);
+                              return (
+                                <div key={ws.id} className="p-4 border border-border bg-muted/10 hover:bg-muted/20 rounded-xl transition-all flex justify-between items-center text-xs gap-3">
+                                  <div className="space-y-1 text-left">
+                                    <p className="font-semibold text-foreground text-sm">{ws.title}</p>
+                                    <p className="text-[10px] text-muted-foreground">
+                                      Date: <strong className="text-foreground">{ws.date}</strong> • Price: <strong className="text-coffee">{ws.price}</strong> • Seats Left: {ws.seatsLeft}
+                                    </p>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => setViewingCourseDetails({
+                                        id: ws.id,
+                                        title: ws.title,
+                                        level: 'All Levels Welcome',
+                                        price: ws.price,
+                                        instructor: 'Sarah Jenkins (M.Mus)',
+                                        schedule: `Date: ${ws.date} • 7:00 PM EST`,
+                                        duration: '2 Hours Live Webinar',
+                                        syllabus: 'Live presentation, interactive chord progression demonstrations, styling techniques, and student Q&A.',
+                                        isWorkshop: true,
+                                        seatsLeft: ws.seatsLeft
+                                      })}
+                                      className="px-2.5 py-1.5 border border-border text-foreground hover:bg-muted font-semibold rounded-lg text-[10px] whitespace-nowrap"
+                                    >
+                                      View Details
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        if (isRegistered) {
+                                          toast.info('You are already registered for this session.');
+                                          return;
+                                        }
+                                        if (ws.seatsLeft <= 0) {
+                                          toast.error('This session is sold out.');
+                                          return;
+                                        }
+                                        setJoinedWorkshops([...joinedWorkshops, ws.id]);
+                                        setTeacherWorkshops(teacherWorkshops.map(w => w.id === ws.id ? { ...w, seatsLeft: w.seatsLeft - 1 } : w));
+                                        toast.success(`Successfully registered for "${ws.title}"! 🎟️`);
+                                      }}
+                                      className={cn(
+                                        "px-2.5 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap transition-colors",
+                                        isRegistered ? "bg-muted text-muted-foreground" : "bg-coffee text-white hover:opacity-90"
+                                      )}
+                                    >
+                                      {isRegistered ? 'Registered' : 'Join Session'}
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2175,11 +2387,7 @@ export default function Dashboard() {
                         <div>
                           <h5 className="font-bold text-[10px] uppercase text-muted-foreground mb-3">Live Session Chat</h5>
                           <div className="space-y-3 h-48 overflow-y-auto pr-1">
-                            {[
-                              { user: 'Clara', msg: 'The sound quality is amazing!' },
-                              { user: 'Buster', msg: 'Can you show that fingerpicking chord again?' },
-                              { user: 'Sarah', msg: 'Great session!' }
-                            ].map((chat, idx) => (
+                            {workshopChats.map((chat, idx) => (
                               <div key={idx} className="text-[11px] leading-relaxed">
                                 <strong className="text-coffee">@{chat.user}: </strong>
                                 <span className="text-muted-foreground">{chat.msg}</span>
@@ -2188,12 +2396,29 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <div className="pt-3 border-t border-border mt-3">
-                          <input
-                            type="text"
-                            placeholder="Say something..."
-                            disabled
-                            className="w-full px-3 py-1.5 border border-border rounded-lg bg-muted text-[10px] text-muted-foreground focus:outline-none"
-                          />
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              if (!workshopChatInput.trim()) return;
+                              setWorkshopChats([...workshopChats, { user: user.name || 'You', msg: workshopChatInput.trim() }]);
+                              setWorkshopChatInput('');
+                            }}
+                            className="flex gap-1.5"
+                          >
+                            <input
+                              type="text"
+                              placeholder="Say something..."
+                              value={workshopChatInput}
+                              onChange={(e) => setWorkshopChatInput(e.target.value)}
+                              className="flex-1 px-3 py-1.5 border border-border rounded-lg bg-background text-[10px] text-foreground focus:outline-none focus:border-coffee/50"
+                            />
+                            <button
+                              type="submit"
+                              className="px-2.5 py-1.5 bg-coffee text-white text-[10px] font-bold rounded-lg hover:opacity-90"
+                            >
+                              Send
+                            </button>
+                          </form>
                         </div>
                       </div>
                     </div>
@@ -2388,124 +2613,206 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'venue-profile' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4">Venue Listing Settings</h3>
-                    <div className="space-y-4">
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Name</label>
-                          <input
-                            type="text"
-                            value={venueName}
-                            onChange={e => setVenueName(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
+                  <div className="max-w-xl mx-auto space-y-4">
+                    {isVenueSaved ? (
+                      <div className="bg-card rounded-2xl border border-border p-6 shadow-warm-lg animate-in fade-in duration-200 text-left">
+                        <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-border">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                            <CheckCircle className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="font-display font-semibold text-lg text-foreground">Venue Profile Saved</h3>
+                            <p className="text-xs text-muted-foreground">Your listed space is live and accepting booking requests.</p>
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Seating Capacity</label>
-                          <input
-                            type="number"
-                            value={venueCapacity}
-                            onChange={e => setVenueCapacity(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
+
+                        <div className="space-y-4">
+                          <div className="aspect-video w-full rounded-xl bg-muted overflow-hidden relative border border-border flex items-center justify-center">
+                            {/* Visual representation of the venue */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 z-10" />
+                            <div className="w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-coffee/20 via-background to-background flex items-center justify-center">
+                              <Coffee className="w-16 h-16 text-coffee/20" />
+                            </div>
+                            <div className="absolute bottom-4 left-4 z-20 text-left">
+                              <span className={cn(
+                                "px-2 py-0.5 text-[9px] font-bold uppercase rounded-full tracking-wider text-white",
+                                venueStatus === 'Listed & Active' ? "bg-emerald-600" : "bg-zinc-600"
+                              )}>
+                                {venueStatus}
+                              </span>
+                              <h4 className="font-display font-bold text-white text-lg mt-1">{venueName}</h4>
+                              <p className="text-white/70 text-xs flex items-center gap-1"><MapPin className="w-3 h-3 text-gold" /> {venueAddress}</p>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 text-xs">
+                            <div className="p-3 bg-muted/40 rounded-xl border border-border">
+                              <span className="text-[10px] text-muted-foreground uppercase font-semibold">Capacity</span>
+                              <p className="font-bold text-foreground mt-0.5">{venueCapacity} guests</p>
+                            </div>
+                            <div className="p-3 bg-muted/40 rounded-xl border border-border">
+                              <span className="text-[10px] text-muted-foreground uppercase font-semibold">Pricing</span>
+                              <p className="font-bold text-foreground mt-0.5">${venuePricingPerHour} / hour</p>
+                            </div>
+                            <div className="p-3 bg-muted/40 rounded-xl border border-border">
+                              <span className="text-[10px] text-muted-foreground uppercase font-semibold">Acoustics</span>
+                              <p className="font-bold text-foreground mt-0.5">{venueAcousticsRating}</p>
+                            </div>
+                            <div className="p-3 bg-muted/40 rounded-xl border border-border">
+                              <span className="text-[10px] text-muted-foreground uppercase font-semibold">Contact Phone</span>
+                              <p className="font-bold text-foreground mt-0.5">{venueContactPhone}</p>
+                            </div>
+                          </div>
+
+                          <div className="p-4 bg-muted/20 border border-border rounded-xl text-xs space-y-2">
+                            <div>
+                              <span className="text-[10px] text-muted-foreground uppercase font-semibold block">Stage Gear</span>
+                              <p className="text-foreground mt-0.5">{venueStageGear || 'No special gear provided'}</p>
+                            </div>
+                            <div className="border-t border-border pt-2">
+                              <span className="text-[10px] text-muted-foreground uppercase font-semibold block">Description</span>
+                              <p className="text-foreground mt-0.5 leading-relaxed">{venueDescription}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2.5 pt-2">
+                            <button
+                              onClick={() => setIsVenueSaved(false)}
+                              className="flex-1 py-2.5 border border-border text-xs font-semibold rounded-xl hover:bg-muted transition-colors text-foreground"
+                            >
+                              Edit Listing Details
+                            </button>
+                            <button
+                              onClick={() => toast.success('Venue profile link copied to clipboard! 📋')}
+                              className="flex-1 py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90 shadow-warm transition-opacity"
+                            >
+                              View Live Listing
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Address</label>
-                          <input
-                            type="text"
-                            value={venueAddress}
-                            onChange={e => setVenueAddress(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Contact Phone</label>
-                          <input
-                            type="text"
-                            value={venueContactPhone}
-                            onChange={e => setVenueContactPhone(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid sm:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Stage Gear</label>
-                          <input
-                            type="text"
-                            value={venueStageGear}
-                            onChange={e => setVenueStageGear(e.target.value)}
-                            placeholder="e.g. Mixer, Mics, PAs"
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Acoustics Rating</label>
-                          <select
-                            value={venueAcousticsRating}
-                            onChange={e => setVenueAcousticsRating(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                    ) : (
+                      <div className="bg-card rounded-2xl border border-border p-5 text-left">
+                        <h3 className="font-semibold text-foreground mb-4">Venue Listing Settings</h3>
+                        <div className="space-y-4">
+                          <div className="grid sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Name</label>
+                              <input
+                                type="text"
+                                value={venueName}
+                                onChange={e => setVenueName(e.target.value)}
+                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">Seating Capacity</label>
+                              <input
+                                type="number"
+                                value={venueCapacity}
+                                onChange={e => setVenueCapacity(e.target.value)}
+                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Address</label>
+                              <input
+                                type="text"
+                                value={venueAddress}
+                                onChange={e => setVenueAddress(e.target.value)}
+                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">Contact Phone</label>
+                              <input
+                                type="text"
+                                value={venueContactPhone}
+                                onChange={e => setVenueContactPhone(e.target.value)}
+                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid sm:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">Stage Gear</label>
+                              <input
+                                type="text"
+                                value={venueStageGear}
+                                onChange={e => setVenueStageGear(e.target.value)}
+                                placeholder="e.g. Mixer, Mics, PAs"
+                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">Acoustics Rating</label>
+                              <select
+                                value={venueAcousticsRating}
+                                onChange={e => setVenueAcousticsRating(e.target.value)}
+                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              >
+                                <option value="Excellent">Excellent</option>
+                                <option value="Good">Good</option>
+                                <option value="Average">Average</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">Pricing ($ / Hr)</label>
+                              <input
+                                type="number"
+                                value={venuePricingPerHour}
+                                onChange={e => setVenuePricingPerHour(e.target.value)}
+                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Description</label>
+                            <textarea
+                              rows={3}
+                              value={venueDescription}
+                              onChange={e => setVenueDescription(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">Listing Status</label>
+                            <select
+                              value={venueStatus}
+                              onChange={e => setVenueStatus(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Listed & Active">Listed & Active</option>
+                              <option value="Temporary Closed">Temporary Closed</option>
+                            </select>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setIsSavingVenueProfile(true);
+                              toast.info('Saving venue profile to database...');
+                              setTimeout(() => {
+                                setIsSavingVenueProfile(false);
+                                setIsVenueSaved(true);
+                                toast.success('Venue listing details saved successfully! 🏛️');
+                              }, 1200);
+                            }}
+                            disabled={isSavingVenueProfile}
+                            className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90 disabled:opacity-55 flex items-center justify-center gap-1.5 transition-opacity"
                           >
-                            <option value="Excellent">Excellent</option>
-                            <option value="Good">Good</option>
-                            <option value="Average">Average</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Pricing ($ / Hr)</label>
-                          <input
-                            type="number"
-                            value={venuePricingPerHour}
-                            onChange={e => setVenuePricingPerHour(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
+                            {isSavingVenueProfile ? (
+                              <>
+                                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Saving Venue Details...
+                              </>
+                            ) : (
+                              'Save Venue Profile'
+                            )}
+                          </button>
                         </div>
                       </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Venue Description</label>
-                        <textarea
-                          rows={3}
-                          value={venueDescription}
-                          onChange={e => setVenueDescription(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Listing Status</label>
-                        <select
-                          value={venueStatus}
-                          onChange={e => setVenueStatus(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        >
-                          <option value="Listed & Active">Listed & Active</option>
-                          <option value="Temporary Closed">Temporary Closed</option>
-                        </select>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setIsSavingVenueProfile(true);
-                          toast.info('Saving venue profile to database...');
-                          setTimeout(() => {
-                            setIsSavingVenueProfile(false);
-                            toast.success('Venue listing details saved successfully! 🏛️');
-                          }, 1200);
-                        }}
-                        disabled={isSavingVenueProfile}
-                        className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90 disabled:opacity-55 flex items-center justify-center gap-1.5 transition-opacity"
-                      >
-                        {isSavingVenueProfile ? (
-                          <>
-                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Saving Venue Details...
-                          </>
-                        ) : (
-                          'Save Venue Profile'
-                        )}
-                      </button>
-                    </div>
+                    )}
                   </div>
                 )}
 
@@ -2766,20 +3073,59 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'audience' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 text-center max-w-md mx-auto">
-                    <TrendingUp className="w-8 h-8 text-coffee mx-auto mb-2" />
-                    <h3 className="font-semibold text-foreground mb-2">Audience Analytics</h3>
-                    <p className="text-xs text-muted-foreground mb-4">Reach local music lovers. Promote your next gig to 3,120 customers in your neighborhood.</p>
-                    <div className="bg-muted/30 border border-border p-3.5 rounded-xl mb-4 text-xs flex justify-between items-center">
-                      <span className="text-muted-foreground">Active Ad Campaigns:</span>
-                      <strong className="text-foreground text-sm">{venueCampaignsCount}</strong>
+                  <div className="space-y-6 max-w-2xl mx-auto text-left">
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+                      <div className="flex-1 space-y-2">
+                        <h3 className="font-display font-semibold text-lg text-foreground flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5 text-coffee" />
+                          Audience Outreach Campaigns
+                        </h3>
+                        <p className="text-xs text-muted-foreground">
+                          Promote venue listings and upcoming live sets directly to verified music fans in Austin. Set radius ranges, daily budgets, and track engagement.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setShowPromoModal(true)}
+                        className="px-5 py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90 transition-all shadow-warm whitespace-nowrap"
+                      >
+                        Launch New Campaign
+                      </button>
                     </div>
-                    <button
-                      onClick={() => setShowPromoModal(true)}
-                      className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
-                    >
-                      Launch Local Promo Ads ($25)
-                    </button>
+
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-4 tracking-wider">Running Ad Campaigns ({venueCampaigns.length})</h4>
+                      <div className="space-y-3">
+                        {venueCampaigns.map(camp => (
+                          <div key={camp.id} className="p-4 border border-border bg-muted/10 hover:bg-muted/20 rounded-xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-foreground text-sm">{camp.title}</p>
+                                <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded-full font-bold text-[9px] uppercase tracking-wider animate-pulse">
+                                  {camp.status}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground">
+                                Featured Event: <strong className="text-foreground">{camp.eventName}</strong> • Radius: {camp.radius} • Goal: {camp.goal}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-6 self-start sm:self-center">
+                              <div className="text-center sm:text-right">
+                                <p className="text-[9px] text-muted-foreground uppercase font-semibold">Impressions</p>
+                                <p className="font-bold text-foreground mt-0.5">{camp.impressions.toLocaleString()}</p>
+                              </div>
+                              <div className="text-center sm:text-right">
+                                <p className="text-[9px] text-muted-foreground uppercase font-semibold">Clicks</p>
+                                <p className="font-bold text-foreground mt-0.5">{camp.clicks.toLocaleString()}</p>
+                              </div>
+                              <div className="text-center sm:text-right">
+                                <p className="text-[9px] text-muted-foreground uppercase font-semibold">Budget</p>
+                                <p className="font-bold text-coffee mt-0.5">${camp.budget}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -2953,6 +3299,21 @@ export default function Dashboard() {
                               setTimeout(() => {
                                 setPromoProcessing(false);
                                 setVenueCampaignsCount(venueCampaignsCount + 1);
+                                const selectedEvent = venueEvents.find(e => e.id === Number(promoEventId));
+                                setVenueCampaigns([
+                                  {
+                                    id: Date.now(),
+                                    title: promoAdTitle.trim(),
+                                    eventName: selectedEvent ? selectedEvent.name : 'Custom Promo',
+                                    radius: `${promoRadius} Miles`,
+                                    goal: promoGoal,
+                                    budget: promoBudget,
+                                    status: 'Running',
+                                    impressions: 0,
+                                    clicks: 0
+                                  },
+                                  ...venueCampaigns
+                                ]);
                                 setPromoAdTitle('');
                                 setPromoAdDesc('');
                                 setShowPromoModal(false);
@@ -3050,118 +3411,159 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'create-event' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto">
-                    <h3 className="font-semibold text-foreground mb-4">Create New Event</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Event Name</label>
-                        <input
-                          type="text"
-                          value={newOrgEventName}
-                          onChange={e => setNewOrgEventName(e.target.value)}
-                          placeholder="e.g. Indie Wave Fest"
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
+                  <div className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto text-left items-start animate-in fade-in duration-200">
+                    {/* Create Event Form Card */}
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                      <h3 className="font-display font-semibold text-lg text-foreground mb-4">Create New Event</h3>
+                      <div className="space-y-4">
                         <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Event Genre / Category</label>
-                          <select
-                            value={newOrgEventGenre}
-                            onChange={e => setNewOrgEventGenre(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          >
-                            <option value="Acoustic Lounge">Acoustic Lounge</option>
-                            <option value="Live Concert">Live Concert</option>
-                            <option value="Festival">Festival</option>
-                            <option value="Open Mic">Open Mic</option>
-                            <option value="Panel Discussion">Panel Discussion</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Ticket Capacity</label>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Event Name</label>
                           <input
-                            type="number"
-                            value={newOrgEventCapacity}
-                            onChange={e => setNewOrgEventCapacity(e.target.value)}
+                            type="text"
+                            value={newOrgEventName}
+                            onChange={e => setNewOrgEventName(e.target.value)}
+                            placeholder="e.g. Indie Wave Fest"
                             className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
                           />
                         </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">Event Genre / Category</label>
+                            <select
+                              value={newOrgEventGenre}
+                              onChange={e => setNewOrgEventGenre(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Acoustic Lounge">Acoustic Lounge</option>
+                              <option value="Live Concert">Live Concert</option>
+                              <option value="Festival">Festival</option>
+                              <option value="Open Mic">Open Mic</option>
+                              <option value="Panel Discussion">Panel Discussion</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">Ticket Capacity</label>
+                            <input
+                              type="number"
+                              value={newOrgEventCapacity}
+                              onChange={e => setNewOrgEventCapacity(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">Date</label>
+                            <input
+                              type="date"
+                              value={newOrgEventDate}
+                              onChange={e => setNewOrgEventDate(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">Start Time</label>
+                            <input
+                              type="time"
+                              value={newOrgEventTime}
+                              onChange={e => setNewOrgEventTime(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">Ticket Price ($ USD)</label>
+                            <input
+                              type="number"
+                              value={newOrgEventPrice}
+                              onChange={e => setNewOrgEventPrice(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                        </div>
                         <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Date</label>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Venue / Performance Location</label>
                           <input
-                            type="date"
-                            value={newOrgEventDate}
-                            onChange={e => setNewOrgEventDate(e.target.value)}
+                            type="text"
+                            value={newOrgEventLocation}
+                            onChange={e => setNewOrgEventLocation(e.target.value)}
+                            placeholder="e.g. Main Concert Hall, Chords Cafe Garden Stage"
                             className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Start Time</label>
-                          <input
-                            type="time"
-                            value={newOrgEventTime}
-                            onChange={e => setNewOrgEventTime(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">Event Description</label>
+                          <textarea
+                            rows={2}
+                            value={newOrgEventDesc}
+                            onChange={e => setNewOrgEventDesc(e.target.value)}
+                            placeholder="Describe the lineup, schedule, attractions, food, or general info..."
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
                           />
                         </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-foreground mb-1.5">Ticket Price ($ USD)</label>
-                          <input
-                            type="number"
-                            value={newOrgEventPrice}
-                            onChange={e => setNewOrgEventPrice(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Venue / Performance Location</label>
-                        <input
-                          type="text"
-                          value={newOrgEventLocation}
-                          onChange={e => setNewOrgEventLocation(e.target.value)}
-                          placeholder="e.g. Main Concert Hall, Chords Cafe Garden Stage"
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">Event Description</label>
-                        <textarea
-                          rows={2}
-                          value={newOrgEventDesc}
-                          onChange={e => setNewOrgEventDesc(e.target.value)}
-                          placeholder="Describe the lineup, schedule, attractions, food, or general info..."
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
-                        />
-                      </div>
-                      <button
-                        onClick={() => {
-                          if (!newOrgEventName.trim()) {
-                            toast.error('Please enter an event name.');
-                            return;
-                          }
-                          setOrgEvents([
-                            ...orgEvents,
-                            {
-                              id: Date.now(),
-                              name: newOrgEventName,
-                              date: newOrgEventDate,
-                              ticketsSold: 0,
-                              capacity: parseInt(newOrgEventCapacity),
-                              price: `$${newOrgEventPrice}`
+                        <button
+                          onClick={() => {
+                            if (!newOrgEventName.trim()) {
+                              toast.error('Please enter an event name.');
+                              return;
                             }
-                          ]);
-                          setNewOrgEventName('');
-                          setNewOrgEventDesc('');
-                          toast.success('Event listing initialized! Ticket sales launched.');
-                        }}
-                        className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
-                      >
-                        Launch Ticket Sales
-                      </button>
+                            setOrgEvents([
+                              ...orgEvents,
+                              {
+                                id: Date.now(),
+                                name: newOrgEventName.trim(),
+                                date: newOrgEventDate,
+                                ticketsSold: 0,
+                                capacity: parseInt(newOrgEventCapacity) || 100,
+                                price: `$${newOrgEventPrice}`
+                              }
+                            ]);
+                            setNewOrgEventName('');
+                            setNewOrgEventDesc('');
+                            toast.success('Event listing initialized! Ticket sales launched.');
+                          }}
+                          className="w-full py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90 shadow-warm"
+                        >
+                          Launch Ticket Sales
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Running Programs & Ticket Sales History Card */}
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
+                      <h3 className="font-display font-semibold text-lg text-foreground">Running Programs & Ticket Sales</h3>
+                      <p className="text-xs text-muted-foreground">Monitor real-time attendee sign-ups, ticket quotas, and schedule dates for active concert events.</p>
+                      
+                      <div className="space-y-3.5">
+                        {orgEvents.map(evt => {
+                          const percent = Math.min(100, Math.round((evt.ticketsSold / evt.capacity) * 100)) || 0;
+                          return (
+                            <div key={evt.id} className="p-4 border border-border bg-muted/15 rounded-xl text-xs space-y-3">
+                              <div className="flex justify-between items-start gap-2">
+                                <div>
+                                  <p className="font-semibold text-foreground text-sm">{evt.name}</p>
+                                  <p className="text-[10px] text-muted-foreground mt-0.5">Date: {evt.date} • Price: {evt.price}</p>
+                                </div>
+                                <span className={cn(
+                                  "px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider",
+                                  percent >= 100 ? "bg-red-500/10 text-red-600" : "bg-emerald-500/10 text-emerald-600 animate-pulse"
+                                )}>
+                                  {percent >= 100 ? 'Sold Out' : 'Active'}
+                                </span>
+                              </div>
+
+                              <div className="space-y-1">
+                                <div className="flex justify-between text-[10px] text-muted-foreground">
+                                  <span>Tickets Sold</span>
+                                  <span className="font-semibold text-foreground">{evt.ticketsSold} / {evt.capacity} ({percent}%)</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-muted border border-border rounded-full overflow-hidden">
+                                  <div className="h-full bg-coffee rounded-full" style={{ width: `${percent}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -3224,79 +3626,6 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {activeTab === 'tickets' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
-                    <div className="text-center mb-2">
-                      <DollarSign className="w-8 h-8 text-coffee mx-auto mb-2" />
-                      <h3 className="font-semibold text-foreground mb-2">Manage Ticket Sales Tiers</h3>
-                      <p className="text-xs text-muted-foreground">Configure pricing and sales cap volumes for early bird, general admission, and VIP levels.</p>
-                    </div>
-
-                    <div className="space-y-3.5 pt-2 text-xs">
-                      <div>
-                        <label className="block text-[10px] font-bold text-foreground mb-1">Select Event</label>
-                        <select
-                          value={ticketTierEventId}
-                          onChange={e => setTicketTierEventId(e.target.value)}
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        >
-                          {orgEvents.map(evt => (
-                            <option key={evt.id} value={evt.id}>{evt.name}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="border border-border p-3 rounded-xl bg-muted/10 space-y-2">
-                          <strong className="text-[10px] text-coffee uppercase block">Early Bird</strong>
-                          <div>
-                            <label className="block text-[9px] text-muted-foreground mb-0.5">Price ($)</label>
-                            <input
-                              type="number"
-                              value={ticketTierEarlyPrice}
-                              onChange={e => setTicketTierEarlyPrice(e.target.value)}
-                              className="w-full px-2 py-1.5 border border-border rounded bg-card text-xs"
-                            />
-                          </div>
-                        </div>
-                        <div className="border border-border p-3 rounded-xl bg-muted/10 space-y-2">
-                          <strong className="text-[10px] text-coffee uppercase block">Gen Admission</strong>
-                          <div>
-                            <label className="block text-[9px] text-muted-foreground mb-0.5">Price ($)</label>
-                            <input
-                              type="number"
-                              value={ticketTierGAPrice}
-                              onChange={e => setTicketTierGAPrice(e.target.value)}
-                              className="w-full px-2 py-1.5 border border-border rounded bg-card text-xs"
-                            />
-                          </div>
-                        </div>
-                        <div className="border border-border p-3 rounded-xl bg-muted/10 space-y-2">
-                          <strong className="text-[10px] text-coffee uppercase block">VIP Pass</strong>
-                          <div>
-                            <label className="block text-[9px] text-muted-foreground mb-0.5">Price ($)</label>
-                            <input
-                              type="number"
-                              value={ticketTierVIPPrice}
-                              onChange={e => setTicketTierVIPPrice(e.target.value)}
-                              className="w-full px-2 py-1.5 border border-border rounded bg-card text-xs"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => {
-                          const ev = orgEvents.find(e => e.id.toString() === ticketTierEventId);
-                          toast.success(`Ticket tier pricing successfully configured for "${ev ? ev.name : 'your event'}"! 🎫`);
-                        }}
-                        className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl hover:opacity-90"
-                      >
-                        Save Ticket Pricing Configuration
-                      </button>
-                    </div>
-                  </div>
-                )}
 
                 {activeTab === 'attendees' && (
                   <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-6">
@@ -3694,63 +4023,97 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'discover-talent' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-semibold text-foreground">Top Performing Artists</h3>
-                      <button
-                        onClick={() => {
-                          setIsRefreshingTalent(true);
-                          toast.info('Querying talent index stats...');
-                          setTimeout(() => {
-                            const shuffled = [...talentDirectory];
-                            shuffled.reverse();
-                            if (shuffled.length === 3) {
-                              shuffled.push({
-                                name: 'Clara Oswald',
-                                genre: 'Opera / Acoustic Cello',
-                                followers: '19K',
-                                rate: '$320/Gig',
-                                avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80'
-                              });
-                            }
-                            setTalentDirectory(shuffled);
-                            setIsRefreshingTalent(false);
-                            toast.success('Artist catalog refreshed! 4 verified matches found. 🎼');
-                          }, 1000);
-                        }}
-                        disabled={isRefreshingTalent}
-                        className="px-3 py-1.5 bg-coffee text-white font-semibold rounded-lg text-xs hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5 animate-in fade-in"
-                      >
-                        {isRefreshingTalent ? (
-                          <>
-                            <span className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-                            Refreshed Catalog
-                          </>
-                        ) : (
-                          'Refresh Catalog'
-                        )}
-                      </button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Browse verified independent musicians with target branding audience matches.</p>
+                  <div className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto text-left items-start animate-in fade-in duration-200">
+                    {/* Verified Artists Catalog Card */}
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="font-display font-semibold text-lg text-foreground">Top Performing Artists</h3>
+                        <button
+                          onClick={() => {
+                            setIsRefreshingTalent(true);
+                            toast.info('Querying talent index stats...');
+                            setTimeout(() => {
+                              const shuffled = [...talentDirectory];
+                              shuffled.reverse();
+                              if (shuffled.length === 3) {
+                                shuffled.push({
+                                  name: 'Clara Oswald',
+                                  genre: 'Opera / Acoustic Cello',
+                                  followers: '19K',
+                                  rate: '$320/Gig',
+                                  avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80'
+                                });
+                              }
+                              setTalentDirectory(shuffled);
+                              setIsRefreshingTalent(false);
+                              toast.success('Artist catalog refreshed! 4 verified matches found. 🎼');
+                            }, 1000);
+                          }}
+                          disabled={isRefreshingTalent}
+                          className="px-3 py-1.5 bg-coffee text-white font-semibold rounded-lg text-xs hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5 transition-opacity"
+                        >
+                          {isRefreshingTalent ? (
+                            <>
+                              <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Refreshed Catalog
+                            </>
+                          ) : (
+                            'Refresh Catalog'
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-4">Browse verified independent musicians with target branding audience matches.</p>
 
-                    <div className="space-y-3 pt-2">
-                      {talentDirectory.map(artist => (
-                        <div key={artist.name} className="flex items-center justify-between p-3 border border-border rounded-xl bg-muted/15 text-xs">
-                          <div className="flex items-center gap-3">
-                            <img src={artist.avatar} alt={artist.name} className="w-10 h-10 rounded-full object-cover border border-border" />
-                            <div>
-                              <p className="font-semibold text-foreground">{artist.name}</p>
-                              <p className="text-[10px] text-muted-foreground mt-0.5">{artist.genre} • Followers: {artist.followers} • Rate: {artist.rate}</p>
+                      <div className="space-y-3">
+                        {talentDirectory.map(artist => (
+                          <div key={artist.name} className="flex items-center justify-between p-3 border border-border rounded-xl bg-muted/15 text-xs">
+                            <div className="flex items-center gap-3">
+                              <img src={artist.avatar} alt={artist.name} className="w-10 h-10 rounded-full object-cover border border-border" />
+                              <div>
+                                <p className="font-semibold text-foreground">{artist.name}</p>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">{artist.genre} • Followers: {artist.followers} • Rate: {artist.rate}</p>
+                              </div>
                             </div>
+                            <button
+                              onClick={() => setInquiringArtist(artist)}
+                              className="px-2.5 py-1.5 bg-coffee/10 text-coffee hover:bg-coffee/20 rounded-lg text-[10px] font-semibold"
+                            >
+                              Inquire Sponsorship
+                            </button>
                           </div>
-                          <button
-                            onClick={() => toast.success(`Talent sponsorship inquiry sent to ${artist.name}! 🚀`)}
-                            className="px-2.5 py-1.5 bg-coffee/10 text-coffee hover:bg-coffee/20 rounded-lg text-[10px] font-semibold"
-                          >
-                            Inquire Sponsorship
-                          </button>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Sent Sponsorship Requests & History Card */}
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
+                      <h3 className="font-display font-semibold text-lg text-foreground">Sponsorship Request History</h3>
+                      <p className="text-xs text-muted-foreground">Monitor pending proposal payouts, accepted partnerships, and response history logs.</p>
+
+                      <div className="space-y-3.5">
+                        {sponsorshipInquiries.map(inq => (
+                          <div key={inq.id} className="p-4 border border-border bg-muted/15 rounded-xl text-xs space-y-3">
+                            <div className="flex justify-between items-start gap-2">
+                              <div>
+                                <p className="font-semibold text-foreground text-sm">@{inq.artistName}</p>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">Placement: {inq.placement} • Budget: ${inq.budget}</p>
+                              </div>
+                              <span className={cn(
+                                "px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider",
+                                inq.status === 'Accepted' ? "bg-emerald-500/10 text-emerald-600" :
+                                inq.status === 'Declined' ? "bg-red-500/10 text-red-600" :
+                                "bg-amber-500/10 text-amber-600 animate-pulse"
+                              )}>
+                                {inq.status}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground border-t border-border/50 pt-2 flex justify-between items-center">
+                              <span>Sent date: {inq.date}</span>
+                              <span onClick={() => toast.info(`Proposal details: $${inq.budget} offer for ${inq.placement}. Status is currently ${inq.status}.`)} className="text-[9.5px] text-coffee hover:underline cursor-pointer font-semibold">View Details</span>
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -3800,133 +4163,169 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === 'campaigns' && (
-                  <div className="bg-card rounded-2xl border border-border p-5 max-w-xl mx-auto space-y-4">
-                    <h3 className="font-semibold text-foreground">Launch Sponsor Campaign</h3>
-                    <div className="space-y-3.5 text-xs">
-                      <div>
-                        <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Name</label>
-                        <input
-                          type="text"
-                          value={newCampaignName}
-                          onChange={e => setNewCampaignName(e.target.value)}
-                          placeholder="e.g. Free Coffee Coupon Ads"
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                        />
-                      </div>
-
-                      <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto text-left items-start animate-in fade-in duration-200">
+                    {/* Launch Campaign Form */}
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                      <h3 className="font-display font-semibold text-lg text-foreground mb-4">Launch Sponsor Campaign</h3>
+                      <div className="space-y-3.5 text-xs">
                         <div>
-                          <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Goal</label>
-                          <select
-                            value={campaignGoal}
-                            onChange={e => setCampaignGoal(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          >
-                            <option value="Brand Awareness">Brand Awareness</option>
-                            <option value="Promo Code Conversions">Promo Code Conversions</option>
-                            <option value="Leads Collection">Leads Collection</option>
-                            <option value="Event RSVP Boost">Event RSVP Boost</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-bold text-foreground mb-1">Target Audience</label>
-                          <select
-                            value={campaignAudience}
-                            onChange={e => setCampaignAudience(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          >
-                            <option value="All Patrons">All Patrons</option>
-                            <option value="Musicians Only">Musicians Only</option>
-                            <option value="Venue Owners Only">Venue Owners Only</option>
-                            <option value="Local Fans Only">Local Fans Only</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="grid sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[10px] font-bold text-foreground mb-1">Promo Discount / Voucher Code</label>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Name</label>
                           <input
                             type="text"
-                            value={campaignPromoCode}
-                            onChange={e => setCampaignPromoCode(e.target.value)}
-                            placeholder="e.g. COFFEEVIBE20"
+                            value={newCampaignName}
+                            onChange={e => setNewCampaignName(e.target.value)}
+                            placeholder="e.g. Free Coffee Coupon Ads"
                             className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
                           />
                         </div>
+
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Goal</label>
+                            <select
+                              value={campaignGoal}
+                              onChange={e => setCampaignGoal(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="Brand Awareness">Brand Awareness</option>
+                              <option value="Promo Code Conversions">Promo Code Conversions</option>
+                              <option value="Leads Collection">Leads Collection</option>
+                              <option value="Event RSVP Boost">Event RSVP Boost</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Target Audience</label>
+                            <select
+                              value={campaignAudience}
+                              onChange={e => setCampaignAudience(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            >
+                              <option value="All Patrons">All Patrons</option>
+                              <option value="Musicians Only">Musicians Only</option>
+                              <option value="Venue Owners Only">Venue Owners Only</option>
+                              <option value="Local Fans Only">Local Fans Only</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Promo Discount / Voucher Code</label>
+                            <input
+                              type="text"
+                              value={campaignPromoCode}
+                              onChange={e => setCampaignPromoCode(e.target.value)}
+                              placeholder="e.g. COFFEEVIBE20"
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Budget ($ USD)</label>
+                            <input
+                              type="number"
+                              value={campaignBudget}
+                              onChange={e => setCampaignBudget(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            />
+                          </div>
+                        </div>
+
                         <div>
-                          <label className="block text-[10px] font-bold text-foreground mb-1">Campaign Budget ($ USD)</label>
-                          <input
-                            type="number"
-                            value={campaignBudget}
-                            onChange={e => setCampaignBudget(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Select Marketing Channels</label>
+                          <div className="grid grid-cols-2 gap-2 mt-1">
+                            {['In-App Banner Ads', 'Coffee Sleeves Logo', 'Email Newsletters', 'Live Stream Bumpers'].map(channel => (
+                              <label key={channel} className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground">
+                                <input
+                                  type="checkbox"
+                                  checked={campaignChannels.includes(channel)}
+                                  onChange={e => {
+                                    if (e.target.checked) {
+                                      setCampaignChannels([...campaignChannels, channel]);
+                                    } else {
+                                      setCampaignChannels(campaignChannels.filter(c => c !== channel));
+                                    }
+                                  }}
+                                  className="rounded border-border text-coffee focus:ring-coffee/40"
+                                />
+                                <span>{channel}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-foreground mb-1">Ad Copy Pitch Description</label>
+                          <textarea
+                            rows={2}
+                            value={campaignAdCopy}
+                            onChange={e => setCampaignAdCopy(e.target.value)}
+                            placeholder="Describe the promotion deal details to target listeners..."
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
                           />
                         </div>
-                      </div>
 
-                      <div>
-                        <label className="block text-[10px] font-bold text-foreground mb-1">Select Marketing Channels</label>
-                        <div className="grid grid-cols-2 gap-2 mt-1">
-                          {['In-App Banner Ads', 'Coffee Sleeves Logo', 'Email Newsletters', 'Live Stream Bumpers'].map(channel => (
-                            <label key={channel} className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground">
-                              <input
-                                type="checkbox"
-                                checked={campaignChannels.includes(channel)}
-                                onChange={e => {
-                                  if (e.target.checked) {
-                                    setCampaignChannels([...campaignChannels, channel]);
-                                  } else {
-                                    setCampaignChannels(campaignChannels.filter(c => c !== channel));
-                                  }
-                                }}
-                                className="rounded border-border text-coffee focus:ring-coffee/40"
-                              />
-                              <span>{channel}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-bold text-foreground mb-1">Ad Copy Pitch Description</label>
-                        <textarea
-                          rows={2}
-                          value={campaignAdCopy}
-                          onChange={e => setCampaignAdCopy(e.target.value)}
-                          placeholder="Describe the promotion deal details to target listeners..."
-                          className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
-                        />
-                      </div>
-
-                      <button
-                        onClick={() => {
-                          if (!newCampaignName.trim()) {
-                            toast.error('Please enter a campaign name.');
-                            return;
-                          }
-                          const bud = parseFloat(campaignBudget) || 100;
-                          const estImpressions = `${Math.round(bud * 45)}K`;
-                          const estClicks = Math.round(bud * 1.5);
-                          const ctrPct = '3.3%';
-                          setSponsorCampaigns([
-                            ...sponsorCampaigns,
-                            {
-                              id: Date.now(),
-                              name: newCampaignName,
-                              impressions: estImpressions,
-                              clicks: estClicks,
-                              ctr: ctrPct
+                        <button
+                          onClick={() => {
+                            if (!newCampaignName.trim()) {
+                              toast.error('Please enter a campaign name.');
+                              return;
                             }
-                          ]);
-                          setNewCampaignName('');
-                          setCampaignAdCopy('');
-                          toast.success('Sponsor campaign launched successfully! Real-time metrics generated.');
-                        }}
-                        className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
-                      >
-                        Publish Campaign
-                      </button>
+                            const bud = parseFloat(campaignBudget) || 100;
+                            const estImpressions = `${Math.round(bud * 45)}K`;
+                            const estClicks = Math.round(bud * 1.5);
+                            const ctrPct = '3.3%';
+                            setSponsorCampaigns([
+                              ...sponsorCampaigns,
+                              {
+                                id: Date.now(),
+                                name: newCampaignName.trim(),
+                                impressions: estImpressions,
+                                clicks: estClicks,
+                                ctr: ctrPct
+                              }
+                            ]);
+                            setNewCampaignName('');
+                            setCampaignAdCopy('');
+                            toast.success('Sponsor campaign launched successfully! Real-time metrics generated.');
+                          }}
+                          className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90 shadow-warm transition-opacity"
+                        >
+                          Pay & Launch Campaign
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Running Sponsor Campaigns & Results */}
+                    <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
+                      <h3 className="font-display font-semibold text-lg text-foreground">Running Campaigns & Results</h3>
+                      <p className="text-xs text-muted-foreground">Monitor real-time branding results, impressions count, click-through rates, and leads conversion.</p>
+                      
+                      <div className="space-y-3.5">
+                        {sponsorCampaigns.map(camp => (
+                          <div key={camp.id} className="p-4 border border-border bg-muted/15 rounded-xl text-xs space-y-3">
+                            <div className="flex justify-between items-start gap-2">
+                              <div>
+                                <p className="font-semibold text-foreground text-sm">{camp.name}</p>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">Status: <strong className="text-emerald-600 font-bold uppercase animate-pulse">Active</strong></p>
+                              </div>
+                              <span className="px-2 py-0.5 bg-coffee/10 text-coffee rounded text-[9px] font-bold">
+                                {camp.ctr} CTR
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 text-center border-t border-border/50 pt-2.5">
+                              <div>
+                                <p className="text-[9px] uppercase text-muted-foreground font-semibold">Impressions</p>
+                                <p className="font-bold text-foreground mt-0.5">{camp.impressions}</p>
+                              </div>
+                              <div>
+                                <p className="text-[9px] uppercase text-muted-foreground font-semibold">Clicks</p>
+                                <p className="font-bold text-foreground mt-0.5">{camp.clicks.toLocaleString()}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -3990,6 +4389,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
+
+
 
                 {activeTab === 'metrics' && (
                   <div className="grid lg:grid-cols-3 gap-6">
@@ -4478,6 +4879,159 @@ export default function Dashboard() {
                             className="px-4 py-2.5 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted transition-colors"
                           >
                             Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {inquiringArtist && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold flex items-center gap-1.5">
+                          <Mail className="w-4 h-4 text-coffee" />
+                          Inquire Sponsorship: {inquiringArtist.name}
+                        </h4>
+                        <button onClick={() => setInquiringArtist(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      
+                      <div className="space-y-3.5 text-xs">
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Target Placement</label>
+                          <select
+                            value={inquiryPlacement}
+                            onChange={e => setInquiryPlacement(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Shoutout & Logo on Banner">Shoutout & Logo on Banner</option>
+                            <option value="Dedicated Merch Placement">Dedicated Merch Placement</option>
+                            <option value="Audio Intro Sponsor">Audio Intro Sponsor</option>
+                            <option value="Social Media Endorsement">Social Media Endorsement</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Offer Budget ($ USD)</label>
+                          <input
+                            type="number"
+                            value={inquiryBudget}
+                            onChange={e => setInquiryBudget(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Intro Message</label>
+                          <textarea
+                            rows={3}
+                            value={inquiryMessage}
+                            onChange={e => setInquiryMessage(e.target.value)}
+                            placeholder="Tell the artist why you would love to collaborate..."
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                          />
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            setSponsorshipInquiries([
+                              {
+                                id: Date.now(),
+                                artistName: inquiringArtist.name,
+                                placement: inquiryPlacement,
+                                budget: inquiryBudget,
+                                status: 'Pending',
+                                date: 'Today'
+                              },
+                              ...sponsorshipInquiries
+                            ]);
+                            toast.success(`Inquiry sent to ${inquiringArtist.name}! Offer of $${inquiryBudget} is pending. 🚀`);
+                            setInquiringArtist(null);
+                            setInquiryMessage('');
+                          }}
+                          className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl hover:opacity-90 shadow-warm animate-in"
+                        >
+                          Send Inquiry Offer
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {viewingCourseDetails && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold flex items-center gap-1.5">
+                          <BookOpen className="w-4 h-4 text-coffee" />
+                          {viewingCourseDetails.isWorkshop ? 'Workshop Masterclass' : 'Course Details'}
+                        </h4>
+                        <button onClick={() => setViewingCourseDetails(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+
+                      <div className="space-y-4 text-xs">
+                        <div>
+                          <p className="font-semibold text-foreground text-base leading-snug">{viewingCourseDetails.title}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">Instructor: {viewingCourseDetails.instructor}</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 border-y border-border/60 py-3 text-left">
+                          <div>
+                            <span className="block text-[9px] uppercase font-bold text-muted-foreground">Class Schedule</span>
+                            <span className="font-medium text-foreground text-[10px] leading-tight block mt-0.5">{viewingCourseDetails.schedule}</span>
+                          </div>
+                          <div>
+                            <span className="block text-[9px] uppercase font-bold text-muted-foreground">Class Level / Duration</span>
+                            <span className="font-medium text-foreground text-[10px] leading-tight block mt-0.5">{viewingCourseDetails.level} ({viewingCourseDetails.duration})</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span className="block text-[9px] uppercase font-bold text-muted-foreground mb-1">Syllabus Overview</span>
+                          <p className="text-muted-foreground leading-relaxed text-[11px]">{viewingCourseDetails.syllabus}</p>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          <button
+                            onClick={() => {
+                              if (viewingCourseDetails.isWorkshop) {
+                                const isRegistered = joinedWorkshops.includes(viewingCourseDetails.id);
+                                if (isRegistered) {
+                                  toast.info('You are already registered for this session.');
+                                  return;
+                                }
+                                if (viewingCourseDetails.seatsLeft <= 0) {
+                                  toast.error('This session is sold out.');
+                                  return;
+                                }
+                                setJoinedWorkshops([...joinedWorkshops, viewingCourseDetails.id]);
+                                setTeacherWorkshops(teacherWorkshops.map(w => w.id === viewingCourseDetails.id ? { ...w, seatsLeft: w.seatsLeft - 1 } : w));
+                                toast.success(`Successfully registered for "${viewingCourseDetails.title}"! 🎟️`);
+                              } else {
+                                const isEnrolled = joinedCourses.includes(viewingCourseDetails.id);
+                                if (isEnrolled) {
+                                  toast.info('You are already enrolled in this course.');
+                                  return;
+                                }
+                                setJoinedCourses([...joinedCourses, viewingCourseDetails.id]);
+                                setTeacherCourses(teacherCourses.map(c => c.id === viewingCourseDetails.id ? { ...c, students: c.students + 1 } : c));
+                                toast.success(`Successfully enrolled in "${viewingCourseDetails.title}"! 🎒`);
+                              }
+                              setViewingCourseDetails(null);
+                            }}
+                            className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1 hover:opacity-90 transition-opacity"
+                          >
+                            {viewingCourseDetails.isWorkshop 
+                              ? (joinedWorkshops.includes(viewingCourseDetails.id) ? 'Registered' : `Join Workshop • ${viewingCourseDetails.price}`)
+                              : (joinedCourses.includes(viewingCourseDetails.id) ? 'Enrolled' : `Enroll Now • ${viewingCourseDetails.price}`)
+                            }
+                          </button>
+                          <button
+                            onClick={() => setViewingCourseDetails(null)}
+                            className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                          >
+                            Close Info
                           </button>
                         </div>
                       </div>
