@@ -101,7 +101,7 @@ export default function Dashboard() {
   // Notifications State
   const [notificationsList, setNotificationsList] = useState([
     { id: 1, text: "Alex Rivera uploaded a new track: 'Midnight Jazz'!", read: false, time: '2h ago' },
-    { id: 2, text: "Your ticket for Open Mic Night at The Grind Café is confirmed! 🎫", read: false, time: '1d ago' },
+    { id: 2, text: "Your ticket for Open Mic Night at The Grind Café is confirmed! ", read: false, time: '1d ago' },
     { id: 3, text: "New discussion started in Acoustic Fans: 'Who is going?'", read: true, time: '2d ago' },
   ]);
   const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
@@ -698,7 +698,7 @@ export default function Dashboard() {
                             <div className="space-y-2">
                               {tipsSent.map((tip, idx) => (
                                 <div key={idx} className="flex justify-between items-center text-xs bg-muted/30 p-2 rounded-lg border border-border">
-                                  <span>☕ Sent coffee to <strong>{tip.artist}</strong></span>
+                                  <span> Sent coffee to <strong>{tip.artist}</strong></span>
                                   <strong className="text-emerald-600 font-semibold">{`$${tip.amount}`}</strong>
                                 </div>
                               ))}
@@ -852,7 +852,7 @@ export default function Dashboard() {
                                         }
                                         setJoinedCourses([...joinedCourses, course.id]);
                                         setTeacherCourses(teacherCourses.map(c => c.id === course.id ? { ...c, students: c.students + 1 } : c));
-                                        toast.success(`Successfully enrolled in "${course.title}"! 🎒`);
+                                        toast.success(`Successfully enrolled in "${course.title}"! `);
                                       }}
                                       className={cn(
                                         "px-2.5 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap transition-colors",
@@ -916,7 +916,7 @@ export default function Dashboard() {
                                         }
                                         setJoinedWorkshops([...joinedWorkshops, ws.id]);
                                         setTeacherWorkshops(teacherWorkshops.map(w => w.id === ws.id ? { ...w, seatsLeft: w.seatsLeft - 1 } : w));
-                                        toast.success(`Successfully registered for "${ws.title}"! 🎟️`);
+                                        toast.success(`Successfully registered for "${ws.title}"! `);
                                       }}
                                       className={cn(
                                         "px-2.5 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap transition-colors",
@@ -1026,7 +1026,7 @@ export default function Dashboard() {
                     {bookingEvent && (
                       <div className="bg-card border border-border rounded-2xl p-6 shadow-warm">
                         <div className="flex justify-between items-center mb-4">
-                          <h4 className="font-display font-semibold text-lg text-foreground">🎟️ Reserve Tickets for {bookingEvent.title}</h4>
+                          <h4 className="font-display font-semibold text-lg text-foreground"> Reserve Tickets for {bookingEvent.title}</h4>
                           <button onClick={() => setBookingEvent(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
                         </div>
                         <form
@@ -1038,7 +1038,7 @@ export default function Dashboard() {
                             }
                             setRegisteredEvents([...registeredEvents, bookingEvent.id]);
                             setBookingEvent(null);
-                            toast.success(`Reserved ${ticketQty} ticket(s) for ${bookingEvent.title} successfully! 🎫`);
+                            toast.success(`Reserved ${ticketQty} ticket(s) for ${bookingEvent.title} successfully! `);
                           }}
                           className="space-y-4"
                         >
@@ -1094,23 +1094,23 @@ export default function Dashboard() {
                     {viewingEvent && (
                       <div className="bg-card border border-border rounded-2xl p-6 shadow-warm">
                         <div className="flex justify-between items-center mb-4">
-                          <h4 className="font-display font-semibold text-lg text-foreground">📋 Event Details: {viewingEvent.title}</h4>
+                          <h4 className="font-display font-semibold text-lg text-foreground"> Event Details: {viewingEvent.title}</h4>
                           <button onClick={() => setViewingEvent(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
                         </div>
                         <div className="space-y-3 text-xs">
                           <p className="text-muted-foreground leading-relaxed">{viewingEvent.desc}</p>
                           <div className="grid sm:grid-cols-2 gap-3 pt-2">
                             <div>
-                              <strong className="text-foreground">📍 Venue & Address:</strong>
+                              <strong className="text-foreground"> Venue & Address:</strong>
                               <p className="text-muted-foreground mt-0.5">{viewingEvent.venue} ({viewingEvent.address})</p>
                             </div>
                             <div>
-                              <strong className="text-foreground">⏰ Timing & Cost:</strong>
+                              <strong className="text-foreground"> Timing & Cost:</strong>
                               <p className="text-muted-foreground mt-0.5">{viewingEvent.date} · {viewingEvent.time} · {viewingEvent.price}</p>
                             </div>
                           </div>
                           <div className="pt-2">
-                            <strong className="text-foreground">🎤 Lineup:</strong>
+                            <strong className="text-foreground"> Lineup:</strong>
                             <p className="text-muted-foreground mt-0.5">{viewingEvent.lineup}</p>
                           </div>
                           <button onClick={() => setViewingEvent(null)} className="mt-4 px-4 py-2 border border-border text-foreground hover:bg-muted rounded-xl transition-all">
@@ -1179,7 +1179,7 @@ export default function Dashboard() {
 
                       {/* Chat Board */}
                       <div className="lg:col-span-2 bg-card rounded-2xl border border-border p-5 flex flex-col h-[400px]">
-                        <h3 className="font-semibold text-foreground mb-3">💬 {selectedCommunity} Chat</h3>
+                        <h3 className="font-semibold text-foreground mb-3"> {selectedCommunity} Chat</h3>
                         <div className="flex-1 overflow-y-auto border border-border rounded-xl p-3 bg-muted/20 space-y-3 mb-3">
                           {communityPosts
                             .filter(p => p.community === selectedCommunity)
@@ -1217,7 +1217,7 @@ export default function Dashboard() {
                     {joiningCommunity && (
                       <div className="bg-card border border-border rounded-2xl p-6 shadow-warm">
                         <div className="flex justify-between items-center mb-4">
-                          <h4 className="font-display font-semibold text-lg text-foreground">💬 Community Hub: {joiningCommunity.name}</h4>
+                          <h4 className="font-display font-semibold text-lg text-foreground"> Community Hub: {joiningCommunity.name}</h4>
                           <button onClick={() => setJoiningCommunity(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
                         </div>
                         <div className="space-y-4 text-xs">
@@ -1259,7 +1259,7 @@ export default function Dashboard() {
                                   onClick={() => {
                                     setJoinedCommunities([...joinedCommunities, joiningCommunity.name]);
                                     setJoiningCommunity(null);
-                                    toast.success(`Welcome to the ${joiningCommunity.name} community! 🎉`);
+                                    toast.success(`Welcome to the ${joiningCommunity.name} community! `);
                                   }}
                                   className="px-4 py-2.5 bg-coffee text-white font-semibold rounded-xl hover:opacity-90 transition-colors"
                                 >
@@ -1466,7 +1466,7 @@ export default function Dashboard() {
                           setPortfolioTracks([...portfolioTracks, { id: Date.now(), title: newTrackTitle, plays: 0, likes: 0, status: 'Released' }]);
                           setNewTrackTitle('');
                           setAudioFile(null);
-                          toast.success('Track and audio file published to your portfolio! 🎧');
+                          toast.success('Track and audio file published to your portfolio! ');
                         }}
                         className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
                       >
@@ -1479,7 +1479,7 @@ export default function Dashboard() {
                       <div className="space-y-2">
                         {portfolioTracks.map(track => (
                           <div key={track.id} className="flex justify-between items-center p-2.5 border border-border rounded-xl bg-muted/15 text-xs">
-                            <span className="font-medium text-foreground">🎵 {track.title}</span>
+                            <span className="font-medium text-foreground"> {track.title}</span>
                             <span className="text-muted-foreground font-semibold bg-muted px-2 py-0.5 rounded-full">{track.plays} plays</span>
                           </div>
                         ))}
@@ -1496,7 +1496,7 @@ export default function Dashboard() {
                         {gigOffers.map(gig => (
                           <div key={gig.id} className="flex flex-wrap justify-between items-center p-4 border border-border rounded-xl bg-muted/10 text-xs">
                             <div>
-                              <p className="font-semibold text-sm text-foreground">🏟️ Gig at {gig.venue}</p>
+                              <p className="font-semibold text-sm text-foreground"> Gig at {gig.venue}</p>
                               <p className="text-muted-foreground mt-0.5">Date: {gig.date} • Offer Pay: <strong className="text-emerald-600 font-semibold">{gig.pay}</strong></p>
                             </div>
                             <div className="flex gap-2">
@@ -1511,7 +1511,7 @@ export default function Dashboard() {
                                   <button
                                     onClick={() => {
                                       setGigOffers(gigOffers.map(g => g.id === gig.id ? { ...g, status: 'Confirmed' } : g));
-                                      toast.success(`Gig booking for ${gig.venue} accepted! 📅`);
+                                      toast.success(`Gig booking for ${gig.venue} accepted! `);
                                     }}
                                     className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-semibold hover:opacity-90 transition-all"
                                   >
@@ -1541,18 +1541,18 @@ export default function Dashboard() {
                     {viewingGig && (
                       <div className="bg-card border border-border rounded-2xl p-6 shadow-warm">
                         <div className="flex justify-between items-center mb-4">
-                          <h4 className="font-display font-semibold text-lg text-foreground">🏟️ Performance Invitation details: {viewingGig.venue}</h4>
+                          <h4 className="font-display font-semibold text-lg text-foreground"> Performance Invitation details: {viewingGig.venue}</h4>
                           <button onClick={() => setViewingGig(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
                         </div>
                         <div className="space-y-4 text-xs">
                           <p className="text-muted-foreground leading-relaxed">{viewingGig.desc}</p>
                           <div className="grid sm:grid-cols-2 gap-3 pt-2">
                             <div>
-                              <strong className="text-foreground">📍 Location Address:</strong>
+                              <strong className="text-foreground"> Location Address:</strong>
                               <p className="text-muted-foreground mt-0.5">{viewingGig.address}</p>
                             </div>
                             <div>
-                              <strong className="text-foreground">⏰ Timing & Compensation:</strong>
+                              <strong className="text-foreground"> Timing & Compensation:</strong>
                               <p className="text-muted-foreground mt-0.5">{viewingGig.date} · {viewingGig.time} · <span className="text-emerald-600 font-semibold">{viewingGig.pay}</span></p>
                             </div>
                           </div>
@@ -1568,7 +1568,7 @@ export default function Dashboard() {
                                   onClick={() => {
                                     setGigOffers(gigOffers.map(g => g.id === viewingGig.id ? { ...g, status: 'Confirmed' } : g));
                                     setViewingGig(null);
-                                    toast.success(`Gig booking for ${viewingGig.venue} accepted! 📅`);
+                                    toast.success(`Gig booking for ${viewingGig.venue} accepted! `);
                                   }}
                                   className="px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:opacity-90 transition-colors"
                                 >
@@ -1629,7 +1629,7 @@ export default function Dashboard() {
                           setNewCollabTitle('');
                           setNewCollabDesc('');
                           setNewCollabReqs('');
-                          toast.success('Collaboration request uploaded to board! 🚀');
+                          toast.success('Collaboration request uploaded to board! ');
                         }}
                         className="space-y-3"
                       >
@@ -1715,7 +1715,7 @@ export default function Dashboard() {
                                       return;
                                     }
                                     setCollabList(collabList.map(c => c.id === collab.id ? { ...c, status: 'Joined' } : c));
-                                    toast.success(`Successfully joined collaboration with ${collab.creator}! 💬`);
+                                    toast.success(`Successfully joined collaboration with ${collab.creator}! `);
                                   }}
                                   className="px-3 py-1 bg-coffee text-white font-semibold rounded-lg text-[10px]"
                                 >
@@ -1735,7 +1735,7 @@ export default function Dashboard() {
                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                         <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-lg w-full relative animate-in fade-in zoom-in-95 duration-200">
                           <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-display font-semibold text-base text-foreground">🤝 Collaboration Details: {viewingCollab.title}</h4>
+                            <h4 className="font-display font-semibold text-base text-foreground"> Collaboration Details: {viewingCollab.title}</h4>
                             <button onClick={() => setViewingCollab(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
                           </div>
                           <div className="space-y-4 text-xs">
@@ -1762,7 +1762,7 @@ export default function Dashboard() {
                                     }
                                     setCollabList(collabList.map(c => c.id === viewingCollab.id ? { ...c, status: 'Joined' } : c));
                                     setViewingCollab(null);
-                                    toast.success(`Successfully joined collaboration with ${viewingCollab.creator}! 💬`);
+                                    toast.success(`Successfully joined collaboration with ${viewingCollab.creator}! `);
                                   }}
                                   className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl hover:opacity-90 transition-all"
                                 >
@@ -1820,11 +1820,11 @@ export default function Dashboard() {
                         <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Live Fan Tipping History</h4>
                         <div className="space-y-2">
                           <div className="flex justify-between items-center text-xs bg-muted/40 p-2.5 rounded-lg border border-border">
-                            <span>☕ Emily Johnson tipped: "Love your latest demo track!"</span>
+                            <span> Emily Johnson tipped: "Love your latest demo track!"</span>
                             <strong className="text-emerald-600 font-semibold">$10.00</strong>
                           </div>
                           <div className="flex justify-between items-center text-xs bg-muted/40 p-2.5 rounded-lg border border-border">
-                            <span>☕ Dave Vance (Sponsor) tipped: "Keep it up!"</span>
+                            <span> Dave Vance (Sponsor) tipped: "Keep it up!"</span>
                             <strong className="text-emerald-600 font-semibold">$50.00</strong>
                           </div>
                         </div>
@@ -1930,7 +1930,7 @@ export default function Dashboard() {
                             setStoreTrackTitle('');
                             setStoreTrackPrice('9.99');
                             setStoreTrackCover(null);
-                            toast.success(`Track "${storeTrackTitle}" listed successfully on digital storefront! 💿`);
+                            toast.success(`Track "${storeTrackTitle}" listed successfully on digital storefront! `);
                           }}
                           className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-lg hover:opacity-90"
                         >
@@ -1944,7 +1944,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-3">
                               <img src={track.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop'} className="w-8 h-8 rounded-lg object-cover border border-border" />
                               <div>
-                                <p className="font-semibold text-foreground">💿 {track.title}</p>
+                                <p className="font-semibold text-foreground"> {track.title}</p>
                                 <p className="text-[10px] text-muted-foreground">Format: {track.format || 'EP'} • Date: {track.releaseDate || '2026-06-01'}</p>
                               </div>
                             </div>
@@ -2017,7 +2017,7 @@ export default function Dashboard() {
                         <div className="space-y-3">
                           {mentorshipStudents.map(student => (
                             <div key={student.id} className="p-3 border border-border rounded-xl bg-muted/10 text-xs">
-                              <p className="font-semibold text-foreground">🎓 {student.name}</p>
+                              <p className="font-semibold text-foreground"> {student.name}</p>
                               <p className="text-muted-foreground mt-1">{student.notes}</p>
                               <p className="text-[9px] text-muted-foreground mt-2">Last lesson: {student.lastMeeting}</p>
                             </div>
@@ -2117,7 +2117,7 @@ export default function Dashboard() {
                           setNewCourseHours('10');
                           setNewCourseLectures('12');
                           setNewCourseSyllabus('');
-                          toast.success('Course created and listed successfully! 📚');
+                          toast.success('Course created and listed successfully! ');
                         }}
                         className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
                       >
@@ -2131,7 +2131,7 @@ export default function Dashboard() {
                         {teacherCourses.map(course => (
                           <div key={course.id} className="flex justify-between items-center p-3 border border-border rounded-xl bg-muted/15 text-xs">
                             <div>
-                              <p className="font-semibold text-foreground">📚 {course.title}</p>
+                              <p className="font-semibold text-foreground"> {course.title}</p>
                               <p className="text-[10px] text-muted-foreground mt-0.5">Level: {course.level} • Price: {course.price} • Students: {course.students}</p>
                             </div>
                             <span className="px-2 py-1 bg-coffee/10 text-coffee rounded text-[10px] font-bold">Listed</span>
@@ -2170,7 +2170,7 @@ export default function Dashboard() {
                           if (!newWorkshopTitle.trim()) return;
                           setTeacherWorkshops([...teacherWorkshops, { id: Date.now(), title: newWorkshopTitle, date: newWorkshopDate, seatsLeft: 20, price: '$15' }]);
                           setNewWorkshopTitle('');
-                          toast.success('Workshop scheduled! Students can now register. 🎟️');
+                          toast.success('Workshop scheduled! Students can now register. ');
                         }}
                         className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
                       >
@@ -2356,8 +2356,8 @@ export default function Dashboard() {
                       {/* Video stream simulator */}
                       <div className="md:col-span-2 space-y-4">
                         <div className="flex justify-between items-center">
-                          <h4 className="font-display font-semibold text-foreground text-sm">🎥 Broadcasting: {activeHostingWorkshop.title}</h4>
-                          <span className="px-2 py-0.5 bg-red-600 text-white text-[9px] font-bold rounded-full animate-pulse flex items-center gap-1">🔴 LIVE</span>
+                          <h4 className="font-display font-semibold text-foreground text-sm"> Broadcasting: {activeHostingWorkshop.title}</h4>
+                          <span className="px-2 py-0.5 bg-red-600 text-white text-[9px] font-bold rounded-full animate-pulse flex items-center gap-1"> LIVE</span>
                         </div>
                         <div className="aspect-video bg-black rounded-xl border border-border flex flex-col items-center justify-center relative overflow-hidden">
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
@@ -2430,7 +2430,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm">🗓️ Schedule Class: {schedulingStudent.name}</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm"> Schedule Class: {schedulingStudent.name}</h4>
                         <button onClick={() => setSchedulingStudent(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-3 text-xs">
@@ -2458,7 +2458,7 @@ export default function Dashboard() {
                         <div className="flex gap-2 pt-2">
                           <button
                             onClick={() => {
-                              toast.success(`1-on-1 session scheduled with ${schedulingStudent.name} for ${meetingDate} at ${meetingTime}! 📅`);
+                              toast.success(`1-on-1 session scheduled with ${schedulingStudent.name} for ${meetingDate} at ${meetingTime}! `);
                               setMentorshipStudents(mentorshipStudents.map(s => s.id === schedulingStudent.id ? { ...s, lastMeeting: meetingDate } : s));
                               setSchedulingStudent(null);
                             }}
@@ -2483,7 +2483,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">💳 Confirm Payout Withdrawal</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold"> Confirm Payout Withdrawal</h4>
                         <button onClick={() => setShowWithdrawalModal(false)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-4 text-xs">
@@ -2524,7 +2524,7 @@ export default function Dashboard() {
                                 toast.error('Please enter a valid withdrawal amount.');
                                 return;
                               }
-                              toast.success(`Withdrawal request of $${amt.toLocaleString()} successfully queued to ${selectedWithdrawalAccount}! 🚀`);
+                              toast.success(`Withdrawal request of $${amt.toLocaleString()} successfully queued to ${selectedWithdrawalAccount}! `);
                               setTeacherEarnings(prev => prev - amt);
                               setShowWithdrawalModal(false);
                             }}
@@ -2579,7 +2579,7 @@ export default function Dashboard() {
                           {sentArtistOffers.map(offer => (
                             <div key={offer.id} className="flex justify-between items-center p-3 border border-border rounded-xl bg-muted/15 text-xs">
                               <div>
-                                <p className="font-semibold text-foreground">🎤 {offer.artist}</p>
+                                <p className="font-semibold text-foreground"> {offer.artist}</p>
                                 <p className="text-[10px] text-muted-foreground mt-0.5">Date: {offer.date} • Pay: {offer.pay}</p>
                               </div>
                               <span className={cn(
@@ -2600,7 +2600,7 @@ export default function Dashboard() {
                           {venueReservations.map(res => (
                             <div key={res.id} className="p-3 border border-border rounded-xl bg-muted/10 text-xs flex justify-between items-center">
                               <div>
-                                <p className="font-semibold text-foreground">🍽️ {res.table} ({res.guests} Guests)</p>
+                                <p className="font-semibold text-foreground"> {res.table} ({res.guests} Guests)</p>
                                 <p className="text-muted-foreground mt-0.5">Reservation time: {res.time}</p>
                               </div>
                               <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[9px] font-bold">{res.status}</span>
@@ -2683,7 +2683,7 @@ export default function Dashboard() {
                               Edit Listing Details
                             </button>
                             <button
-                              onClick={() => toast.success('Venue profile link copied to clipboard! 📋')}
+                              onClick={() => toast.success('Venue profile link copied to clipboard! ')}
                               className="flex-1 py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90 shadow-warm transition-opacity"
                             >
                               View Live Listing
@@ -2795,7 +2795,7 @@ export default function Dashboard() {
                               setTimeout(() => {
                                 setIsSavingVenueProfile(false);
                                 setIsVenueSaved(true);
-                                toast.success('Venue listing details saved successfully! 🏛️');
+                                toast.success('Venue listing details saved successfully! ');
                               }, 1200);
                             }}
                             disabled={isSavingVenueProfile}
@@ -2903,7 +2903,7 @@ export default function Dashboard() {
                           ]);
                           setNewVenueEventName('');
                           setNewVenueEventDesc('');
-                          toast.success('Event hosted at your venue! 🏟️');
+                          toast.success('Event hosted at your venue! ');
                         }}
                         className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-xl hover:opacity-90"
                       >
@@ -2917,7 +2917,7 @@ export default function Dashboard() {
                         {venueEvents.map(evt => (
                           <div key={evt.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
                             <div>
-                              <p className="font-semibold text-foreground">🏟️ {evt.name}</p>
+                              <p className="font-semibold text-foreground"> {evt.name}</p>
                               <p className="text-[10px] text-muted-foreground mt-0.5">Date: {evt.date} • Time: {evt.time} • Price: {evt.price} • Genre: {evt.genre}</p>
                             </div>
                             <span className="px-2 py-0.5 bg-coffee/10 text-coffee rounded text-[9px] font-bold">Scheduled</span>
@@ -3012,7 +3012,7 @@ export default function Dashboard() {
                             }
                           ]);
                           setBookingNotes('');
-                          toast.success(`Booking offer sent to ${bookingArtistName}! 🎤`);
+                          toast.success(`Booking offer sent to ${bookingArtistName}! `);
                         }}
                         className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-xl hover:opacity-90"
                       >
@@ -3026,7 +3026,7 @@ export default function Dashboard() {
                         {sentArtistOffers.map(offer => (
                           <div key={offer.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
                             <div>
-                              <p className="font-semibold text-foreground">🎤 {offer.artist}</p>
+                              <p className="font-semibold text-foreground"> {offer.artist}</p>
                               <p className="text-[10px] text-muted-foreground mt-0.5">Date: {offer.date} • Pay: {offer.pay} • Travel Comp: {offer.accommodation}</p>
                             </div>
                             <span className={`px-2 py-0.5 text-[9px] font-bold rounded ${offer.status === 'Accepted' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{offer.status}</span>
@@ -3138,7 +3138,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">📋 Reservation Info: {viewingReservation.table}</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold"> Reservation Info: {viewingReservation.table}</h4>
                         <button onClick={() => setViewingReservation(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-3.5 text-xs">
@@ -3200,7 +3200,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-md w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">📢 Setup Local Ad Campaign</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold"> Setup Local Ad Campaign</h4>
                         <button onClick={() => setShowPromoModal(false)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-4 text-xs">
@@ -3393,7 +3393,7 @@ export default function Dashboard() {
                           {attendees.map(att => (
                             <div key={att.id} className="p-3 border border-border rounded-xl bg-muted/10 text-xs flex justify-between items-center">
                               <div>
-                                <p className="font-semibold text-foreground">🎫 {att.name}</p>
+                                <p className="font-semibold text-foreground"> {att.name}</p>
                                 <p className="text-muted-foreground mt-0.5">Ticket Type: {att.ticket}</p>
                               </div>
                               <span className={cn(
@@ -3615,7 +3615,7 @@ export default function Dashboard() {
                         {invitedArtistsList.map(inv => (
                           <div key={inv.id} className="flex justify-between items-center p-3 border border-border rounded-xl bg-muted/10 text-xs">
                             <div>
-                              <p className="font-semibold text-foreground">🎤 {inv.name}</p>
+                              <p className="font-semibold text-foreground"> {inv.name}</p>
                               <p className="text-[10px] text-muted-foreground mt-0.5">Event: {inv.event} • Payout Offer: {inv.pay} • Date: {inv.date}</p>
                             </div>
                             <span className="px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-[9px] font-bold">{inv.status}</span>
@@ -3715,7 +3715,7 @@ export default function Dashboard() {
                         {attendees.map(att => (
                           <div key={att.id} className="p-3 border border-border rounded-xl bg-muted/15 text-xs flex justify-between items-center">
                             <div>
-                              <p className="font-semibold text-foreground">🎫 {att.name}</p>
+                              <p className="font-semibold text-foreground"> {att.name}</p>
                               <p className="text-muted-foreground mt-0.5">Ticket: {att.ticket} • Status: {att.status}</p>
                             </div>
                             <div className="flex gap-2">
@@ -3830,7 +3830,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">🎤 Invite to Lineup: {invitingArtist.name}</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold"> Invite to Lineup: {invitingArtist.name}</h4>
                         <button onClick={() => { setShowInviteArtistModal(false); setInvitingArtist(null); }} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-4 text-xs">
@@ -3858,7 +3858,7 @@ export default function Dashboard() {
                         </div>
 
                         <div className="bg-muted/30 p-2.5 rounded-xl border border-border leading-relaxed text-[10px] text-muted-foreground">
-                          📌 Dispatching this offer sends an invitation contract to the artist dashboard. Once they accept, they will join the event lineup catalog.
+                           Dispatching this offer sends an invitation contract to the artist dashboard. Once they accept, they will join the event lineup catalog.
                         </div>
 
                         <div className="flex gap-2 pt-2">
@@ -3901,7 +3901,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">🎫 Ticket Details: {viewingAttendee.name}</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold"> Ticket Details: {viewingAttendee.name}</h4>
                         <button onClick={() => setViewingAttendee(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-3.5 text-xs">
@@ -4335,7 +4335,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold">☕ Sponsorship: {viewingSponsorOpportunity.name}</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold"> Sponsorship: {viewingSponsorOpportunity.name}</h4>
                         <button onClick={() => setViewingSponsorOpportunity(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-3.5 text-xs">
@@ -4370,7 +4370,7 @@ export default function Dashboard() {
                                 toast.info(`You are already sponsoring ${viewingSponsorOpportunity.name}`);
                               } else {
                                 setSponsoredEvents([...sponsoredEvents, viewingSponsorOpportunity.name]);
-                                toast.success(`Sponsorship pledge confirmed for ${viewingSponsorOpportunity.name}! ☕`);
+                                toast.success(`Sponsorship pledge confirmed for ${viewingSponsorOpportunity.name}! `);
                               }
                               setViewingSponsorOpportunity(null);
                             }}
@@ -4450,7 +4450,7 @@ export default function Dashboard() {
                               },
                               ...sponsorshipInquiries
                             ]);
-                            toast.success(`Inquiry sent to ${inquiringArtist.name}! Offer of $${inquiryBudget} is pending. 🚀`);
+                            toast.success(`Inquiry sent to ${inquiringArtist.name}! Offer of $${inquiryBudget} is pending. `);
                             setInquiringArtist(null);
                             setInquiryMessage('');
                           }}
@@ -4747,7 +4747,7 @@ export default function Dashboard() {
                           />
                         </div>
                       </div>
-                      <button onClick={() => toast.success('Platform configurations saved successfully! ⚙️')} className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
+                      <button onClick={() => toast.success('Platform configurations saved successfully! ')} className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
                         Save Configurations
                       </button>
                     </div>
@@ -4762,14 +4762,14 @@ export default function Dashboard() {
                         <div key={app.id} className="p-4 border border-border rounded-xl bg-muted/15 text-xs space-y-3">
                           <div className="flex justify-between items-start">
                             <div>
-                              <p className="font-semibold text-foreground text-sm">🌟 {app.name}</p>
+                              <p className="font-semibold text-foreground text-sm"> {app.name}</p>
                               <p className="text-muted-foreground mt-0.5">Genre: {app.genre} • Applied: {app.joined}</p>
                             </div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => {
                                   setPendingVerifications(pendingVerifications.filter(a => a.id !== app.id));
-                                  toast.success(`Artist "${app.name}" approved and verified successfully! 🌟`);
+                                  toast.success(`Artist "${app.name}" approved and verified successfully! `);
                                 }}
                                 className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-[10px]"
                               >
@@ -4826,7 +4826,7 @@ export default function Dashboard() {
                               <button
                                 onClick={() => {
                                   setModerationReports(moderationReports.filter(r => r.id !== rep.id));
-                                  toast.success('Flagged content successfully removed from platform. 🛡️');
+                                  toast.success('Flagged content successfully removed from platform. ');
                                 }}
                                 className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold text-[10px]"
                               >
@@ -4893,7 +4893,7 @@ export default function Dashboard() {
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
-                        toast.success('Revenue statement downloaded successfully! 📊');
+                        toast.success('Revenue statement downloaded successfully! ');
                       }}
                       className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
                     >
@@ -4911,7 +4911,7 @@ export default function Dashboard() {
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold font-display">⚠️ Decline Verification Request</h4>
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold font-display"> Decline Verification Request</h4>
                         <button onClick={() => { setShowRejectModal(false); setRejectingArtistId(null); }} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="space-y-4 text-xs">
@@ -4930,7 +4930,7 @@ export default function Dashboard() {
                         </div>
 
                         <div className="bg-muted/30 p-2.5 rounded-xl border border-border leading-relaxed text-[10px] text-muted-foreground">
-                          📌 Submitting this decline sends a notification email to the artist detailing the reject reason, allowing them to re-apply once resolved.
+                           Submitting this decline sends a notification email to the artist detailing the reject reason, allowing them to re-apply once resolved.
                         </div>
 
                         <div className="flex gap-2 pt-2">
@@ -5008,7 +5008,7 @@ export default function Dashboard() {
                             }
                             setJoinedWorkshops([...joinedWorkshops, viewingCourseDetails.id]);
                             setTeacherWorkshops(teacherWorkshops.map(w => w.id === viewingCourseDetails.id ? { ...w, seatsLeft: w.seatsLeft - 1 } : w));
-                            toast.success(`Successfully registered for "${viewingCourseDetails.title}"! 🎟️`);
+                            toast.success(`Successfully registered for "${viewingCourseDetails.title}"! `);
                           } else {
                             const isEnrolled = joinedCourses.includes(viewingCourseDetails.id);
                             if (isEnrolled) {
@@ -5017,7 +5017,7 @@ export default function Dashboard() {
                             }
                             setJoinedCourses([...joinedCourses, viewingCourseDetails.id]);
                             setTeacherCourses(teacherCourses.map(c => c.id === viewingCourseDetails.id ? { ...c, students: c.students + 1 } : c));
-                            toast.success(`Successfully enrolled in "${viewingCourseDetails.title}"! 🎒`);
+                            toast.success(`Successfully enrolled in "${viewingCourseDetails.title}"! `);
                           }
                           setViewingCourseDetails(null);
                         }}
