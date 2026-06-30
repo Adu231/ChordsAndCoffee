@@ -339,7 +339,7 @@ export default function Index() {
                   </li>
                 ))}
               </ul>
-              <Link to="/dashboard" className="inline-flex items-center gap-2 px-6 py-3 bg-coffee text-white rounded-xl font-semibold hover:bg-[hsl(25,40%,26%)] shadow-warm transition-all hover:-translate-y-0.5">
+              <Link to={user ? "/dashboard" : "/register"} className="inline-flex items-center gap-2 px-6 py-3 bg-coffee text-white rounded-xl font-semibold hover:bg-[hsl(25,40%,26%)] shadow-warm transition-all hover:-translate-y-0.5">
                 View Dashboard <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

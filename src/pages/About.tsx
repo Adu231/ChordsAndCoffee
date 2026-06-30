@@ -3,7 +3,7 @@ import { Coffee, Music, Users, Heart, Award, Globe, ArrowRight, Target, Lightbul
 import AnimatedCounter from '@/components/features/AnimatedCounter';
 
 const team = [
-  { name: 'Sofia Mendez', role: 'Co-Founder & CEO', img: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face', bio: 'Former music producer and community builder with 10+ years in the creative industry.' },
+  { name: 'Sofia Mendez', role: 'Co-Founder & CEO', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face', bio: 'Former music producer and community builder with 10+ years in the creative industry.' },
   { name: 'Marcus Lee', role: 'Co-Founder & CTO', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face', bio: 'Full-stack engineer passionate about building tools that empower artists.' },
   { name: 'Priya Sharma', role: 'Head of Community', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face', bio: 'Music therapist turned community architect. Connects artists across 40+ cities.' },
   { name: 'James Osei', role: 'Head of Product', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face', bio: 'Product designer who has shipped features used by millions of music creators.' },

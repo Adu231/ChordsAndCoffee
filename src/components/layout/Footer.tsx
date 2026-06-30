@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Coffee, Music, Heart, Instagram, Twitter, Youtube, Facebook, Mail, MapPin, Phone } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const footerLinks = {
   Platform: [
@@ -29,6 +30,8 @@ const socials = [
 ];
 
 export default function Footer() {
+  const { user } = useAuth();
+
   return (
     <footer className="bg-[hsl(220,27%,10%)] text-white">
       {/* Top Section */}
@@ -79,16 +82,21 @@ export default function Footer() {
             <div key={section}>
               <h4 className="font-semibold text-sm text-white/80 mb-4 uppercase tracking-wider">{section}</h4>
               <ul className="space-y-2.5">
-                {links.map(link => (
-                  <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm text-white/50 hover:text-gold transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {links.map(link => {
+                  const targetHref = link.label === 'Dashboard'
+                    ? (user ? '/dashboard' : '/register')
+                    : link.href;
+                  return (
+                    <li key={link.label}>
+                      <Link
+                        to={targetHref}
+                        className="text-sm text-white/50 hover:text-gold transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
