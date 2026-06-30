@@ -4390,7 +4390,78 @@ export default function Dashboard() {
                   </div>
                 )}
 
+                {inquiringArtist && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
+                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-display font-semibold text-foreground text-sm font-bold flex items-center gap-1.5">
+                          <Mail className="w-4 h-4 text-coffee" />
+                          Inquire Sponsorship: {inquiringArtist.name}
+                        </h4>
+                        <button onClick={() => setInquiringArtist(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      
+                      <div className="space-y-3.5 text-xs">
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Target Placement</label>
+                          <select
+                            value={inquiryPlacement}
+                            onChange={e => setInquiryPlacement(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          >
+                            <option value="Shoutout & Logo on Banner">Shoutout & Logo on Banner</option>
+                            <option value="Dedicated Merch Placement">Dedicated Merch Placement</option>
+                            <option value="Audio Intro Sponsor">Audio Intro Sponsor</option>
+                            <option value="Social Media Endorsement">Social Media Endorsement</option>
+                          </select>
+                        </div>
 
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Offer Budget ($ USD)</label>
+                          <input
+                            type="number"
+                            value={inquiryBudget}
+                            onChange={e => setInquiryBudget(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Intro Message</label>
+                          <textarea
+                            rows={3}
+                            value={inquiryMessage}
+                            onChange={e => setInquiryMessage(e.target.value)}
+                            placeholder="Tell the artist why you would love to collaborate..."
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
+                          />
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            setSponsorshipInquiries([
+                              {
+                                id: Date.now(),
+                                artistName: inquiringArtist.name,
+                                placement: inquiryPlacement,
+                                budget: inquiryBudget,
+                                status: 'Pending',
+                                date: 'Today'
+                              },
+                              ...sponsorshipInquiries
+                            ]);
+                            toast.success(`Inquiry sent to ${inquiringArtist.name}! Offer of $${inquiryBudget} is pending. 🚀`);
+                            setInquiringArtist(null);
+                            setInquiryMessage('');
+                          }}
+                          className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl hover:opacity-90 shadow-warm"
+                        >
+                          Send Inquiry Offer
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {activeTab === 'metrics' && (
                   <div className="grid lg:grid-cols-3 gap-6">
@@ -4885,160 +4956,88 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
-
-                {inquiringArtist && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
-                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold flex items-center gap-1.5">
-                          <Mail className="w-4 h-4 text-coffee" />
-                          Inquire Sponsorship: {inquiringArtist.name}
-                        </h4>
-                        <button onClick={() => setInquiringArtist(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
-                      </div>
-                      
-                      <div className="space-y-3.5 text-xs">
-                        <div>
-                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Target Placement</label>
-                          <select
-                            value={inquiryPlacement}
-                            onChange={e => setInquiryPlacement(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          >
-                            <option value="Shoutout & Logo on Banner">Shoutout & Logo on Banner</option>
-                            <option value="Dedicated Merch Placement">Dedicated Merch Placement</option>
-                            <option value="Audio Intro Sponsor">Audio Intro Sponsor</option>
-                            <option value="Social Media Endorsement">Social Media Endorsement</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Offer Budget ($ USD)</label>
-                          <input
-                            type="number"
-                            value={inquiryBudget}
-                            onChange={e => setInquiryBudget(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Intro Message</label>
-                          <textarea
-                            rows={3}
-                            value={inquiryMessage}
-                            onChange={e => setInquiryMessage(e.target.value)}
-                            placeholder="Tell the artist why you would love to collaborate..."
-                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none resize-none"
-                          />
-                        </div>
-
-                        <button
-                          onClick={() => {
-                            setSponsorshipInquiries([
-                              {
-                                id: Date.now(),
-                                artistName: inquiringArtist.name,
-                                placement: inquiryPlacement,
-                                budget: inquiryBudget,
-                                status: 'Pending',
-                                date: 'Today'
-                              },
-                              ...sponsorshipInquiries
-                            ]);
-                            toast.success(`Inquiry sent to ${inquiringArtist.name}! Offer of $${inquiryBudget} is pending. 🚀`);
-                            setInquiringArtist(null);
-                            setInquiryMessage('');
-                          }}
-                          className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl hover:opacity-90 shadow-warm animate-in"
-                        >
-                          Send Inquiry Offer
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {viewingCourseDetails && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
-                    <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-display font-semibold text-foreground text-sm font-bold flex items-center gap-1.5">
-                          <BookOpen className="w-4 h-4 text-coffee" />
-                          {viewingCourseDetails.isWorkshop ? 'Workshop Masterclass' : 'Course Details'}
-                        </h4>
-                        <button onClick={() => setViewingCourseDetails(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
-                      </div>
-
-                      <div className="space-y-4 text-xs">
-                        <div>
-                          <p className="font-semibold text-foreground text-base leading-snug">{viewingCourseDetails.title}</p>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">Instructor: {viewingCourseDetails.instructor}</p>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 border-y border-border/60 py-3 text-left">
-                          <div>
-                            <span className="block text-[9px] uppercase font-bold text-muted-foreground">Class Schedule</span>
-                            <span className="font-medium text-foreground text-[10px] leading-tight block mt-0.5">{viewingCourseDetails.schedule}</span>
-                          </div>
-                          <div>
-                            <span className="block text-[9px] uppercase font-bold text-muted-foreground">Class Level / Duration</span>
-                            <span className="font-medium text-foreground text-[10px] leading-tight block mt-0.5">{viewingCourseDetails.level} ({viewingCourseDetails.duration})</span>
-                          </div>
-                        </div>
-
-                        <div>
-                          <span className="block text-[9px] uppercase font-bold text-muted-foreground mb-1">Syllabus Overview</span>
-                          <p className="text-muted-foreground leading-relaxed text-[11px]">{viewingCourseDetails.syllabus}</p>
-                        </div>
-
-                        <div className="flex gap-3 pt-2">
-                          <button
-                            onClick={() => {
-                              if (viewingCourseDetails.isWorkshop) {
-                                const isRegistered = joinedWorkshops.includes(viewingCourseDetails.id);
-                                if (isRegistered) {
-                                  toast.info('You are already registered for this session.');
-                                  return;
-                                }
-                                if (viewingCourseDetails.seatsLeft <= 0) {
-                                  toast.error('This session is sold out.');
-                                  return;
-                                }
-                                setJoinedWorkshops([...joinedWorkshops, viewingCourseDetails.id]);
-                                setTeacherWorkshops(teacherWorkshops.map(w => w.id === viewingCourseDetails.id ? { ...w, seatsLeft: w.seatsLeft - 1 } : w));
-                                toast.success(`Successfully registered for "${viewingCourseDetails.title}"! 🎟️`);
-                              } else {
-                                const isEnrolled = joinedCourses.includes(viewingCourseDetails.id);
-                                if (isEnrolled) {
-                                  toast.info('You are already enrolled in this course.');
-                                  return;
-                                }
-                                setJoinedCourses([...joinedCourses, viewingCourseDetails.id]);
-                                setTeacherCourses(teacherCourses.map(c => c.id === viewingCourseDetails.id ? { ...c, students: c.students + 1 } : c));
-                                toast.success(`Successfully enrolled in "${viewingCourseDetails.title}"! 🎒`);
-                              }
-                              setViewingCourseDetails(null);
-                            }}
-                            className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1 hover:opacity-90 transition-opacity"
-                          >
-                            {viewingCourseDetails.isWorkshop 
-                              ? (joinedWorkshops.includes(viewingCourseDetails.id) ? 'Registered' : `Join Workshop • ${viewingCourseDetails.price}`)
-                              : (joinedCourses.includes(viewingCourseDetails.id) ? 'Enrolled' : `Enroll Now • ${viewingCourseDetails.price}`)
-                            }
-                          </button>
-                          <button
-                            onClick={() => setViewingCourseDetails(null)}
-                            className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
-                          >
-                            Close Info
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </>
+            )}
+
+            {/* Global Course Details Modal Overlay */}
+            {viewingCourseDetails && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
+                <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-display font-semibold text-foreground text-sm font-bold flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-coffee" />
+                      {viewingCourseDetails.isWorkshop ? 'Workshop Masterclass' : 'Course Details'}
+                    </h4>
+                    <button onClick={() => setViewingCourseDetails(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                  </div>
+
+                  <div className="space-y-4 text-xs">
+                    <div>
+                      <p className="font-semibold text-foreground text-base leading-snug">{viewingCourseDetails.title}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Instructor: {viewingCourseDetails.instructor}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 border-y border-border/60 py-3 text-left">
+                      <div>
+                        <span className="block text-[9px] uppercase font-bold text-muted-foreground">Class Schedule</span>
+                        <span className="font-medium text-foreground text-[10px] leading-tight block mt-0.5">{viewingCourseDetails.schedule}</span>
+                      </div>
+                      <div>
+                        <span className="block text-[9px] uppercase font-bold text-muted-foreground">Class Level / Duration</span>
+                        <span className="font-medium text-foreground text-[10px] leading-tight block mt-0.5">{viewingCourseDetails.level} ({viewingCourseDetails.duration})</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="block text-[9px] uppercase font-bold text-muted-foreground mb-1">Syllabus Overview</span>
+                      <p className="text-muted-foreground leading-relaxed text-[11px]">{viewingCourseDetails.syllabus}</p>
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        onClick={() => {
+                          if (viewingCourseDetails.isWorkshop) {
+                            const isRegistered = joinedWorkshops.includes(viewingCourseDetails.id);
+                            if (isRegistered) {
+                              toast.info('You are already registered for this session.');
+                              return;
+                            }
+                            if (viewingCourseDetails.seatsLeft <= 0) {
+                              toast.error('This session is sold out.');
+                              return;
+                            }
+                            setJoinedWorkshops([...joinedWorkshops, viewingCourseDetails.id]);
+                            setTeacherWorkshops(teacherWorkshops.map(w => w.id === viewingCourseDetails.id ? { ...w, seatsLeft: w.seatsLeft - 1 } : w));
+                            toast.success(`Successfully registered for "${viewingCourseDetails.title}"! 🎟️`);
+                          } else {
+                            const isEnrolled = joinedCourses.includes(viewingCourseDetails.id);
+                            if (isEnrolled) {
+                              toast.info('You are already enrolled in this course.');
+                              return;
+                            }
+                            setJoinedCourses([...joinedCourses, viewingCourseDetails.id]);
+                            setTeacherCourses(teacherCourses.map(c => c.id === viewingCourseDetails.id ? { ...c, students: c.students + 1 } : c));
+                            toast.success(`Successfully enrolled in "${viewingCourseDetails.title}"! 🎒`);
+                          }
+                          setViewingCourseDetails(null);
+                        }}
+                        className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1 hover:opacity-90 transition-opacity"
+                      >
+                        {viewingCourseDetails.isWorkshop 
+                          ? (joinedWorkshops.includes(viewingCourseDetails.id) ? 'Registered' : `Join Workshop • ${viewingCourseDetails.price}`)
+                          : (joinedCourses.includes(viewingCourseDetails.id) ? 'Enrolled' : `Enroll Now • ${viewingCourseDetails.price}`)
+                        }
+                      </button>
+                      <button
+                        onClick={() => setViewingCourseDetails(null)}
+                        className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                      >
+                        Close Info
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </main>
