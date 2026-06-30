@@ -47,7 +47,7 @@ export default function Register() {
   const handleSubmit = async () => {
     const result = await register(form.name, form.email, form.password);
     if (result.success) {
-      toast.success('Account created! Welcome to ChordsAndCoffee 🎵');
+      toast.success('Account created! Welcome to ChordsAndCoffee');
       navigate('/dashboard');
     } else {
       setErrors({ form: result.error || 'Registration failed.' });

@@ -20,7 +20,7 @@ export default function Careers() {
       toast.error('Please enter your name and email address.');
       return;
     }
-    toast.success(`Application for ${selectedJob} submitted successfully! We'll be in touch. 🎵`);
+    toast.success(`Application for ${selectedJob} submitted successfully! We'll be in touch.`);
     setName('');
     setEmail('');
     setNote('');

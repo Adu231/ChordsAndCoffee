@@ -608,7 +608,7 @@ export default function Dashboard() {
             <div className="flex items-start justify-between mb-6">
               <div>
                 <h1 className="font-display font-bold text-2xl lg:text-3xl text-foreground">
-                  Hello, {user.name.split(' ')[0]} 👋
+                  Hello, {user.name.split(' ')[0]} 
                 </h1>
                 <p className="text-muted-foreground text-sm mt-1">Here is your tailored workspace. Let's start the flow.</p>
               </div>

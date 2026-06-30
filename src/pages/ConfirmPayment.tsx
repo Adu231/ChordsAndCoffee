@@ -31,7 +31,7 @@ export default function ConfirmPayment() {
     // Simulate payment gateway response delay
     await new Promise(r => setTimeout(r, 2000));
     setLoading(false);
-    toast.success(`Payment of $${total.toFixed(2)} processed successfully! Direct tip sent to ${artist}. ☕🎵`);
+    toast.success(`Payment of $${total.toFixed(2)} processed successfully! Direct tip sent to ${artist}.`);
     navigate('/dashboard');
   };
 

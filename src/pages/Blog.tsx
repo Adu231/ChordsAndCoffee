@@ -164,7 +164,7 @@ export default function Blog() {
             >
               Close Article
             </button>
-            <span className="text-xs text-muted-foreground">Thank you for reading ChordsAndCoffee! ☕</span>
+            <span className="text-xs text-muted-foreground">Thank you for reading ChordsAndCoffee!</span>
           </div>
 
         </div>
