@@ -6,7 +6,7 @@ import {
   Bell, Search, Menu, X, Coffee, LogOut, ChevronRight, Mic2,
   BookOpen, MapPin, Clock, User, Award, Shield, CheckCircle, Video, BookMarked, HelpCircle,
   FileText, Check, AlertCircle, PlusCircle, Share2, Trash2, Send, Mail,
-  Headphones, Pause, SlidersHorizontal, Radio, Flame
+  Headphones, Pause, SlidersHorizontal, Radio, Flame, ShoppingBag
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
@@ -40,6 +40,7 @@ const getNavItemsForRole = (role: string) => {
       return [
         { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
         { icon: Music, label: 'Upload Portfolio', id: 'portfolio' },
+        { icon: ShoppingBag, label: 'Digital Storefront', id: 'storefront' },
         { icon: Calendar, label: 'Book Performances', id: 'booking' },
         { icon: Users, label: 'Collaborate', id: 'collab' },
         { icon: DollarSign, label: 'Monetize Music', id: 'monetize' },
@@ -243,6 +244,20 @@ export default function Dashboard() {
   const [storeTrackFormat, setStoreTrackFormat] = useState('EP');
   const [storeTrackDate, setStoreTrackDate] = useState('2026-07-01');
   const [storeTrackCover, setStoreTrackCover] = useState<File | null>(null);
+
+  // Monetize Payout States
+  const [streamingPayouts, setStreamingPayouts] = useState(1420);
+  const [tippingPayouts, setTippingPayouts] = useState(740);
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+  const [withdrawStep, setWithdrawStep] = useState<'details' | 'confirm'>('details');
+  const [bankName, setBankName] = useState('Chase Bank');
+  const [bankAccount, setBankAccount] = useState('•••• •••• 1234');
+  const [bankRouting, setBankRouting] = useState('•••• •••• 5678');
+  const [bankHolder, setBankHolder] = useState(user.name);
+  const [withdrawalHistory, setWithdrawalHistory] = useState([
+    { id: 1, date: 'Jun 18, 2026', amount: 850.00, bank: 'Chase Bank (•••• 1234)', status: 'Completed' },
+    { id: 2, date: 'May 04, 2026', amount: 420.00, bank: 'Chase Bank (•••• 1234)', status: 'Completed' },
+  ]);
 
   // 4.3 Music Teacher States
   const [teacherEarnings, setTeacherEarnings] = useState(4250);
@@ -2149,17 +2164,42 @@ export default function Dashboard() {
                   <div className="space-y-6 max-w-2xl mx-auto">
                     <div className="bg-card rounded-2xl border border-border p-5">
                       <h3 className="font-semibold text-foreground mb-4">Music Monetization Portal</h3>
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="border border-border p-4 rounded-xl bg-muted/20 text-center">
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="border border-border p-4 rounded-xl bg-muted/20 text-center relative overflow-hidden">
                           <DollarSign className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
-                          <h4 className="font-bold text-lg text-foreground">$1,420</h4>
+                          <h4 className="font-bold text-lg text-foreground">${streamingPayouts.toLocaleString()}</h4>
                           <p className="text-[10px] text-muted-foreground">Streaming Payouts</p>
                         </div>
-                        <div className="border border-border p-4 rounded-xl bg-muted/20 text-center">
+                        <div className="border border-border p-4 rounded-xl bg-muted/20 text-center relative overflow-hidden">
                           <Heart className="w-6 h-6 text-rose-500 mx-auto mb-2" />
-                          <h4 className="font-bold text-lg text-foreground">$740</h4>
+                          <h4 className="font-bold text-lg text-foreground">${tippingPayouts.toLocaleString()}</h4>
                           <p className="text-[10px] text-muted-foreground">Fan Tipping Jar</p>
                         </div>
+                      </div>
+
+                      {/* Withdraw Balance Button Section */}
+                      <div className="bg-muted/10 border border-border rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="text-left">
+                          <span className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Withdrawable Account Balance</span>
+                          <span className="text-xl font-bold text-foreground">
+                            ${(streamingPayouts + tippingPayouts).toFixed(2)}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (streamingPayouts + tippingPayouts <= 0) {
+                              toast.info("Your account balance is currently $0.00. No funds to withdraw.");
+                              return;
+                            }
+                            setWithdrawStep('details');
+                            setWithdrawModalOpen(true);
+                          }}
+                          disabled={streamingPayouts + tippingPayouts <= 0}
+                          className="w-full sm:w-auto px-5 py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Withdraw Payouts
+                        </button>
                       </div>
                       <div className="border-t border-border pt-4">
                         <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Live Fan Tipping History</h4>
@@ -2174,9 +2214,37 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Digital Storefront */}
+                      {/* Withdrawal Request History */}
+                      <div className="border-t border-border pt-4 mt-4">
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">Withdrawal Request History</h4>
+                        {withdrawalHistory.length === 0 ? (
+                          <p className="text-[11px] text-muted-foreground text-center py-2">No past withdrawals found.</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {withdrawalHistory.map(w => (
+                              <div key={w.id} className="flex justify-between items-center text-xs bg-muted/30 p-2.5 rounded-lg border border-border">
+                                <div>
+                                  <p className="font-semibold text-foreground">{w.bank}</p>
+                                  <p className="text-[10px] text-muted-foreground mt-0.5">{w.date}</p>
+                                </div>
+                                <div className="text-right flex items-center gap-2">
+                                  <strong className="text-foreground">${w.amount.toFixed(2)}</strong>
+                                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ${w.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                                    {w.status}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'storefront' && (
+                  <div className="space-y-6 max-w-2xl mx-auto text-left animate-in fade-in duration-200">
                     <div className="bg-card rounded-2xl border border-border p-5">
                       <h3 className="font-semibold text-foreground mb-4">Digital Storefront Manager</h3>
                       <div className="space-y-4 mb-6 bg-muted/25 border border-border p-5 rounded-xl text-xs">
@@ -5381,6 +5449,145 @@ export default function Dashboard() {
                       </button>
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Musician Monetization Payout Withdraw Modal */}
+            {withdrawModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
+                <div className="bg-card border border-border rounded-2xl p-6 shadow-2xl max-w-sm w-full relative animate-in fade-in zoom-in-95 duration-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-display font-semibold text-foreground text-sm font-bold flex items-center gap-1.5">
+                      <DollarSign className="w-4 h-4 text-coffee" />
+                      {withdrawStep === 'details' ? 'Confirm Account Details' : 'Confirm Withdrawal'}
+                    </h4>
+                    <button onClick={() => setWithdrawModalOpen(false)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                  </div>
+
+                  {withdrawStep === 'details' ? (
+                    <div className="space-y-4 text-xs">
+                      <p className="text-muted-foreground leading-relaxed">
+                        Please review and confirm your linked bank account information before finalizing this withdrawal.
+                      </p>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[9px] uppercase font-bold text-muted-foreground mb-1">Bank Name</label>
+                          <input
+                            type="text"
+                            value={bankName}
+                            onChange={e => setBankName(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            placeholder="Bank Name"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] uppercase font-bold text-muted-foreground mb-1">Account Holder Name</label>
+                          <input
+                            type="text"
+                            value={bankHolder}
+                            onChange={e => setBankHolder(e.target.value)}
+                            className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                            placeholder="Account Holder"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[9px] uppercase font-bold text-muted-foreground mb-1">Account Number</label>
+                            <input
+                              type="text"
+                              value={bankAccount}
+                              onChange={e => setBankAccount(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              placeholder="Account Number"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] uppercase font-bold text-muted-foreground mb-1">Routing Number</label>
+                            <input
+                              type="text"
+                              value={bankRouting}
+                              onChange={e => setBankRouting(e.target.value)}
+                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                              placeholder="Routing Number"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={() => {
+                            if (!bankName.trim() || !bankHolder.trim() || !bankAccount.trim() || !bankRouting.trim()) {
+                              toast.error('All bank account details are required.');
+                              return;
+                            }
+                            setWithdrawStep('confirm');
+                          }}
+                          className="px-4 py-2 bg-coffee text-white font-semibold rounded-xl text-xs flex-1 hover:opacity-90 transition-opacity"
+                        >
+                          Verify & Continue
+                        </button>
+                        <button
+                          onClick={() => setWithdrawModalOpen(false)}
+                          className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 text-xs">
+                      <p className="text-muted-foreground leading-relaxed">
+                        Are you sure you want to transfer your entire withdrawable balance to the account specified below?
+                      </p>
+
+                      <div className="p-3 bg-muted/40 rounded-xl border border-border space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Total Withdrawal:</span>
+                          <span className="font-bold text-foreground text-sm">${(streamingPayouts + tippingPayouts).toFixed(2)}</span>
+                        </div>
+                        <div className="border-t border-border/60 pt-2 flex justify-between">
+                          <span className="text-muted-foreground">Destination:</span>
+                          <span className="font-semibold text-foreground truncate max-w-[150px]">{bankName} ({bankAccount.slice(-4)})</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl p-2.5 leading-relaxed text-[10px]">
+                        ⚠️ Transfers are irrevocable and may take 2-3 business days to clear in your account depending on bank processing schedules.
+                      </div>
+
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={() => {
+                            const totalAmount = streamingPayouts + tippingPayouts;
+                            const newRecord = {
+                              id: Date.now(),
+                              date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+                              amount: totalAmount,
+                              bank: `${bankName} (•••• ${bankAccount.slice(-4)})`,
+                              status: 'Processing' as const
+                            };
+                            setWithdrawalHistory([newRecord, ...withdrawalHistory]);
+                            setStreamingPayouts(0);
+                            setTippingPayouts(0);
+                            setWithdrawModalOpen(false);
+                            toast.success(`Withdrawal of $${totalAmount.toFixed(2)} processed successfully! Funds will arrive in 2-3 business days. 💰`);
+                          }}
+                          className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-xl text-xs flex-1 hover:bg-emerald-700 transition-colors"
+                        >
+                          Confirm Withdrawal
+                        </button>
+                        <button
+                          onClick={() => setWithdrawStep('details')}
+                          className="px-4 py-2 border border-border rounded-xl text-xs text-muted-foreground hover:bg-muted"
+                        >
+                          Back
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
