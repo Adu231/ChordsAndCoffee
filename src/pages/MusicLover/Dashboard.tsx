@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Search, Headphones, BookOpen, Calendar, Users, Heart,
-  DollarSign, Send, X, ArrowLeft, ShieldCheck, CreditCard, Lock, Play, Pause, Radio, Flame
+  DollarSign, Send, X, ArrowLeft, ShieldCheck, CreditCard, Lock, Play, Pause, Radio, Flame, Music
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
