@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Music, Sun, Moon, ChevronDown, User, Settings, LogOut, LayoutDashboard, Coffee } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -28,6 +28,8 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const exploreMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -40,6 +42,20 @@ export default function Navbar() {
     setDropdownOpen(false);
     setUserMenuOpen(false);
   }, [location.pathname]);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+      if (exploreMenuRef.current && !exploreMenuRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const isActive = (href: string) => location.pathname === href;
   const isHome = location.pathname === '/';
@@ -78,10 +94,9 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) =>
               link.children ? (
-                <div key={link.label} className="relative">
+                <div key={link.label} className="relative" ref={exploreMenuRef}>
                   <button
                     onClick={() => setDropdownOpen(v => !v)}
-                    onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
                     className={cn(
                       'flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                       scrolled || !isHome
@@ -141,10 +156,9 @@ export default function Navbar() {
             </button>
 
             {user ? (
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(v => !v)}
-                  onBlur={() => setTimeout(() => setUserMenuOpen(false), 150)}
                   className={cn(
                     "flex items-center gap-2 p-1.5 rounded-xl transition-colors",
                     scrolled || !isHome ? "hover:bg-muted" : "hover:bg-white/10"
