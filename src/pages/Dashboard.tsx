@@ -5,7 +5,8 @@ import {
   TrendingUp, DollarSign, Eye, Heart, MessageSquare, Play, Plus,
   Bell, Search, Menu, X, Coffee, LogOut, ChevronRight, Mic2,
   BookOpen, MapPin, Clock, User, Award, Shield, CheckCircle, Video, BookMarked, HelpCircle,
-  FileText, Check, AlertCircle, PlusCircle, Share2, Trash2, Send, Mail
+  FileText, Check, AlertCircle, PlusCircle, Share2, Trash2, Send, Mail,
+  Headphones, Pause, SlidersHorizontal, Radio, Flame
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line } from 'recharts';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,6 +30,7 @@ const getNavItemsForRole = (role: string) => {
       return [
         { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
         { icon: Search, label: 'Discover Artists', id: 'discover' },
+        { icon: Headphones, label: 'Discover Music', id: 'discover-music' },
         { icon: BookOpen, label: 'Learn Music', id: 'learn' },
         { icon: Calendar, label: 'Attend Events', id: 'events' },
         { icon: Users, label: 'Join Communities', id: 'community' },
@@ -118,6 +120,13 @@ export default function Dashboard() {
   const [joinedWorkshops, setJoinedWorkshops] = useState<number[]>([]);
   const [courseSearchQuery, setCourseSearchQuery] = useState('');
   const [viewingCourseDetails, setViewingCourseDetails] = useState<any | null>(null);
+
+  // Discover Music States
+  const [musicSearchQuery, setMusicSearchQuery] = useState('');
+  const [selectedGenreFilter, setSelectedGenreFilter] = useState('All');
+  const [nowPlaying, setNowPlaying] = useState<null | { id: number; title: string; artist: string; genre: string; duration: string; cover: string }>(null);
+  const [likedTracks, setLikedTracks] = useState<number[]>([2, 5]);
+  const [playingId, setPlayingId] = useState<number | null>(null);
   
   // Event Booking & Details States
   const [bookingEvent, setBookingEvent] = useState<{ id: number; title: string; venue: string; date: string; time: string; price: string; desc: string; address: string; lineup: string } | null>(null);
@@ -784,6 +793,294 @@ export default function Dashboard() {
                     })()}
                   </div>
                 )}
+
+                {/* ── DISCOVER MUSIC TAB ── */}
+                {activeTab === 'discover-music' && (() => {
+                  const allTracks = [
+                    { id: 1,  title: 'Café Mornings',       artist: 'Alex Rivera',  genre: 'Acoustic',   duration: '3:42', plays: '12.4K', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop', trending: true  },
+                    { id: 2,  title: 'Neon Drift',          artist: 'Lana Vibe',    genre: 'Synth',      duration: '4:08', plays: '8.9K',  cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop', trending: true  },
+                    { id: 3,  title: 'Blue Groove',         artist: 'Marcus Chen',  genre: 'Jazz',       duration: '5:15', plays: '21K',   cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop', trending: false },
+                    { id: 4,  title: 'Golden Hours',        artist: 'Alex Rivera',  genre: 'Acoustic',   duration: '3:55', plays: '9.2K',  cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop', trending: false },
+                    { id: 5,  title: 'City Rain',           artist: 'Clara Woods',  genre: 'Indie Pop',  duration: '3:28', plays: '6.1K',  cover: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?w=80&h=80&fit=crop', trending: true  },
+                    { id: 6,  title: 'Slap Bass 101',       artist: 'Dave Groove',  genre: 'Funk',       duration: '4:33', plays: '4.7K',  cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&h=80&fit=crop', trending: false },
+                    { id: 7,  title: 'Lo-Fi Sunday',        artist: 'Sarah Synth',  genre: 'Lo-Fi',      duration: '2:58', plays: '31K',   cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&h=80&fit=crop', trending: true  },
+                    { id: 8,  title: 'Midnight Jazz',       artist: 'Marcus Chen',  genre: 'Jazz',       duration: '6:02', plays: '7.8K',  cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop', trending: false },
+                    { id: 9,  title: 'Petal Storm',         artist: 'Clara Woods',  genre: 'Indie Pop',  duration: '3:11', plays: '5.4K',  cover: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?w=80&h=80&fit=crop', trending: false },
+                    { id: 10, title: 'Signal Pulse',        artist: 'Lana Vibe',    genre: 'Synth',      duration: '4:50', plays: '10.2K', cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop', trending: true  },
+                    { id: 11, title: 'Acoustic Sunrise',    artist: 'Alex Rivera',  genre: 'Acoustic',   duration: '4:20', plays: '15.3K', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop', trending: false },
+                    { id: 12, title: 'Funky Chicken',       artist: 'Dave Groove',  genre: 'Funk',       duration: '3:47', plays: '3.2K',  cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&h=80&fit=crop', trending: false },
+                  ];
+
+                  const genres = ['All', 'Acoustic', 'Jazz', 'Synth', 'Indie Pop', 'Funk', 'Lo-Fi'];
+
+                  const filtered = allTracks.filter(t => {
+                    const matchGenre = selectedGenreFilter === 'All' || t.genre === selectedGenreFilter;
+                    const q = musicSearchQuery.toLowerCase();
+                    const matchSearch = t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q) || t.genre.toLowerCase().includes(q);
+                    return matchGenre && matchSearch;
+                  });
+
+                  const trending = allTracks.filter(t => t.trending);
+
+                  const handlePlay = (track: typeof allTracks[0]) => {
+                    if (playingId === track.id) {
+                      setPlayingId(null);
+                      setNowPlaying(null);
+                    } else {
+                      setPlayingId(track.id);
+                      setNowPlaying(track);
+                      toast.success(`Now playing: ${track.title} by ${track.artist} 🎵`);
+                    }
+                  };
+
+                  const handleLike = (id: number, title: string) => {
+                    if (likedTracks.includes(id)) {
+                      setLikedTracks(likedTracks.filter(l => l !== id));
+                      toast.info(`Removed "${title}" from your likes.`);
+                    } else {
+                      setLikedTracks([...likedTracks, id]);
+                      toast.success(`Liked "${title}"! `);
+                    }
+                  };
+
+                  return (
+                    <div className="space-y-6 animate-in fade-in duration-200">
+
+                      {/* Header */}
+                      <div className="bg-gradient-to-br from-[hsl(220,27%,13%)] to-[hsl(25,35%,20%)] rounded-2xl p-6 text-white relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-10">
+                          <div className="absolute top-0 right-0 w-48 h-48 bg-gold rounded-full blur-3xl" />
+                          <div className="absolute bottom-0 left-0 w-32 h-32 bg-coffee rounded-full blur-3xl" />
+                        </div>
+                        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Headphones className="w-5 h-5 text-gold" />
+                              <h3 className="font-display font-bold text-xl">Discover Music</h3>
+                            </div>
+                            <p className="text-xs text-white/60">Stream tracks from independent artists on ChordsAndCoffee</p>
+                          </div>
+                          <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                            <Radio className="w-4 h-4 text-gold animate-pulse" />
+                            <span className="text-xs font-medium">{allTracks.length} tracks available</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Search + Genre Filters */}
+                      <div className="bg-card rounded-2xl border border-border p-4">
+                        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                          <div className="relative flex-1">
+                            <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                            <input
+                              type="text"
+                              placeholder="Search songs, artists, genres..."
+                              value={musicSearchQuery}
+                              onChange={e => setMusicSearchQuery(e.target.value)}
+                              className="w-full pl-9 pr-4 py-2 bg-muted/40 border border-border rounded-xl text-xs focus:outline-none focus:border-coffee/50"
+                            />
+                          </div>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {genres.map(g => (
+                              <button
+                                key={g}
+                                onClick={() => setSelectedGenreFilter(g)}
+                                className={cn(
+                                  'px-3 py-1.5 rounded-full text-[10px] font-semibold transition-colors',
+                                  selectedGenreFilter === g
+                                    ? 'bg-coffee text-white'
+                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                )}
+                              >
+                                {g}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Trending row (only when no search active) */}
+                        {!musicSearchQuery && selectedGenreFilter === 'All' && (
+                          <div className="mb-5">
+                            <div className="flex items-center gap-1.5 mb-3">
+                              <Flame className="w-4 h-4 text-orange-500" />
+                              <span className="text-xs font-bold text-foreground uppercase tracking-wide">Trending Now</span>
+                            </div>
+                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                              {trending.map(track => (
+                                <div
+                                  key={track.id}
+                                  className="flex-shrink-0 w-36 bg-muted/40 border border-border rounded-xl p-3 cursor-pointer hover:border-coffee/50 hover:shadow-warm transition-all group"
+                                  onClick={() => handlePlay(track)}
+                                >
+                                  <div className="relative mb-2">
+                                    <img src={track.cover} alt={track.title} className="w-full h-24 object-cover rounded-lg" />
+                                    <div className="absolute inset-0 rounded-lg bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                      {playingId === track.id
+                                        ? <Pause className="w-7 h-7 text-white" />
+                                        : <Play className="w-7 h-7 text-white" fill="white" />
+                                      }
+                                    </div>
+                                    {playingId === track.id && (
+                                      <div className="absolute top-1.5 right-1.5 flex gap-0.5 items-end h-4">
+                                        {[3,5,4,6,3].map((h,i) => (
+                                          <div key={i} className="w-0.5 bg-coffee rounded-full animate-bounce" style={{ height: `${h * 2}px`, animationDelay: `${i * 0.1}s` }} />
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <p className="text-[10px] font-semibold text-foreground truncate">{track.title}</p>
+                                  <p className="text-[9px] text-muted-foreground truncate">{track.artist}</p>
+                                  <p className="text-[9px] text-coffee font-medium mt-0.5">{track.plays} plays</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Track List */}
+                        <div>
+                          <div className="flex items-center gap-1.5 mb-3">
+                            <Music className="w-4 h-4 text-coffee" />
+                            <span className="text-xs font-bold text-foreground uppercase tracking-wide">
+                              {musicSearchQuery || selectedGenreFilter !== 'All' ? `Results (${filtered.length})` : 'All Tracks'}
+                            </span>
+                          </div>
+
+                          {filtered.length === 0 ? (
+                            <div className="text-center py-10">
+                              <Headphones className="w-10 h-10 text-muted-foreground/40 mx-auto mb-2" />
+                              <p className="text-sm text-muted-foreground">No tracks found for "{musicSearchQuery}"</p>
+                              <button onClick={() => { setMusicSearchQuery(''); setSelectedGenreFilter('All'); }} className="mt-2 text-xs text-coffee hover:underline">
+                                Clear filters
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              {filtered.map((track, idx) => (
+                                <div
+                                  key={track.id}
+                                  className={cn(
+                                    'flex items-center gap-3 p-3 rounded-xl border transition-all group cursor-pointer',
+                                    playingId === track.id
+                                      ? 'bg-coffee/10 border-coffee/40 shadow-warm'
+                                      : 'border-border hover:bg-muted/40 hover:border-coffee/20'
+                                  )}
+                                >
+                                  {/* Track number / play indicator */}
+                                  <div className="w-7 text-center flex-shrink-0">
+                                    {playingId === track.id ? (
+                                      <div className="flex gap-0.5 items-end justify-center h-4">
+                                        {[3,5,4].map((h,i) => (
+                                          <div key={i} className="w-0.5 bg-coffee rounded-full animate-bounce" style={{ height: `${h * 2}px`, animationDelay: `${i * 0.12}s` }} />
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <span className="text-[10px] text-muted-foreground group-hover:hidden">{idx + 1}</span>
+                                    )}
+                                  </div>
+
+                                  {/* Cover + play on hover */}
+                                  <div className="relative flex-shrink-0" onClick={() => handlePlay(track)}>
+                                    <img src={track.cover} alt={track.title} className="w-10 h-10 rounded-lg object-cover" />
+                                    <div className="absolute inset-0 rounded-lg bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                      {playingId === track.id
+                                        ? <Pause className="w-4 h-4 text-white" />
+                                        : <Play className="w-4 h-4 text-white" fill="white" />
+                                      }
+                                    </div>
+                                  </div>
+
+                                  {/* Info */}
+                                  <div className="flex-1 min-w-0" onClick={() => handlePlay(track)}>
+                                    <p className={cn('text-xs font-semibold truncate', playingId === track.id ? 'text-coffee' : 'text-foreground')}>
+                                      {track.title}
+                                    </p>
+                                    <p className="text-[10px] text-muted-foreground truncate">{track.artist}</p>
+                                  </div>
+
+                                  {/* Genre pill */}
+                                  <span className="hidden sm:inline-flex px-2 py-0.5 bg-muted text-muted-foreground text-[9px] font-semibold rounded-full flex-shrink-0">
+                                    {track.genre}
+                                  </span>
+
+                                  {/* Plays */}
+                                  <span className="text-[10px] text-muted-foreground flex-shrink-0 w-12 text-right">{track.plays}</span>
+
+                                  {/* Duration */}
+                                  <span className="text-[10px] text-muted-foreground flex-shrink-0 w-8 text-right">{track.duration}</span>
+
+                                  {/* Like button */}
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleLike(track.id, track.title); }}
+                                    className="flex-shrink-0 p-1.5 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/20 transition-colors"
+                                  >
+                                    <Heart
+                                      className={cn('w-4 h-4 transition-colors', likedTracks.includes(track.id) ? 'text-rose-500 fill-rose-500' : 'text-muted-foreground')}
+                                    />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Liked Tracks summary */}
+                      {likedTracks.length > 0 && (
+                        <div className="bg-card rounded-2xl border border-border p-4">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
+                            <span className="text-xs font-bold text-foreground">Your Liked Tracks ({likedTracks.length})</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {allTracks.filter(t => likedTracks.includes(t.id)).map(t => (
+                              <div key={t.id} className="flex items-center gap-2 bg-muted/50 border border-border rounded-xl px-3 py-1.5 text-xs">
+                                <img src={t.cover} className="w-5 h-5 rounded object-cover" />
+                                <span className="font-medium text-foreground">{t.title}</span>
+                                <span className="text-muted-foreground">— {t.artist}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Now Playing Mini Bar */}
+                      {nowPlaying && (
+                        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[calc(100%-2rem)] max-w-2xl bg-[hsl(220,27%,12%)] border border-white/10 rounded-2xl shadow-2xl px-4 py-3 flex items-center gap-4 text-white">
+                          <img src={nowPlaying.cover} alt={nowPlaying.title} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold truncate">{nowPlaying.title}</p>
+                            <p className="text-[10px] text-white/50 truncate">{nowPlaying.artist} • {nowPlaying.genre}</p>
+                          </div>
+                          {/* Animated waveform */}
+                          <div className="flex gap-0.5 items-end h-5 flex-shrink-0">
+                            {[4,7,5,8,6,4,7].map((h, i) => (
+                              <div
+                                key={i}
+                                className="w-0.5 bg-coffee rounded-full animate-bounce"
+                                style={{ height: `${h * 2}px`, animationDelay: `${i * 0.1}s` }}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-[10px] text-white/40 flex-shrink-0">{nowPlaying.duration}</span>
+                          <button
+                            onClick={() => { setPlayingId(null); setNowPlaying(null); }}
+                            className="flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                          >
+                            <Pause className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => { setPlayingId(null); setNowPlaying(null); }}
+                            className="flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+
+                    </div>
+                  );
+                })()}
 
                 {activeTab === 'learn' && (
                   <div className="space-y-6 text-left max-w-4xl mx-auto animate-in fade-in duration-200">
