@@ -36,13 +36,26 @@ const validateExpiry = (value: string): string => {
 
 /* --- component ----------------------------------------------------------- */
 
+interface PaymentState {
+  artist: string;
+  amount: number;
+  isBooking?: boolean;
+  eventId?: number;
+  ticketQty?: string;
+  title?: string;
+}
+
 export default function ConfirmPayment() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const tipInfo = location.state as { artist: string; amount: number } | null;
-  const artist  = tipInfo?.artist || 'Alex Rivera';
-  const amount  = tipInfo?.amount || 10;
+  const tipInfo = location.state as PaymentState | null;
+  const artist = tipInfo?.artist || 'Alex Rivera';
+  const amount = tipInfo?.amount || 10;
+  const isBooking = tipInfo?.isBooking || false;
+  const eventId = tipInfo?.eventId;
+  const ticketQty = tipInfo?.ticketQty || '1';
+  const eventTitle = tipInfo?.title || 'Event';
 
   const processingFee = parseFloat((amount * 0.05).toFixed(2));
   const total         = parseFloat((amount + processingFee).toFixed(2));
@@ -140,10 +153,23 @@ export default function ConfirmPayment() {
     }
 
     setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 1800));
     setLoading(false);
-    toast.success(`Payment of $${total.toFixed(2)} processed! Tip sent to ${artist}.`);
-    navigate('/dashboard');
+
+    if (isBooking) {
+      // Redirect to dashboard with booking success parameters
+      navigate('/dashboard', {
+        state: {
+          activeTab: 'events',
+          bookedEventId: eventId,
+          ticketQty: ticketQty,
+          title: eventTitle
+        }
+      });
+    } else {
+      toast.success(`Payment of $${total.toFixed(2)} processed! Tip sent to ${artist}.`);
+      navigate('/dashboard');
+    }
   };
 
   /* -- style helpers -- */
@@ -185,10 +211,22 @@ export default function ConfirmPayment() {
             </div>
 
             <div className="border-t border-white/10 pt-6 space-y-3">
-              <div className="flex justify-between text-xs text-white/60">
-                <span>Direct Tip to {artist}</span>
-                <span>${amount.toFixed(2)}</span>
-              </div>
+              {isBooking ? (
+                <>
+                  <div className="flex justify-between text-xs text-white/60">
+                    <span className="font-medium text-white">Event: {eventTitle}</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-white/60">
+                    <span>Tickets (Qty: {ticketQty})</span>
+                    <span>${amount.toFixed(2)}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between text-xs text-white/60">
+                  <span>Direct Tip to {artist}</span>
+                  <span>${amount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-xs text-white/60">
                 <span>Processing Fee (5%)</span>
                 <span>${processingFee.toFixed(2)}</span>
@@ -291,7 +329,7 @@ export default function ConfirmPayment() {
 
             {/* Rules hint */}
             <p className="text-[10px] text-muted-foreground bg-muted/40 rounded-lg px-3 py-2 border border-border leading-relaxed">
-              ?? Name is auto-uppercased. Expiry month must be <strong>01–12</strong>. Expired cards are rejected. CVC is exactly 3 digits.
+              ?? Name is auto-uppercased. Expiry month must be <strong>01-12</strong>. Expired cards are rejected. CVC is exactly 3 digits.
             </p>
 
             {/* Actions */}

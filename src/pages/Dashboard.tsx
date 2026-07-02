@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Music, Calendar, Users, BarChart3, Settings, Star,
   TrendingUp, DollarSign, Eye, Heart, MessageSquare, Play, Plus,
@@ -95,6 +95,7 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ----------------------------------------------------
   // STATE MANAGEMENT FOR DEMO ROLES (Reactive Workflows)
@@ -141,6 +142,26 @@ export default function Dashboard() {
   const [newPostText, setNewPostText] = useState('');
   const [selectedCommunity, setSelectedCommunity] = useState('Acoustic Fans');
   const [joiningCommunity, setJoiningCommunity] = useState<{ name: string; members: string; desc: string; rules: string } | null>(null);
+
+  // Listen to redirect state from payment verification page
+  useEffect(() => {
+    if (location.state) {
+      const state = location.state as any;
+      if (state.activeTab === 'events' && state.bookedEventId) {
+        // Change activeTab to events
+        setActiveTab('events');
+        // Add event to registered list if not already there
+        if (!registeredEvents.includes(state.bookedEventId)) {
+          setRegisteredEvents(prev => [...prev, state.bookedEventId]);
+        }
+        // Fire confirmation toast
+        toast.success(`Reserved ${state.ticketQty || 1} ticket(s) for "${state.title}" successfully! 🎟️`);
+        
+        // Clear route state to prevent repeat triggers
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, registeredEvents]);
 
   // 4.2 Musician States
   const [portfolioTracks, setPortfolioTracks] = useState([
@@ -1326,64 +1347,91 @@ export default function Dashboard() {
                           <h4 className="font-display font-semibold text-lg text-foreground"> Reserve Tickets for {bookingEvent.title}</h4>
                           <button onClick={() => setBookingEvent(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
                         </div>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            if (!ticketName.trim() || !ticketEmail.trim()) {
-                              toast.error('Name and Email are required.');
-                              return;
-                            }
-                            setRegisteredEvents([...registeredEvents, bookingEvent.id]);
-                            setBookingEvent(null);
-                            toast.success(`Reserved ${ticketQty} ticket(s) for ${bookingEvent.title} successfully! `);
-                          }}
-                          className="space-y-4"
-                        >
-                          <div className="grid sm:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-xs font-semibold text-foreground mb-1">Full Name</label>
-                              <input
-                                type="text"
-                                required
-                                value={ticketName}
-                                onChange={e => setTicketName(e.target.value)}
-                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold text-foreground mb-1">Email Address</label>
-                              <input
-                                type="email"
-                                required
-                                value={ticketEmail}
-                                onChange={e => setTicketEmail(e.target.value)}
-                                className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-foreground mb-1">Number of Tickets</label>
-                            <select
-                              value={ticketQty}
-                              onChange={e => setTicketQty(e.target.value)}
-                              className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                        {(() => {
+                          const priceVal = bookingEvent.price === 'Free' ? 0 : parseFloat(bookingEvent.price.replace('$', ''));
+                          const qty = parseInt(ticketQty, 10) || 1;
+                          const totalPrice = priceVal * qty;
+                          return (
+                            <form
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                if (!ticketName.trim() || !ticketEmail.trim()) {
+                                  toast.error('Name and Email are required.');
+                                  return;
+                                }
+                                setBookingEvent(null);
+                                navigate('/confirm-payment', {
+                                  state: {
+                                    isBooking: true,
+                                    eventId: bookingEvent.id,
+                                    ticketQty: ticketQty,
+                                    title: bookingEvent.title,
+                                    amount: totalPrice,
+                                    artist: bookingEvent.venue
+                                  }
+                                });
+                              }}
+                              className="space-y-4"
                             >
-                              <option value="1">1 Ticket</option>
-                              <option value="2">2 Tickets</option>
-                              <option value="3">3 Tickets</option>
-                              <option value="4">4 Tickets</option>
-                              <option value="5">5 Tickets</option>
-                            </select>
-                          </div>
-                          <div className="flex gap-2">
-                            <button type="submit" className="px-5 py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90">
-                              Confirm Reservation
-                            </button>
-                            <button type="button" onClick={() => setBookingEvent(null)} className="px-5 py-2.5 border border-border text-xs rounded-xl text-muted-foreground hover:bg-muted">
-                              Cancel
-                            </button>
-                          </div>
-                        </form>
+                              <div className="p-3 bg-muted/30 border border-border rounded-xl mb-4 text-xs flex justify-between items-center">
+                                <div>
+                                  <span className="block text-[10px] text-muted-foreground uppercase font-bold">Ticket Price</span>
+                                  <span className="text-foreground font-semibold">{bookingEvent.price}</span>
+                                </div>
+                                <div className="text-right">
+                                  <span className="block text-[10px] text-muted-foreground uppercase font-bold">Subtotal ({qty} ticket(s))</span>
+                                  <span className="text-coffee font-bold text-sm">
+                                    {bookingEvent.price === 'Free' ? 'Free' : `$${totalPrice.toFixed(2)}`}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-xs font-semibold text-foreground mb-1">Full Name</label>
+                                  <input
+                                    type="text"
+                                    required
+                                    value={ticketName}
+                                    onChange={e => setTicketName(e.target.value)}
+                                    className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-foreground mb-1">Email Address</label>
+                                  <input
+                                    type="email"
+                                    required
+                                    value={ticketEmail}
+                                    onChange={e => setTicketEmail(e.target.value)}
+                                    className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-xs font-semibold text-foreground mb-1">Number of Tickets</label>
+                                  <select
+                                    value={ticketQty}
+                                    onChange={e => setTicketQty(e.target.value)}
+                                    className="w-full px-3 py-2 border border-border rounded-xl bg-card text-xs text-foreground focus:outline-none"
+                                  >
+                                    <option value="1">1 Ticket</option>
+                                    <option value="2">2 Tickets</option>
+                                    <option value="3">3 Tickets</option>
+                                    <option value="4">4 Tickets</option>
+                                    <option value="5">5 Tickets</option>
+                                  </select>
+                              </div>
+                              <div className="flex gap-2">
+                                <button type="submit" className="px-5 py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90">
+                                  Confirm & Pay {bookingEvent.price === 'Free' ? 'Free' : `$${totalPrice.toFixed(2)}`}
+                                </button>
+                                <button type="button" onClick={() => setBookingEvent(null)} className="px-5 py-2.5 border border-border text-xs rounded-xl text-muted-foreground hover:bg-muted">
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          );
+                        })()}
                       </div>
                     )}
 
