@@ -223,7 +223,7 @@ export default function VenueOwnerDashboard() {
                     Edit Listing Details
                   </button>
                   <button
-                    onClick={() => toast.success('Venue profile link copied to clipboard! 📋')}
+                    onClick={() => toast.success('Venue profile link copied to clipboard! ')}
                     className="flex-1 py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90 shadow-warm transition-opacity"
                   >
                     View Live Listing
@@ -443,7 +443,7 @@ export default function VenueOwnerDashboard() {
                 ]);
                 setNewVenueEventName('');
                 setNewVenueEventDesc('');
-                toast.success('Event hosted at your venue! 🎙️');
+                toast.success('Event hosted at your venue! ');
               }}
               className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-xl hover:opacity-90"
             >
@@ -552,7 +552,7 @@ export default function VenueOwnerDashboard() {
                   }
                 ]);
                 setBookingNotes('');
-                toast.success(`Booking offer sent to ${bookingArtistName}! 📅`);
+                toast.success(`Booking offer sent to ${bookingArtistName}! `);
               }}
               className="w-full py-2.5 bg-coffee text-white font-semibold text-xs rounded-xl hover:opacity-90"
             >
@@ -853,7 +853,7 @@ export default function VenueOwnerDashboard() {
                       setPromoAdTitle('');
                       setPromoAdDesc('');
                       setShowPromoModal(false);
-                      toast.success(`Ad Campaign "${promoAdTitle || 'Local Promo'}" launched! $${promoBudget} charged to card. 📣`);
+                      toast.success(`Ad Campaign "${promoAdTitle || 'Local Promo'}" launched! $${promoBudget} charged to card. `);
                     }, 1500);
                   }}
                   disabled={promoProcessing}

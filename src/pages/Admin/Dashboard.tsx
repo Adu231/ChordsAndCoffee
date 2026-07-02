@@ -238,7 +238,7 @@ export default function AdminDashboard() {
                 />
               </div>
             </div>
-            <button onClick={() => toast.success('Platform configurations saved successfully! ⚙️')} className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
+            <button onClick={() => toast.success('Platform configurations saved successfully! ')} className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90">
               Save Configurations
             </button>
           </div>
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => {
                         setPendingVerifications(pendingVerifications.filter(a => a.id !== app.id));
-                        toast.success(`Artist "${app.name}" approved and verified successfully! checkmark added. 🛡️`);
+                        toast.success(`Artist "${app.name}" approved and verified successfully! checkmark added. `);
                       }}
                       className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-[10px]"
                     >
@@ -317,7 +317,7 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => {
                         setModerationReports(moderationReports.filter(r => r.id !== rep.id));
-                        toast.success('Flagged content successfully removed from platform. 🗑️');
+                        toast.success('Flagged content successfully removed from platform. ');
                       }}
                       className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold text-[10px]"
                     >
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
-              toast.success('Revenue statement downloaded successfully! 📊');
+              toast.success('Revenue statement downloaded successfully! ');
             }}
             className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
           >

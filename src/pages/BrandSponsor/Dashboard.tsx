@@ -156,7 +156,7 @@ export default function BrandSponsorDashboard() {
                     }
                     setTalentDirectory(shuffled);
                     setIsRefreshingTalent(false);
-                    toast.success('Artist catalog refreshed! 4 verified matches found. 🎼');
+                    toast.success('Artist catalog refreshed! 4 verified matches found. ');
                   }, 1000);
                 }}
                 disabled={isRefreshingTalent}
@@ -255,7 +255,7 @@ export default function BrandSponsorDashboard() {
                         toast.info(`You are already sponsoring ${opportunity.name}`);
                       } else {
                         setSponsoredEvents([...sponsoredEvents, opportunity.name]);
-                        toast.success(`Sponsorship pledge confirmed for ${opportunity.name}! ☕`);
+                        toast.success(`Sponsorship pledge confirmed for ${opportunity.name}! `);
                       }
                     }}
                     className={cn(
@@ -396,7 +396,7 @@ export default function BrandSponsorDashboard() {
                   ]);
                   setNewCampaignName('');
                   setCampaignAdCopy('');
-                  toast.success('Sponsor campaign launched successfully! Real-time metrics generated. 📣');
+                  toast.success('Sponsor campaign launched successfully! Real-time metrics generated. ');
                 }}
                 className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90 shadow-warm transition-opacity"
               >
@@ -561,7 +561,7 @@ export default function BrandSponsorDashboard() {
                     },
                     ...sponsorshipInquiries
                   ]);
-                  toast.success(`Inquiry sent to ${inquiringArtist.name}! Offer of $${inquiryBudget} is pending. ✉️`);
+                  toast.success(`Inquiry sent to ${inquiringArtist.name}! Offer of $${inquiryBudget} is pending. `);
                   setInquiringArtist(null);
                   setInquiryMessage('');
                 }}

@@ -305,7 +305,7 @@ export default function MusicLoverDashboard() {
             toast.info(`Removed "${title}" from your likes.`);
           } else {
             setLikedTracks([...likedTracks, id]);
-            toast.success(`Liked "${title}"! ❤️`);
+            toast.success(`Liked "${title}"! `);
           }
         };
 

@@ -227,7 +227,7 @@ export default function MusicianDashboard() {
                 setPortfolioTracks([...portfolioTracks, { id: Date.now(), title: newTrackTitle, plays: 0, likes: 0, status: 'Released' }]);
                 setNewTrackTitle('');
                 setAudioFile(null);
-                toast.success('Track and audio file published to your portfolio! 🎵');
+                toast.success('Track and audio file published to your portfolio! ');
               }}
               className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
             >
@@ -272,7 +272,7 @@ export default function MusicianDashboard() {
                         <button
                           onClick={() => {
                             setGigOffers(gigOffers.map(g => g.id === gig.id ? { ...g, status: 'Confirmed' } : g));
-                            toast.success(`Gig booking for ${gig.venue} accepted! 🎸`);
+                            toast.success(`Gig booking for ${gig.venue} accepted! `);
                           }}
                           className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-semibold hover:opacity-90 transition-all"
                         >
@@ -389,7 +389,7 @@ export default function MusicianDashboard() {
                 setNewCollabTitle('');
                 setNewCollabDesc('');
                 setNewCollabReqs('');
-                toast.success('Collaboration request uploaded to board! 📝');
+                toast.success('Collaboration request uploaded to board! ');
               }}
               className="space-y-3"
             >
@@ -901,7 +901,7 @@ export default function MusicianDashboard() {
                       setStreamingPayouts(0);
                       setTippingPayouts(0);
                       setWithdrawModalOpen(false);
-                      toast.success(`Withdrawal of $${totalAmount.toFixed(2)} processed successfully! Funds will arrive in 2-3 business days. 💰`);
+                      toast.success(`Withdrawal of $${totalAmount.toFixed(2)} processed successfully! Funds will arrive in 2-3 business days. `);
                     }}
                     className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-xl text-xs flex-1 hover:bg-emerald-700 transition-colors"
                   >

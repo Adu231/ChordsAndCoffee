@@ -243,7 +243,7 @@ export default function EventOrganizerDashboard() {
                   ]);
                   setNewOrgEventName('');
                   setNewOrgEventDesc('');
-                  toast.success('Event listing initialized! Ticket sales launched. 🎟️');
+                  toast.success('Event listing initialized! Ticket sales launched. ');
                 }}
                 className="w-full py-2.5 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90 shadow-warm"
               >
@@ -452,7 +452,7 @@ export default function EventOrganizerDashboard() {
                       <button
                         onClick={() => {
                           setAttendees(attendees.map(a => a.id === att.id ? { ...a, status: 'Checked In' } : a));
-                          toast.success(`Checked in ${att.name}! 🎟️`);
+                          toast.success(`Checked in ${att.name}! `);
                         }}
                         className="px-3 py-1.5 bg-coffee text-white rounded-lg font-semibold hover:opacity-90 text-[10px]"
                       >
@@ -535,7 +535,7 @@ export default function EventOrganizerDashboard() {
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
-              toast.success('Spreadsheet success report downloaded! 📊');
+              toast.success('Spreadsheet success report downloaded! ');
             }}
             className="w-full py-2.5 bg-coffee text-white font-semibold rounded-xl text-xs hover:opacity-90"
           >
@@ -595,7 +595,7 @@ export default function EventOrganizerDashboard() {
                         status: 'Pending'
                       }
                     ]);
-                    toast.success(`Performance invitation successfully dispatched to ${invitingArtist.name}! 🎤`);
+                    toast.success(`Performance invitation successfully dispatched to ${invitingArtist.name}! `);
                     setShowInviteArtistModal(false);
                     setInvitingArtist(null);
                   }}

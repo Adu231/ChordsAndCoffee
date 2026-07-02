@@ -224,7 +224,7 @@ export default function MusicTeacherDashboard() {
                 setNewCourseHours('10');
                 setNewCourseLectures('12');
                 setNewCourseSyllabus('');
-                toast.success('Course created and listed successfully! 🎓');
+                toast.success('Course created and listed successfully! ');
               }}
               className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
             >
@@ -277,7 +277,7 @@ export default function MusicTeacherDashboard() {
                 if (!newWorkshopTitle.trim()) return;
                 setTeacherWorkshops([...teacherWorkshops, { id: Date.now(), title: newWorkshopTitle, date: newWorkshopDate, seatsLeft: 20, price: '$15' }]);
                 setNewWorkshopTitle('');
-                toast.success('Workshop scheduled! Students can now register. 🎟️');
+                toast.success('Workshop scheduled! Students can now register. ');
               }}
               className="w-full py-2 bg-coffee text-white text-xs font-semibold rounded-xl hover:opacity-90"
             >
