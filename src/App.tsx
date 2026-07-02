@@ -34,6 +34,7 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import Careers from "./pages/Careers";
 import CookiePolicy from "./pages/CookiePolicy";
 import ConfirmPayment from "./pages/ConfirmPayment";
+import AIAssistant from "./components/AIAssistant";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollRestoration />
           <InnerApp />
+          <AIAssistant />
           <ScrollToTop />
         </BrowserRouter>
       </TooltipProvider>
