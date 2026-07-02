@@ -268,13 +268,13 @@ export default function MusicLoverDashboard() {
           { id: 3,  title: 'Blue Groove',         artist: 'Marcus Chen',  genre: 'Jazz',       duration: '5:15', plays: '21K',   cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop', trending: false },
           { id: 4,  title: 'Golden Hours',        artist: 'Alex Rivera',  genre: 'Acoustic',   duration: '3:55', plays: '9.2K',  cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop', trending: false },
           { id: 5,  title: 'City Rain',           artist: 'Clara Woods',  genre: 'Indie Pop',  duration: '3:28', plays: '6.1K',  cover: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?w=80&h=80&fit=crop', trending: true  },
-          { id: 6,  title: 'Slap Bass 101',       artist: 'Dave Groove',  genre: 'Funk',       duration: '4:33', plays: '4.7K',  cover: 'https://images.unsplash.com/photo-1486218119243-13301543a1b4?w=80&h=80&fit=crop', trending: false },
+          { id: 6,  title: 'Slap Bass 101',       artist: 'Dave Groove',  genre: 'Funk',       duration: '4:33', plays: '4.7K',  cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&h=80&fit=crop', trending: false },
           { id: 7,  title: 'Lo-Fi Sunday',        artist: 'Sarah Synth',  genre: 'Lo-Fi',      duration: '2:58', plays: '31K',   cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&h=80&fit=crop', trending: true  },
           { id: 8,  title: 'Midnight Jazz',       artist: 'Marcus Chen',  genre: 'Jazz',       duration: '6:02', plays: '7.8K',  cover: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=80&h=80&fit=crop', trending: false },
           { id: 9,  title: 'Petal Storm',         artist: 'Clara Woods',  genre: 'Indie Pop',  duration: '3:11', plays: '5.4K',  cover: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?w=80&h=80&fit=crop', trending: false },
           { id: 10, title: 'Signal Pulse',        artist: 'Lana Vibe',    genre: 'Synth',      duration: '4:50', plays: '10.2K', cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&h=80&fit=crop', trending: true  },
           { id: 11, title: 'Acoustic Sunrise',    artist: 'Alex Rivera',  genre: 'Acoustic',   duration: '4:20', plays: '15.3K', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=80&h=80&fit=crop', trending: false },
-          { id: 12, title: 'Funky Chicken',       artist: 'Dave Groove',  genre: 'Funk',       duration: '3:47', plays: '3.2K',  cover: 'https://images.unsplash.com/photo-1486218119243-13301543a1b4?w=80&h=80&fit=crop', trending: false },
+          { id: 12, title: 'Funky Chicken',       artist: 'Dave Groove',  genre: 'Funk',       duration: '3:47', plays: '3.2K',  cover: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&h=80&fit=crop', trending: false },
         ];
 
         const genres = ['All', 'Acoustic', 'Jazz', 'Synth', 'Indie Pop', 'Funk', 'Lo-Fi'];
