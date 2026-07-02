@@ -14,6 +14,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
+import MusicLoverDashboard from "./pages/MusicLover/Dashboard";
+import MusicianDashboard from "./pages/Musician/Dashboard";
+import MusicTeacherDashboard from "./pages/MusicTeacher/Dashboard";
+import VenueOwnerDashboard from "./pages/VenueOwner/Dashboard";
+import EventOrganizerDashboard from "./pages/EventOrganizer/Dashboard";
+import BrandSponsorDashboard from "./pages/BrandSponsor/Dashboard";
+import AdminDashboard from "./pages/Admin/Dashboard";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import About from "./pages/About";
@@ -61,6 +68,13 @@ function InnerApp() {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/music-lover" element={<MusicLoverDashboard />} />
+      <Route path="/musician" element={<MusicianDashboard />} />
+      <Route path="/music-teacher" element={<MusicTeacherDashboard />} />
+      <Route path="/venue-owner" element={<VenueOwnerDashboard />} />
+      <Route path="/event-organizer" element={<EventOrganizerDashboard />} />
+      <Route path="/brand-sponsor" element={<BrandSponsorDashboard />} />
+      <Route path="/admin" element={<AdminDashboard />} />
 
       {/* Pages with full layout */}
       <Route path="/*" element={<WithLayout />} />
