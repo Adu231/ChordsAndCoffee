@@ -32,15 +32,15 @@ export default function AIAssistant() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
-  // Hide the chatbot on the payment page
-  if (location.pathname === '/confirm-payment') {
-    return null;
-  }
-
   // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  // Hide the chatbot on the payment page
+  if (location.pathname === '/confirm-payment') {
+    return null;
+  }
 
   const handleSend = (textToSend: string) => {
     if (!textToSend.trim()) return;
